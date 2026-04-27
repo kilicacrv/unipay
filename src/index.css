@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-inter bg-background text-dark antialiased;
+  }
+  * {
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer utilities {
+  .gradient-primary {
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+  }
+  .gradient-success {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  }
+  .gradient-hero {
+    background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 50%, #312E81 100%);
+  }
+  .text-gradient {
+    background: linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow duration-200;
+  }
+  .btn-primary {
+    @apply gradient-primary text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 hover:-translate-y-0.5 transition-all duration-200;
+  }
+  .btn-secondary {
+    @apply bg-white text-dark font-bold px-6 py-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 hover:-translate-y-0.5 transition-all duration-200;
+  }
+  .input-field {
+    @apply w-full bg-white border border-slate-200 rounded-xl pl-4 pr-4 py-3.5 font-medium text-dark outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200 placeholder:text-slate-400;
+  }
+  .marquee-container {
+    overflow: hidden;
+    white-space: nowrap;
+    display: flex;
+  }
+  .marquee-content {
+    display: flex;
+    animation: marquee 20s linear infinite;
+  }
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+}
