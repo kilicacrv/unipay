@@ -126,7 +126,9 @@ const Register = () => {
           </form>
 
           <p className="text-center text-xs text-slate-400 mt-5 leading-relaxed">
-            Devam ederek <span className="underline cursor-pointer">Gizlilik Politikasını</span> ve <span className="underline cursor-pointer">Kullanım Koşullarını</span> kabul etmiş olursunuz.
+            Devam ederek{' '}
+            <Link to="/gizlilik" className="underline hover:text-primary transition-colors">Gizlilik Politikasını</Link> ve{' '}
+            <Link to="/kullanim-kosullari" className="underline hover:text-primary transition-colors">Kullanım Koşullarını</Link> kabul etmiş olursunuz.
           </p>
         </div>
 

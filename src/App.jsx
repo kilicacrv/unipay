@@ -13,6 +13,8 @@ import BusinessForm from './pages/BusinessForm';
 import Register from './pages/Register';
 import VerifyStudent from './pages/VerifyStudent';
 import Admin from './pages/Admin';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 
 function App() {
   return (
@@ -29,6 +31,8 @@ function App() {
             <Route path="/kayit" element={<Register />} />
             <Route path="/dogrulama" element={<VerifyStudent />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/gizlilik" element={<Privacy />} />
+            <Route path="/kullanim-kosullari" element={<Terms />} />
           </Routes>
         </main>
 
