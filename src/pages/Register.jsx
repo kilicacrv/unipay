@@ -32,6 +32,8 @@ const Register = () => {
       setError('Geçerli bir telefon numarası girin.');
       return;
     }
+    // Bir sonraki adımda kullanmak için kaydet
+    sessionStorage.setItem('unipay_applicant', JSON.stringify(formData));
     navigate('/dogrulama');
   };
 
@@ -45,7 +47,6 @@ const Register = () => {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="w-14 h-14 gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-500/30">
             <span className="text-white font-black text-2xl">Ü</span>
@@ -54,9 +55,7 @@ const Register = () => {
           <p className="text-slate-500 text-sm">Ücretsiz kayıt ol, indirimleri kullanmaya başla.</p>
         </div>
 
-        {/* Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
-          {/* Google Button */}
           <button
             type="button"
             onClick={() => navigate('/dogrulama')}
@@ -79,7 +78,6 @@ const Register = () => {
             <div className="flex-1 h-px bg-slate-100" />
           </div>
 
-          {/* Error */}
           {error && (
             <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 mb-6 text-sm font-medium">
               <AlertCircle size={15} />
@@ -88,22 +86,13 @@ const Register = () => {
           )}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-            {/* Ad Soyad */}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">Ad Soyad</label>
               <InputWrapper icon={<User size={16} />}>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Adınız ve Soyadınız"
-                  className={inputBase}
-                />
+                <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Adınız ve Soyadınız" className={inputBase} />
               </InputWrapper>
             </div>
 
-            {/* Telefon */}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">Telefon Numarası</label>
               <div className="flex items-center bg-white border border-slate-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary transition-all duration-200">
@@ -111,27 +100,14 @@ const Register = () => {
                   <Smartphone size={16} className="text-slate-400" />
                   <span className="text-sm font-semibold text-slate-500">+90</span>
                 </div>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="5XX XXX XX XX"
-                  className={`${inputBase} pl-3`}
-                />
+                <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="5XX XXX XX XX" className={`${inputBase} pl-3`} />
               </div>
             </div>
 
-            {/* Üniversite */}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">Üniversite</label>
               <InputWrapper icon={<GraduationCap size={16} />}>
-                <select
-                  name="university"
-                  value={formData.university}
-                  onChange={handleChange}
-                  className={`${inputBase} appearance-none cursor-pointer`}
-                >
+                <select name="university" value={formData.university} onChange={handleChange} className={`${inputBase} appearance-none cursor-pointer`}>
                   <option value="" disabled>Üniversite Seçin</option>
                   <option value="selcuk">Selçuk Üniversitesi</option>
                   <option value="necmettin">Necmettin Erbakan Üniversitesi</option>
@@ -150,15 +126,12 @@ const Register = () => {
           </form>
 
           <p className="text-center text-xs text-slate-400 mt-5 leading-relaxed">
-            Devam ederek{' '}
-            <span className="underline cursor-pointer">Gizlilik Politikasını</span> ve{' '}
-            <span className="underline cursor-pointer">Kullanım Koşullarını</span> kabul etmiş olursunuz.
+            Devam ederek <span className="underline cursor-pointer">Gizlilik Politikasını</span> ve <span className="underline cursor-pointer">Kullanım Koşullarını</span> kabul etmiş olursunuz.
           </p>
         </div>
 
         <p className="text-center text-sm text-slate-500 mt-6">
-          Zaten hesabın var mı?{' '}
-          <Link to="/kayit" className="text-primary font-semibold hover:underline">Giriş Yap</Link>
+          Zaten hesabın var mı? <Link to="/kayit" className="text-primary font-semibold hover:underline">Giriş Yap</Link>
         </p>
       </motion.div>
     </div>

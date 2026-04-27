@@ -12,6 +12,7 @@ import Venues from './pages/Venues';
 import BusinessForm from './pages/BusinessForm';
 import Register from './pages/Register';
 import VerifyStudent from './pages/VerifyStudent';
+import Admin from './pages/Admin';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route path="/isletme-basvurusu" element={<BusinessForm />} />
             <Route path="/kayit" element={<Register />} />
             <Route path="/dogrulama" element={<VerifyStudent />} />
+            <Route path="/admin" element={<Admin />} />
           </Routes>
         </main>
 
