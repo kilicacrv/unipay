@@ -33,7 +33,7 @@ const Navbar = () => {
       >
         {/* Logo */}
         <Link to="/" className="flex items-center select-none">
-          <img src="/kampüs pay.png" alt="Kampüs Pay" className="h-12 md:h-16 w-auto" />
+          <img src="/kampus-pay.png" alt="Kampüs Pay" className="h-12 md:h-16 w-auto" />
         </Link>
 
         {/* Desktop Links */}

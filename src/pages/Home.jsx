@@ -58,7 +58,7 @@ const Home = () => {
           >
             <span className="text-secondary font-black text-lg uppercase tracking-widest bg-secondary/10 px-4 py-2 rounded-full border-2 border-secondary">ÇOK YAKINDA</span>
             <h2 className="text-4xl md:text-5xl font-black text-dark tracking-tight mt-8 mb-6 uppercase">
-              Bosna'yı Re-Design Ediyoruz ⚡️
+              Erkenden yerini al, ilk sen kullan!
             </h2>
             <p className="text-dark/80 text-xl max-w-2xl mx-auto font-medium leading-relaxed">
               En sevdiğin kafeler, en cool mekanlar... Hepsi tek bir ağda birleşiyor. Bosna'nın yeni hareketine katıl, vibe'ı yakala. Hazır mısın?
