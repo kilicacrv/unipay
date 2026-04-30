@@ -24,13 +24,30 @@ const Login = () => {
 
       if (loginError) throw loginError;
 
-      // Admin mi kontrol et
+      const user = data.user;
+      const role = user?.user_metadata?.role || 'student';
       const adminEmails = ['alperenklc55@gmail.com'];
+
+      // Admin değilse onay kontrolü yap
+      if (!adminEmails.includes(email) && role === 'student') {
+        const { data: appData, error: appError } = await supabase
+          .from('applications')
+          .select('status')
+          .eq('auth_id', user.id)
+          .single();
+
+        if (appError || !appData || appData.status !== 'onaylandi') {
+          await supabase.auth.signOut();
+          setError('Hesabınız henüz onaylanmamış. Onaylandığında e-posta alacaksınız.');
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Başarılı giriş yönlendirmesi
       if (adminEmails.includes(email)) {
         navigate('/admin');
       } else {
-        // Rolüne göre yönlendir
-        const role = data.user?.user_metadata?.role || 'student';
         if (role === 'admin') navigate('/admin');
         else if (role === 'business') navigate('/business');
         else navigate('/dashboard');

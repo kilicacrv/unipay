@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Smartphone, User, GraduationCap, AlertCircle, Mail } from 'lucide-react';
+import { Smartphone, User, GraduationCap, AlertCircle, Mail, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const InputWrapper = ({ icon, children }) => (
@@ -14,7 +14,7 @@ const InputWrapper = ({ icon, children }) => (
 
 const Register = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ name: '', phone: '', email: '', university: '' });
+  const [formData, setFormData] = useState({ name: '', phone: '', email: '', password: '', university: '' });
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
@@ -24,8 +24,12 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.phone || !formData.email || !formData.university) {
+    if (!formData.name || !formData.phone || !formData.email || !formData.password || !formData.university) {
       setError('Lütfen tüm alanları doldurun.');
+      return;
+    }
+    if (formData.password.length < 6) {
+      setError('Şifre en az 6 karakter olmalıdır.');
       return;
     }
     if (formData.phone.replace(/\D/g, '').length < 10) {
@@ -90,6 +94,13 @@ const Register = () => {
             </div>
 
             <div>
+              <label className="block text-sm font-semibold text-dark/80 mb-1.5">Şifre</label>
+              <InputWrapper icon={<Lock size={16} />}>
+                <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="••••••••" className={inputBase} />
+              </InputWrapper>
+            </div>
+
+            <div>
               <label className="block text-sm font-semibold text-dark/80 mb-1.5">Üniversite</label>
               <InputWrapper icon={<GraduationCap size={16} />}>
                 <select name="university" value={formData.university} onChange={handleChange} className={`${inputBase} appearance-none cursor-pointer`}>
@@ -118,7 +129,7 @@ const Register = () => {
         </div>
 
         <p className="text-center text-sm text-dark/70 mt-6">
-          Zaten hesabın var mı? <Link to="/kayit" className="text-primary font-semibold hover:underline">Giriş Yap</Link>
+          Zaten hesabın var mı? <Link to="/login" className="text-primary font-semibold hover:underline">Giriş Yap</Link>
         </p>
       </motion.div>
     </div>

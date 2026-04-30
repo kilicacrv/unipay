@@ -27,6 +27,24 @@ const VerifyStudent = () => {
     if (!fileObj) return;
     setLoading(true); setError('');
     try {
+      const savedApplicant = JSON.parse(sessionStorage.getItem('kampuspay.comlicant') || '{}');
+
+      // 1. Supabase Auth ile kullanıcı oluştur
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: savedApplicant.email,
+        password: savedApplicant.password,
+        options: {
+          data: {
+            role: 'student',
+            full_name: savedApplicant.name,
+            university: savedApplicant.university
+          }
+        }
+      });
+
+      if (authError) throw authError;
+
+      // 2. Kartı Storage'a yükle
       const ext = fileObj.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
       const { error: storageError } = await supabase.storage
@@ -34,9 +52,10 @@ const VerifyStudent = () => {
       if (storageError) throw storageError;
 
       const { data: urlData } = supabase.storage.from('student-cards').getPublicUrl(fileName);
-      const savedApplicant = JSON.parse(sessionStorage.getItem('kampuspay.comlicant') || '{}');
 
+      // 3. Başvuru tablosuna ekle (auth_id ile bağlayarak)
       const { error: dbError } = await supabase.from('applications').insert([{
+        auth_id: authData.user?.id, // Auth user ID'sini buraya kaydediyoruz
         name: savedApplicant.name || 'Belirtilmedi',
         phone: savedApplicant.phone || 'Belirtilmedi',
         email: savedApplicant.email || null,
@@ -44,7 +63,9 @@ const VerifyStudent = () => {
         card_url: urlData.publicUrl,
         status: 'bekliyor',
       }]);
+      
       if (dbError) throw dbError;
+      
       sessionStorage.removeItem('kampuspay.comlicant');
       setIsSubmitted(true);
     } catch (err) {

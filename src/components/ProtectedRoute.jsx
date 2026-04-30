@@ -42,8 +42,22 @@ const ProtectedRoute = ({ children, allowedRole }) => {
         
         // 3. Öğrenci Kontrolü
         else if (allowedRole === 'student') {
-          if (user.user_metadata?.role === 'student' || !user.user_metadata?.role) {
-            setAuthorized(true);
+          // Önce metadata'ya bak
+          const isStudentRole = user.user_metadata?.role === 'student' || !user.user_metadata?.role;
+          
+          if (isStudentRole) {
+            // Veritabanından onay durumunu sorgula
+            const { data: appData, error: appError } = await supabase
+              .from('applications')
+              .select('status')
+              .eq('auth_id', user.id)
+              .single();
+
+            if (!appError && appData?.status === 'onaylandi') {
+              setAuthorized(true);
+            } else {
+              setAuthorized(false);
+            }
           }
         }
 
