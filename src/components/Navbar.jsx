@@ -21,10 +21,10 @@ const Navbar = () => {
   ];
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[100] px-4 py-4 md:py-6 pointer-events-none">
+    <div className="fixed top-0 left-0 right-0 z-[100] px-4 py-3 md:py-4 pointer-events-none">
       <nav 
         className={`
-          max-w-6xl mx-auto flex justify-between items-center px-5 py-3 transition-all duration-500 pointer-events-auto
+          max-w-6xl mx-auto flex justify-between items-center px-5 py-2 transition-all duration-500 pointer-events-auto
           ${scrolled 
             ? 'bg-white/95 backdrop-blur-xl border border-dark/5 shadow-xl rounded-[1.5rem]' 
             : 'bg-white/50 backdrop-blur-sm rounded-[1.5rem] border border-white/20'
@@ -33,7 +33,7 @@ const Navbar = () => {
       >
         {/* Logo */}
         <Link to="/" className="flex items-center select-none">
-          <img src="/kampus-pay.png" alt="Kampüs Pay" className="h-20 md:h-24 w-auto" />
+          <img src="/kampus-pay.png" alt="Kampüs Pay" className="h-14 md:h-18 w-auto" />
         </Link>
 
         {/* Desktop Links */}
