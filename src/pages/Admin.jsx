@@ -97,7 +97,7 @@ const Admin = () => {
             </div>
             
             <div className="flex items-center gap-4">
-              <div className="hidden md:flex bg-slate-100 p-1 rounded-lg border border-slate-200">
+              <div className="flex overflow-x-auto no-scrollbar max-w-[200px] sm:max-w-none bg-slate-100 p-1 rounded-lg border border-slate-200">
                 <button 
                   onClick={() => { setActiveTab('students'); setFilter('all'); }}
                   className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-all ${activeTab === 'students' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}

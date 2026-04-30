@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Store, MapPin, Plus, Trash2, Edit2, Save, X, Search, Loader2, Image as ImageIcon, Upload, CheckCircle, AlertCircle } from 'lucide-react';
+import { Store, MapPin, Plus, Trash2, Edit2, Save, X, Search, Loader2, Image as ImageIcon, Upload, CheckCircle, AlertCircle, ChevronLeft } from 'lucide-react';
 
 const AdminVenues = () => {
   const [venues, setVenues] = useState([]);
@@ -127,6 +127,12 @@ const AdminVenues = () => {
     <div className="p-8 max-w-6xl mx-auto font-sans">
       <div className="flex justify-between items-end mb-10">
         <div>
+          <button 
+            onClick={() => window.history.back()}
+            className="flex items-center gap-1 text-slate-400 hover:text-slate-900 font-bold text-[10px] uppercase tracking-widest mb-4 transition-colors"
+          >
+            <ChevronLeft size={14} /> Geri Dön
+          </button>
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">Mekan Yönetimi</h1>
           <p className="text-slate-500 font-bold mt-1 uppercase text-[10px] tracking-widest">Sisteme yeni mekan ekleyin veya mevcutları düzenleyin.</p>
         </div>

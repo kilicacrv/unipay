@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { BarChart2, Heart, MapPin, Users, Zap, TrendingUp, Store, Loader2 } from 'lucide-react';
+import { BarChart2, Heart, MapPin, Users, Zap, TrendingUp, Store, Loader2, ChevronLeft } from 'lucide-react';
 
 const StatCard = ({ label, value, icon, sub, color }) => (
   <div className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-sm flex items-start gap-6 hover:shadow-xl transition-all">
@@ -88,6 +88,12 @@ const AdminAnalytics = () => {
   return (
     <div className="p-8 max-w-6xl mx-auto font-sans">
       <div className="mb-10">
+        <button 
+          onClick={() => window.history.back()}
+          className="flex items-center gap-1 text-slate-400 hover:text-slate-900 font-bold text-[10px] uppercase tracking-widest mb-4 transition-colors"
+        >
+          <ChevronLeft size={14} /> Geri Dön
+        </button>
         <h1 className="text-3xl font-black text-slate-900 tracking-tight">Platform Analitiği</h1>
         <p className="text-slate-500 font-bold mt-1 uppercase text-[10px] tracking-widest">Gerçek zamanlı platform istatistikleri.</p>
       </div>
