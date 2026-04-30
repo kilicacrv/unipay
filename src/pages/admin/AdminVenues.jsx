@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Store, MapPin, Plus, Trash2, Edit2, Save, X, Search, Loader2, Image as ImageIcon } from 'lucide-react';
+import { Store, MapPin, Plus, Trash2, Edit2, Save, X, Search, Loader2, Image as ImageIcon, Upload, CheckCircle, AlertCircle } from 'lucide-react';
 
 const AdminVenues = () => {
   const [venues, setVenues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+
   const [newVenue, setNewVenue] = useState({
     name: '',
     category: 'Cafe',
@@ -15,7 +19,8 @@ const AdminVenues = () => {
     address: '',
     phone: '',
     instagram: '',
-    rating: 4.5
+    rating: 4.5,
+    google_maps_url: ''
   });
 
   useEffect(() => {
@@ -29,15 +34,85 @@ const AdminVenues = () => {
     setLoading(false);
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const parseGoogleMapsLink = (url) => {
+    if (!url) return null;
+    // Regex to find @lat,lng in Google Maps URLs
+    const regex = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
+    const match = url.match(regex);
+    if (match) {
+      return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
+    }
+    return null;
+  };
+
   const handleAddVenue = async (e) => {
     e.preventDefault();
-    const { error } = await supabase.from('venues').insert(newVenue);
-    if (!error) {
+    setUploading(true);
+
+    try {
+      let finalImageUrl = newVenue.image_url;
+
+      // 1. Image Upload
+      if (imageFile) {
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        const filePath = `venues/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('business-assets')
+          .upload(filePath, imageFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('business-assets')
+          .getPublicUrl(filePath);
+        
+        finalImageUrl = publicUrl;
+      }
+
+      // 2. Parse Coordinates from Link
+      let finalLat = newVenue.lat;
+      let finalLng = newVenue.lng;
+      const coords = parseGoogleMapsLink(newVenue.google_maps_url);
+      if (coords) {
+        finalLat = coords.lat;
+        finalLng = coords.lng;
+      }
+
+      // 3. Database Insert
+      const venueToInsert = {
+        ...newVenue,
+        lat: finalLat,
+        lng: finalLng,
+        image_url: finalImageUrl
+      };
+      
+      // Remove temporary field before insert
+      delete venueToInsert.google_maps_url;
+
+      const { error } = await supabase.from('venues').insert(venueToInsert);
+      
+      if (error) throw error;
+
       setIsAdding(false);
-      setNewVenue({ name: '', category: 'Cafe', lat: 37.99, lng: 32.51, image_url: '', address: '', phone: '', instagram: '', rating: 4.5 });
+      setNewVenue({ name: '', category: 'Cafe', lat: 37.99, lng: 32.51, image_url: '', address: '', phone: '', instagram: '', rating: 4.5, google_maps_url: '' });
+      setImageFile(null);
+      setImagePreview(null);
       fetchVenues();
-    } else {
-      alert('Hata: ' + error.message);
+      alert('Mekan başarıyla eklendi!');
+    } catch (err) {
+      alert('Hata: ' + err.message);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -64,15 +139,21 @@ const AdminVenues = () => {
       </div>
 
       {isAdding && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-6">
-          <div className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+        <div className="fixed inset-0 z-50 overflow-hidden">
+          <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={() => setIsAdding(false)} />
+          
+          <div className="absolute inset-y-0 right-0 max-w-xl w-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-500 ease-out">
             <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-              <h2 className="text-xl font-black text-slate-900">Mekan Detayları</h2>
+              <div>
+                <h2 className="text-xl font-black text-slate-900">Yeni Mekan Ekle</h2>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Mekan detaylarını girin</p>
+              </div>
               <button onClick={() => setIsAdding(false)} className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-900 shadow-sm border border-slate-100 transition-colors">
                 <X size={20} />
               </button>
             </div>
-            <form onSubmit={handleAddVenue} className="p-8 space-y-6 max-h-[70vh] overflow-y-auto no-scrollbar">
+
+            <form onSubmit={handleAddVenue} className="flex-1 overflow-y-auto p-8 space-y-6 no-scrollbar">
               <div className="grid grid-cols-2 gap-6">
                 <div className="col-span-2 sm:col-span-1">
                   <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Mekan Adı</label>
@@ -80,6 +161,7 @@ const AdminVenues = () => {
                     required
                     type="text" 
                     className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-primary/20 font-bold text-slate-900"
+                    placeholder="Mekan İsmi"
                     value={newVenue.name}
                     onChange={e => setNewVenue({...newVenue, name: e.target.value})}
                   />
@@ -100,37 +182,49 @@ const AdminVenues = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Enlem (Lat)</label>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Google Maps Linki (Otomatik Koordinat)</label>
+                <div className="relative">
                   <input 
-                    required
-                    type="number" step="any"
+                    type="url" 
+                    placeholder="https://www.google.com/maps/..."
                     className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-primary/20 font-bold text-slate-900"
-                    value={newVenue.lat}
-                    onChange={e => setNewVenue({...newVenue, lat: parseFloat(e.target.value)})}
+                    value={newVenue.google_maps_url}
+                    onChange={e => setNewVenue({...newVenue, google_maps_url: e.target.value})}
                   />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Boylam (Lng)</label>
-                  <input 
-                    required
-                    type="number" step="any"
-                    className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-primary/20 font-bold text-slate-900"
-                    value={newVenue.lng}
-                    onChange={e => setNewVenue({...newVenue, lng: parseFloat(e.target.value)})}
-                  />
+                  <div className="flex items-center gap-2 mt-2 ml-1 text-slate-400">
+                    <AlertCircle size={10} />
+                    <p className="text-[9px] font-medium uppercase tracking-tight">Link girerseniz koordinatlar otomatik çekilir.</p>
+                  </div>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Görsel URL</label>
-                <input 
-                  type="url" 
-                  className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-primary/20 font-bold text-slate-900"
-                  value={newVenue.image_url}
-                  onChange={e => setNewVenue({...newVenue, image_url: e.target.value})}
-                />
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Mekan Görseli</label>
+                <div 
+                  onClick={() => document.getElementById('venue-image-upload').click()}
+                  className="border-2 border-dashed border-slate-100 rounded-3xl p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 transition-colors relative overflow-hidden h-40"
+                >
+                  {imagePreview ? (
+                    <>
+                      <img src={imagePreview} alt="Preview" className="absolute inset-0 w-full h-full object-cover opacity-20" />
+                      <div className="relative z-10 flex flex-col items-center">
+                        <CheckCircle className="text-emerald-500 mb-2" size={32} />
+                        <span className="text-sm font-bold text-slate-900">Görsel Seçildi</span>
+                        <span className="text-xs text-slate-500 mt-1 font-medium italic">Değiştirmek için tıklayın</span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <ImageIcon className="text-slate-300 mb-4" size={48} />
+                      <span className="text-sm font-bold text-slate-900">Görsel Seçmek İçin Tıklayın</span>
+                      <span className="text-[10px] text-slate-400 mt-2 text-center px-4 font-medium leading-relaxed">
+                        Mekanın en güzel fotoğrafını yükleyin.
+                      </span>
+                    </>
+                  )}
+                  <input id="venue-image-upload" type="file" hidden accept="image/*" onChange={handleImageChange} />
+                </div>
               </div>
 
               <div>
@@ -138,17 +232,27 @@ const AdminVenues = () => {
                 <textarea 
                   rows={2}
                   className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-primary/20 font-bold text-slate-900 resize-none"
+                  placeholder="Mekanın açık adresi..."
                   value={newVenue.address}
                   onChange={e => setNewVenue({...newVenue, address: e.target.value})}
                 />
               </div>
 
-              <div className="flex gap-4 pt-4">
+              <div className="pt-6 border-t border-slate-100 flex gap-4">
+                <button 
+                  type="button"
+                  onClick={() => setIsAdding(false)}
+                  className="flex-1 px-6 py-5 rounded-[2rem] font-black text-xs uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors"
+                >
+                  İptal
+                </button>
                 <button 
                   type="submit"
-                  className="flex-1 bg-primary text-dark py-5 rounded-[2rem] font-black text-xs uppercase tracking-widest shadow-xl hover:brightness-110 transition-all"
+                  disabled={uploading}
+                  className="flex-[2] bg-slate-900 text-white py-5 rounded-[2rem] font-black text-xs uppercase tracking-widest shadow-xl hover:brightness-110 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                 >
-                  Kaydet ve Yayınla
+                  {uploading ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                  {uploading ? 'Yükleniyor...' : 'Kaydet ve Yayınla'}
                 </button>
               </div>
             </form>
@@ -166,7 +270,7 @@ const AdminVenues = () => {
           {venues.map(venue => (
             <div key={venue.id} className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
               <div className="flex gap-4 mb-6">
-                <div className="w-20 h-20 bg-slate-100 rounded-3xl overflow-hidden shrink-0">
+                <div className="w-20 h-20 bg-slate-100 rounded-3xl overflow-hidden shrink-0 border border-slate-50 shadow-inner">
                   <img src={venue.image_url || 'https://via.placeholder.com/200x200'} className="w-full h-full object-cover" alt="" />
                 </div>
                 <div>
