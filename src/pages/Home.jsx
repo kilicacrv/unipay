@@ -57,11 +57,11 @@ const Home = () => {
             className="mb-12"
           >
             <span className="text-secondary font-black text-lg uppercase tracking-widest bg-secondary/10 px-4 py-2 rounded-full border-2 border-secondary">ÇOK YAKINDA</span>
-            <h2 className="text-4xl md:text-5xl font-black text-dark tracking-tight mt-8 mb-6">
-              Bosna'nın Sırrı Çözülüyor...
+            <h2 className="text-4xl md:text-5xl font-black text-dark tracking-tight mt-8 mb-6 uppercase">
+              Bosna'yı Re-Design Ediyoruz ⚡️
             </h2>
             <p className="text-dark/80 text-xl max-w-2xl mx-auto font-medium leading-relaxed">
-              En sevdiğin kafeler, en çok gittiğin mekanlar... Hepsi tek bir ağda birleşiyor. Yakında Bosna Hersek Mahallesi'nde yer yerinden oynayacak. Hazır mısın?
+              En sevdiğin kafeler, en cool mekanlar... Hepsi tek bir ağda birleşiyor. Bosna'nın yeni hareketine katıl, vibe'ı yakala. Hazır mısın?
             </p>
           </motion.div>
 
@@ -70,18 +70,13 @@ const Home = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="rounded-[2rem] overflow-hidden border-4 border-dark shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            className="rounded-[2rem] overflow-hidden border-4 border-dark shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] bg-white"
           >
-            <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3145.47458694038!2d32.50290121532454!3d38.01890307971597!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14d08f43c3d31b0b%3A0xc392ceceb9d88!2sBosna%20Hersek%2C%20Sel%C3%A7uklu%2FKonya!5e0!3m2!1str!2str!4v1690000000000!5m2!1str!2str" 
-              width="100%" 
-              className="h-[300px] md:h-[450px]"
-              style={{ border: 0 }} 
-              allowFullScreen="" 
-              loading="lazy" 
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Bosna Hersek Mahallesi Haritası"
-            ></iframe>
+            <img 
+              src="/bosna-map.png" 
+              alt="Bosna Hersek Mahallesi Sanatsal Harita" 
+              className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700 cursor-zoom-in"
+            />
           </motion.div>
         </div>
       </section>
