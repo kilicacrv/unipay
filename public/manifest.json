@@ -1,0 +1,16 @@
+{
+  "name": "Kampüs Pay",
+  "short_name": "Kampüs Pay",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4F46E5",
+  "description": "Konya Bosna'da Öğrenciye Özel İndirim Ağı",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

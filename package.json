@@ -1,5 +1,5 @@
 {
-  "name": "unipay",
+  "name": "kampuspay",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,11 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
+    "@fontsource/poppins": "^5.2.7",
     "@supabase/supabase-js": "^2.104.1",
     "framer-motion": "^12.38.0",
+    "html5-qrcode": "^2.3.8",
+    "leaflet": "^1.9.4",
     "lucide-react": "^1.11.0",
+    "qrcode.react": "^4.2.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
+    "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.14.2"
   },
   "devDependencies": {

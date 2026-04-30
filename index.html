@@ -2,16 +2,59 @@
 <html lang="tr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Üni Pay — Konya Bosna'daki öğrencilere özel anlaşmalı mekan indirim ağı. Kayıt ol, QR kodunu göster, indirimini al." />
+    
+    <!-- Primary Meta Tags -->
+    <title>Kampüs Pay — Konya Bosna'da Öğrenciye Özel İndirim Ağı</title>
+    <meta name="title" content="Kampüs Pay — Konya Bosna'da Öğrenciye Özel İndirim Ağı" />
+    <meta name="description" content="Kampüs Pay — Konya Bosna'daki öğrencilere özel anlaşmalı mekan indirim ağı. Kayıt ol, QR kodunu göster, anında indirimini al. En sevdiğin mekanlarda öğrenci dostu fiyatlar!" />
+    <meta name="keywords" content="kampüs pay, kampuspay, konya öğrenci indirimi, bosna hersek mahallesi indirim, selçuk üniversitesi indirim, öğrenci kartı, indirimli mekanlar" />
+    <meta name="author" content="Kampüs Pay" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kampuspay.com/" />
+    <meta property="og:title" content="Kampüs Pay — Konya Bosna'da Öğrenciye Özel İndirim Ağı" />
+    <meta property="og:description" content="Kayıt ol, QR kodunu göster, indirimini al. Konya Bosna'daki en popüler mekanlarda sana özel indirimler Kampüs Pay'de!" />
+    <meta property="og:image" content="/og-image.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://kampuspay.com/" />
+    <meta property="twitter:title" content="Kampüs Pay — Konya Bosna'da Öğrenciye Özel İndirim Ağı" />
+    <meta property="twitter:description" content="Kayıt ol, QR kodunu göster, indirimini al. Konya Bosna'daki en popüler mekanlarda sana özel indirimler Kampüs Pay'de!" />
+    <meta property="twitter:image" content="/og-image.png" />
+
+    <!-- Performance: Preconnect & Preload -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <title>Üni Pay — Öğrenciye Özel İndirim Ağı</title>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    
+    <link rel="canonical" href="https://kampuspay.com/" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#4F46E5" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Structured Data (Schema.org) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Kampüs Pay",
+        "url": "https://kampuspay.com/",
+        "description": "Konya Bosna'daki öğrencilere özel anlaşmalı mekan indirim ağı.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://kampuspay.com/mekanlar?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
   </body>
 </html>

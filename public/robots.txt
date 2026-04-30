@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kampuspay.com/sitemap.xml

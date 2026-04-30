@@ -8,14 +8,14 @@ const Privacy = () => (
       <div className="mb-10">
         <span className="text-primary font-bold text-sm uppercase tracking-widest">Yasal</span>
         <h1 className="text-4xl font-black tracking-tight mt-2 mb-3">Gizlilik Politikası</h1>
-        <p className="text-slate-500 text-sm">Son güncelleme: {new Date().toLocaleDateString('tr-TR')}</p>
+        <p className="text-dark/70 text-sm">Son güncelleme: {new Date().toLocaleDateString('tr-TR')}</p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 md:p-12 prose prose-slate max-w-none">
+      <div className="bg-white rounded-2xl border border-dark shadow-sm p-8 md:p-12 prose prose-slate max-w-none">
         {[
           {
             title: '1. Toplanan Bilgiler',
-            content: `Üni Pay olarak hizmetlerimizi sunabilmek amacıyla aşağıdaki bilgileri toplamaktayız:
+            content: `Kampüs Pay olarak hizmetlerimizi sunabilmek amacıyla aşağıdaki bilgileri toplamaktayız:
 
 • **Kişisel Bilgiler:** Ad, soyad, telefon numarası ve üniversite bilgisi.
 • **Öğrenci Belgesi:** Öğrencilik durumunuzu doğrulamak amacıyla yüklediğiniz öğrenci kimlik kartı görüntüsü.
@@ -40,11 +40,11 @@ Bilgileriniz üçüncü taraflarla ticari amaçlarla paylaşılmaz, satılmaz ve
           },
           {
             title: '4. Veri Güvenliği',
-            content: `Verileriniz, Supabase altyapısı üzerinde endüstri standardı şifreleme (TLS/SSL) ile korunmaktadır. Kimlik belgesi görüntüleri yalnızca yetkili Üni Pay yöneticileri tarafından erişilebilir özel depolama alanında saklanır. Güvenlik açıklarının önlenmesi için sistemlerimiz düzenli olarak denetlenmektedir.`,
+            content: `Verileriniz, Supabase altyapısı üzerinde endüstri standardı şifreleme (TLS/SSL) ile korunmaktadır. Kimlik belgesi görüntüleri yalnızca yetkili Kampüs Pay yöneticileri tarafından erişilebilir özel depolama alanında saklanır. Güvenlik açıklarının önlenmesi için sistemlerimiz düzenli olarak denetlenmektedir.`,
           },
           {
             title: '5. Çerezler',
-            content: `Üni Pay, oturum yönetimi ve kullanıcı deneyimini iyileştirmek amacıyla sınırlı sayıda teknik çerez kullanabilir. Bu çerezler kişisel bilgi içermez ve pazarlama amacıyla kullanılmaz.`,
+            content: `Kampüs Pay, oturum yönetimi ve kullanıcı deneyimini iyileştirmek amacıyla sınırlı sayıda teknik çerez kullanabilir. Bu çerezler kişisel bilgi içermez ve pazarlama amacıyla kullanılmaz.`,
           },
           {
             title: '6. Haklarınız',
@@ -55,16 +55,16 @@ Bilgileriniz üçüncü taraflarla ticari amaçlarla paylaşılmaz, satılmaz ve
 • Verilerinizin silinmesini talep etme.
 • Veri işlemeye itiraz etme.
 
-Bu haklarınızı kullanmak için info@unipay.app adresine yazabilirsiniz.`,
+Bu haklarınızı kullanmak için info@kampuspay.com adresine yazabilirsiniz.`,
           },
           {
             title: '7. İletişim',
-            content: `Gizlilik politikamıza ilişkin sorularınız için:\n\n**E-posta:** info@unipay.app\n**Instagram:** @unipay.com.tr`,
+            content: `Gizlilik politikamıza ilişkin sorularınız için:\n\n**E-posta:** info@kampuspay.com\n**Instagram:** @kampuspay.com`,
           },
         ].map((section, i) => (
-          <div key={i} className={i !== 0 ? 'mt-8 pt-8 border-t border-slate-100' : ''}>
+          <div key={i} className={i !== 0 ? 'mt-8 pt-8 border-t border-dark' : ''}>
             <h2 className="text-xl font-black text-dark mb-3">{section.title}</h2>
-            <div className="text-slate-600 leading-relaxed text-sm whitespace-pre-line">
+            <div className="text-dark/80 leading-relaxed text-sm whitespace-pre-line">
               {section.content.split('**').map((part, j) =>
                 j % 2 === 1 ? <strong key={j}>{part}</strong> : part
               )}
