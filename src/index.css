@@ -9,10 +9,26 @@
 @layer base {
   body {
     font-family: 'Poppins', sans-serif;
-    @apply bg-background text-dark antialiased;
+    @apply bg-background text-dark antialiased overflow-x-hidden;
+    width: 100%;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
   }
+  
   * {
     -webkit-font-smoothing: antialiased;
+    touch-action: manipulation;
+  }
+
+  /* Mobil Auto-Zoom Fix: iOS'ta inputlara tıklandığında zoom yapmasını engeller */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  @media (min-width: 768px) {
+    input, select, textarea {
+      font-size: 0.875rem !important; /* Masaüstünde tekrar normale döner */
+    }
   }
 }
 
@@ -33,10 +49,10 @@
     @apply bg-white rounded-2xl shadow-sm border border-dark hover:shadow-md transition-shadow duration-200;
   }
   .btn-primary {
-    @apply bg-primary text-dark font-extrabold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 border-2 border-dark;
+    @apply bg-primary text-dark font-extrabold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 border-2 border-dark active:scale-[0.97];
   }
   .btn-secondary {
-    @apply bg-white text-dark font-extrabold px-6 py-3 rounded-xl border-2 border-dark hover:bg-white hover:-translate-y-0.5 transition-all duration-200;
+    @apply bg-white text-dark font-extrabold px-6 py-3 rounded-xl border-2 border-dark hover:bg-white hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.97];
   }
   .input-field {
     @apply w-full bg-white border-2 border-dark rounded-xl pl-4 pr-4 py-3.5 font-medium text-dark outline-none focus:ring-4 focus:ring-primary/50 transition-all duration-200 placeholder:text-dark/50;
