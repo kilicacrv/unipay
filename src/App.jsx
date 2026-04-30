@@ -89,15 +89,9 @@ const AdminAnalytics = lazy(() => import('./pages/admin/AdminAnalytics'));
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 function App() {
-  const [initialLoading, setInitialLoading] = useState(true);
-
   return (
     <Router>
       <ScrollToTop />
-
-      <AnimatePresence>
-        {initialLoading && <InitialLoader onComplete={() => setInitialLoading(false)} />}
-      </AnimatePresence>
 
       <div className="min-h-screen flex flex-col font-poppins bg-background text-dark">
         <Navbar />
