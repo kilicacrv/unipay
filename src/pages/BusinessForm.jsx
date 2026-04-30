@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Store, CheckCircle, AlertCircle, TrendingUp, Users, Loader } from 'lucide-react';
+import { Store, CheckCircle, AlertCircle, TrendingUp, Users, Loader, BarChart2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 
