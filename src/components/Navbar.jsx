@@ -30,7 +30,10 @@ const Navbar = () => {
           {/* Gelecekte eklenecek linkler */}
         </div>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-6">
+          <Link to="/login" className="text-sm font-bold text-dark hover:text-primary transition-colors">
+            Giriş Yap
+          </Link>
           <Link to="/kayit" className="btn-primary text-sm">
             Ön Kayıt Ol →
           </Link>
@@ -55,6 +58,9 @@ const Navbar = () => {
             className="md:hidden mt-2 py-4 px-4 bg-white rounded-2xl shadow-xl border border-dark flex flex-col gap-3"
           >
             <div className="h-px bg-slate-100 my-1" />
+            <Link to="/login" onClick={() => setMenuOpen(false)} className="text-sm font-bold text-dark p-2 hover:bg-slate-50 rounded-lg">
+              Giriş Yap
+            </Link>
             <Link to="/kayit" onClick={() => setMenuOpen(false)} className="btn-primary text-center text-sm">
               Ön Kayıt Ol →
             </Link>

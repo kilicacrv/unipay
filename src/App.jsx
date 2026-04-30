@@ -62,6 +62,7 @@ const LoadingSpinner = () => (
 const Home         = lazy(() => import('./pages/Home'));
 const BusinessForm = lazy(() => import('./pages/BusinessForm'));
 const Register     = lazy(() => import('./pages/Register'));
+const Login        = lazy(() => import('./pages/Login'));
 const VerifyStudent= lazy(() => import('./pages/VerifyStudent'));
 const Admin        = lazy(() => import('./pages/Admin'));
 const Privacy      = lazy(() => import('./pages/Privacy'));
@@ -108,6 +109,7 @@ function App() {
               {/* ── Herkese Açık (Landing + Full) ── */}
               <Route path="/" element={<Home />} />
               <Route path="/kayit" element={<Register />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/isletme-basvurusu" element={<BusinessForm />} />
               <Route path="/gizlilik" element={<Privacy />} />
               <Route path="/kullanim-kosullari" element={<Terms />} />
