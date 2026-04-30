@@ -31,17 +31,8 @@ const Navbar = () => {
         `}
       >
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 group">
-          <motion.div
-            whileHover={{ rotate: -10, scale: 1.1 }}
-            className="w-10 h-10 bg-dark rounded-xl flex items-center justify-center shadow-lg group-hover:bg-primary transition-colors"
-          >
-            <span className="text-primary group-hover:text-dark font-black text-xl">Ü</span>
-          </motion.div>
-          <div className="flex flex-col">
-            <span className="text-dark font-black text-lg leading-none tracking-tight">KAMPÜS PAY</span>
-            <span className="text-[10px] text-dark/40 font-bold uppercase tracking-widest mt-0.5">Premium İndirim</span>
-          </div>
+        <Link to="/" className="flex items-center select-none">
+          <img src="/logo.png" alt="Kampüs Pay" className="h-10 md:h-12 w-auto" />
         </Link>
 
         {/* Desktop Links */}
