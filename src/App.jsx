@@ -124,9 +124,7 @@ function App() {
               } />
 
               {/* ── Sadece Full Launch'ta Açık ── */}
-              <Route path="/dogrulama" element={
-                <LaunchGate><VerifyStudent /></LaunchGate>
-              } />
+              <Route path="/dogrulama" element={<VerifyStudent />} />
 
               {/* Business Panel */}
               <Route path="/business" element={
