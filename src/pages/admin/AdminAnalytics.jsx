@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useNavigate } from 'react-router-dom';
 import { BarChart2, Heart, MapPin, Users, Zap, TrendingUp, Store, Loader2, ChevronLeft } from 'lucide-react';
 
 const StatCard = ({ label, value, icon, sub, color }) => (
@@ -16,6 +17,7 @@ const StatCard = ({ label, value, icon, sub, color }) => (
 );
 
 const AdminAnalytics = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalVenues: 0,
     totalFavorites: 0,
@@ -86,8 +88,22 @@ const AdminAnalytics = () => {
   };
 
   return (
-    <div className="p-8 max-w-6xl mx-auto font-sans">
-      <div className="mb-10">
+    <div className="p-8 pt-32 max-w-6xl mx-auto font-sans">
+      <div className="bg-white border-b border-slate-200 sticky top-20 z-30 shadow-sm transition-all duration-300 -mx-8 -mt-32 mb-12">
+        <div className="max-w-6xl mx-auto px-8 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center font-black text-dark shadow-sm">Ü</div>
+            <h1 className="text-xl font-bold tracking-tight">Platform Analitiği</h1>
+          </div>
+          <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
+            <button onClick={() => navigate('/admin')} className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-all">Başvurular</button>
+            <button onClick={() => navigate('/admin/venues')} className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-all">Mekanlar</button>
+            <button className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-slate-900 text-white shadow-lg">Analitik</button>
+          </div>
+        </div>
+      </div>
+
+      <div className="mb-10 mt-8">
         <button 
           onClick={() => window.history.back()}
           className="flex items-center gap-1 text-slate-400 hover:text-slate-900 font-bold text-[10px] uppercase tracking-widest mb-4 transition-colors"

@@ -118,7 +118,7 @@ const VenueExplore = () => {
   return (
     <div className="h-screen bg-slate-50 flex flex-col relative font-sans overflow-hidden">
       {/* Search & Filters Overlay */}
-      <div className="absolute top-6 inset-x-6 z-[1000] pointer-events-none">
+      <div className="absolute top-28 inset-x-6 z-[1000] pointer-events-none">
         <div className="max-w-lg mx-auto space-y-4">
           {/* Search Bar */}
           <div className="bg-white/80 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-white/20 p-2 flex items-center gap-2 pointer-events-auto">

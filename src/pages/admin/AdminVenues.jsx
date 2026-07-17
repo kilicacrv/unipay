@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useNavigate } from 'react-router-dom';
 import { Store, MapPin, Plus, Trash2, Edit2, Save, X, Search, Loader2, Image as ImageIcon, Upload, CheckCircle, AlertCircle, ChevronLeft } from 'lucide-react';
 
 const AdminVenues = () => {
+  const navigate = useNavigate();
   const [venues, setVenues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
+  const [selectedFilter, setSelectedFilter] = useState('Tümü');
 
   const [newVenue, setNewVenue] = useState({
     name: '',
@@ -124,8 +127,22 @@ const AdminVenues = () => {
   };
 
   return (
-    <div className="p-8 max-w-6xl mx-auto font-sans">
-      <div className="flex justify-between items-end mb-10">
+    <div className="p-8 pt-32 max-w-6xl mx-auto font-sans">
+      <div className="bg-white border-b border-slate-200 sticky top-20 z-30 shadow-sm transition-all duration-300 -mx-8 -mt-32 mb-12">
+        <div className="max-w-6xl mx-auto px-8 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center font-black text-dark shadow-sm">Ü</div>
+            <h1 className="text-xl font-bold tracking-tight">Mekan Yönetimi</h1>
+          </div>
+          <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
+            <button onClick={() => navigate('/admin')} className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-all">Başvurular</button>
+            <button className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-slate-900 text-white shadow-lg">Mekanlar</button>
+            <button onClick={() => navigate('/admin/analytics')} className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-all">Analitik</button>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6 mt-8">
         <div>
           <button 
             onClick={() => window.history.back()}
@@ -136,12 +153,26 @@ const AdminVenues = () => {
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">Mekan Yönetimi</h1>
           <p className="text-slate-500 font-bold mt-1 uppercase text-[10px] tracking-widest">Sisteme yeni mekan ekleyin veya mevcutları düzenleyin.</p>
         </div>
-        <button 
-          onClick={() => setIsAdding(true)}
-          className="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-2 shadow-xl hover:scale-105 transition-all"
-        >
-          <Plus size={18} /> Yeni Mekan Ekle
-        </button>
+
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+            {['Tümü', 'Cafe', 'Restoran', 'Tatlı', 'Giyim', 'Eğlence'].map(cat => (
+              <button
+                key={cat}
+                onClick={() => setSelectedFilter(cat)}
+                className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${selectedFilter === cat ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+          <button 
+            onClick={() => setIsAdding(true)}
+            className="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-2 shadow-xl hover:scale-105 transition-all"
+          >
+            <Plus size={18} /> Yeni Mekan Ekle
+          </button>
+        </div>
       </div>
 
       {isAdding && (
@@ -273,7 +304,9 @@ const AdminVenues = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {venues.map(venue => (
+          {venues
+            .filter(v => selectedFilter === 'Tümü' || v.category === selectedFilter)
+            .map(venue => (
             <div key={venue.id} className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
               <div className="flex gap-4 mb-6">
                 <div className="w-20 h-20 bg-slate-100 rounded-3xl overflow-hidden shrink-0 border border-slate-50 shadow-inner">

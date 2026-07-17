@@ -1,6 +1,7 @@
-import React from 'react';
-import { Eye, MousePointer2, Tag, TrendingUp, Users, Download, Printer } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Eye, MousePointer2, Tag, TrendingUp, Users, Download, Printer, Loader2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import { supabase } from '../../lib/supabase';
 
 const StatCard = ({ title, value, icon, trend, color = "text-slate-900" }) => (
   <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
@@ -18,11 +19,87 @@ const StatCard = ({ title, value, icon, trend, color = "text-slate-900" }) => (
 );
 
 const BusinessDashboard = () => {
-  const business = {
-    id: 'biz_starbucks_bosna',
-    name: 'Starbucks Coffee',
-    branch: 'Bosna Şubesi'
+  const [business, setBusiness] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchBusinessData();
+  }, []);
+
+  const fetchBusinessData = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      // 1. Check business application
+      const { data: bizApp } = await supabase
+        .from('business_applications')
+        .select('business_name')
+        .eq('user_id', user.id)
+        .eq('status', 'onaylandi')
+        .single();
+
+      if (bizApp) {
+        // 2. Try to find the venue
+        const { data: venue } = await supabase
+          .from('venues')
+          .select('*')
+          .ilike('name', `%${bizApp.business_name}%`)
+          .single();
+
+        if (venue) {
+          setBusiness({
+            id: venue.id,
+            name: venue.name,
+            branch: venue.address || 'Merkez'
+          });
+        } else {
+          setBusiness({
+            id: user.id,
+            name: bizApp.business_name,
+            branch: 'Merkez'
+          });
+        }
+      } else {
+        // Fallback for test/admin accounts without a business application
+        setBusiness({
+          id: user.id,
+          name: user.user_metadata?.full_name || 'İşletme Hesabı',
+          branch: 'Merkez'
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching business data:", err);
+      // Fallback
+      setBusiness({
+        id: 'error_id',
+        name: 'İşletme (Hata)',
+        branch: 'Merkez'
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto py-20 flex flex-col items-center opacity-50">
+        <Loader2 className="animate-spin mb-4" size={40} />
+        <p className="text-xs font-black uppercase tracking-widest text-slate-500">İşletme Bilgileri Yükleniyor...</p>
+      </div>
+    );
+  }
+
+  if (!business) {
+    return (
+      <div className="max-w-6xl mx-auto py-20 text-center">
+        <p className="text-slate-500 font-bold">İşletme bilgisi bulunamadı.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto">

@@ -83,9 +83,9 @@ const Admin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans antialiased text-slate-900">
+    <div className="min-h-screen bg-slate-50 font-sans antialiased text-slate-900 pt-20">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
+      <header className="bg-white border-b border-slate-200 sticky top-20 z-30 shadow-sm transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center gap-3">
@@ -96,43 +96,44 @@ const Admin = () => {
               </div>
             </div>
             
-            <div className="flex items-center gap-4">
-              <div className="flex overflow-x-auto no-scrollbar max-w-[200px] sm:max-w-none bg-slate-100 p-1 rounded-lg border border-slate-200">
-                <button 
-                  onClick={() => { setActiveTab('students'); setFilter('all'); }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-all ${activeTab === 'students' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
-                >
-                  <Users size={16} /> Öğrenciler
-                </button>
-                <button 
-                  onClick={() => { setActiveTab('businesses'); setFilter('all'); }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-all ${activeTab === 'businesses' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
-                >
-                  <Store size={16} /> İşletmeler
-                </button>
-                <button 
-                  onClick={() => navigate('/admin/venues')}
-                  className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold text-slate-500 hover:text-slate-700 transition-all"
-                >
-                  <MapPin size={16} /> Mekanlar
-                </button>
-                <button 
-                  onClick={() => navigate('/admin/analytics')}
-                  className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold text-slate-500 hover:text-slate-700 transition-all"
-                >
-                  <BarChart2 size={16} /> Analitik
-                </button>
-              </div>
-
-              <button onClick={fetchData}
-                className="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 text-sm font-semibold px-4 py-2 rounded-lg hover:bg-slate-50 transition-colors shadow-sm">
-                <RefreshCw size={16} className={loading ? 'animate-spin' : ''} /> 
-                <span className="hidden sm:inline">Yenile</span>
-              </button>
-            </div>
+            <button onClick={fetchData}
+              className="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 text-xs font-black uppercase tracking-widest px-4 py-2 rounded-xl hover:bg-slate-50 transition-colors shadow-sm">
+              <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> 
+              <span className="hidden sm:inline">Yenile</span>
+            </button>
           </div>
         </div>
       </header>
+
+      {/* Sub-header Navigation */}
+      <div className="bg-white border-b border-slate-200 sticky top-[10rem] md:top-[10rem] z-20 py-4 px-4 overflow-x-auto no-scrollbar shadow-sm">
+        <div className="max-w-7xl mx-auto flex items-center gap-3">
+          <button 
+            onClick={() => { setActiveTab('students'); setFilter('all'); }}
+            className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-sm border ${activeTab === 'students' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'}`}
+          >
+            <Users size={14} /> Öğrenciler
+          </button>
+          <button 
+            onClick={() => { setActiveTab('businesses'); setFilter('all'); }}
+            className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-sm border ${activeTab === 'businesses' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'}`}
+          >
+            <Store size={14} /> İşletmeler
+          </button>
+          <button 
+            onClick={() => navigate('/admin/venues')}
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest bg-white text-slate-500 border border-slate-200 hover:border-slate-300 transition-all whitespace-nowrap shadow-sm"
+          >
+            <MapPin size={14} /> Mekan Yönetimi
+          </button>
+          <button 
+            onClick={() => navigate('/admin/analytics')}
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest bg-white text-slate-500 border border-slate-200 hover:border-slate-300 transition-all whitespace-nowrap shadow-sm"
+          >
+            <BarChart2 size={14} /> Analitik
+          </button>
+        </div>
+      </div>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Grid */}
