@@ -56,10 +56,10 @@ const Navbar = () => {
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-8">
-          <Link to="/login" className="text-sm font-bold text-dark/70 hover:text-dark transition-colors">Giriş Yap</Link>
+          <Link to="/login" className="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">Giriş Yap</Link>
           <Link 
             to="/kayit" 
-            className="bg-dark text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-primary hover:text-dark transition-all active:scale-95 shadow-lg"
+            className="bg-slate-900 text-white px-6 py-2.5 rounded-2xl font-bold text-sm hover:bg-primary hover:text-dark hover:shadow-lg hover:shadow-primary/20 transition-all active:scale-95"
           >
             Kayıt Ol
           </Link>
@@ -83,21 +83,21 @@ const Navbar = () => {
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             className="md:hidden mt-2 max-w-[200px] ml-auto pointer-events-auto"
           >
-            <div className="bg-white border border-dark/10 rounded-2xl p-2 shadow-2xl flex flex-col overflow-hidden">
+            <div className="bg-white/90 backdrop-blur-xl border border-slate-100 rounded-[2rem] p-3 shadow-2xl flex flex-col overflow-hidden">
               <Link 
                 to="/login" 
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-dark hover:bg-slate-50 rounded-xl transition-colors"
+                className="flex items-center gap-3 px-5 py-4 text-sm font-semibold text-slate-600 hover:bg-slate-50 rounded-2xl transition-colors"
               >
-                <UserCircle2 size={18} className="text-slate-400" />
+                <UserCircle2 size={20} className="text-slate-400" />
                 Giriş Yap
               </Link>
               <Link 
                 to="/kayit" 
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-primary bg-dark rounded-xl transition-colors"
+                className="flex items-center gap-3 px-5 py-4 text-sm font-bold text-white bg-slate-900 rounded-2xl transition-colors mt-2"
               >
-                <ArrowRight size={18} />
+                <ArrowRight size={20} />
                 Kayıt Ol
               </Link>
             </div>
