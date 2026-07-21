@@ -7,9 +7,10 @@ import { supabase } from '../lib/supabase';
 const VerifyStudent = () => {
   const [file, setFile] = useState(null);
   const [fileObj, setFileObj] = useState(null);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null); // 'onaylandi', 'bekliyor'
   const [isDragging, setIsDragging] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [aiStatus, setAiStatus] = useState(''); // Yapay zeka durum mesajı
   const [error, setError] = useState('');
 
   const handleFileChange = (e) => {
@@ -53,7 +54,40 @@ const VerifyStudent = () => {
 
       const { data: urlData } = supabase.storage.from('student-cards').getPublicUrl(fileName);
 
-      // 3. Başvuru tablosuna ekle (auth_id ile bağlayarak)
+      setAiStatus('Yapay zeka belgenizi inceliyor...');
+      
+      // 3. Yapay Zeka ile Doğrulama (Gemini Vision API)
+      let finalStatus = 'bekliyor';
+      try {
+        const verifyRes = await fetch('/api/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            imageUrl: urlData.publicUrl,
+            name: savedApplicant.name,
+            university: savedApplicant.university
+          })
+        });
+
+        const verifyResult = await verifyRes.json();
+        
+        if (verifyRes.ok) {
+          if (verifyResult.valid) {
+            finalStatus = 'onaylandi';
+          } else {
+            throw new Error(verifyResult.reason || 'Kimlik doğrulanamadı, lütfen daha net bir belge yükleyin.');
+          }
+        } else {
+          console.warn('AI Verification Error:', verifyResult.error);
+          throw new Error(verifyResult.error || 'Yapay zeka sunucusu yanıt vermedi.');
+        }
+      } catch (aiErr) {
+        throw new Error('Yapay Zeka Reddi: ' + aiErr.message);
+      }
+
+      setAiStatus('Sisteme kaydediliyor...');
+
+      // 4. Başvuru tablosuna ekle
       const { error: dbError } = await supabase.from('applications').insert([{
         auth_id: authData.user?.id, // Auth user ID'sini buraya kaydediyoruz
         name: savedApplicant.name || 'Belirtilmedi',
@@ -61,34 +95,39 @@ const VerifyStudent = () => {
         email: savedApplicant.email || null,
         university: savedApplicant.university || 'Belirtilmedi',
         card_url: urlData.publicUrl,
-        status: 'bekliyor',
+        status: finalStatus,
       }]);
       
       if (dbError) throw dbError;
       
       sessionStorage.removeItem('kampuspay.comlicant');
-      setIsSubmitted(true);
+      setSubmitStatus(finalStatus);
     } catch (err) {
-      setError('Hata: ' + err.message);
+      setError(err.message);
     } finally {
       setLoading(false);
+      setAiStatus('');
     }
   };
 
-  if (isSubmitted) {
+  if (submitStatus) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-4 py-16">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-16">
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4, type: 'spring', bounce: 0.4 }}
-          className="bg-white rounded-3xl shadow-sm border border-dark p-12 text-center max-w-md w-full">
-          <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Clock size={36} className="text-secondary" />
+          className="bg-white rounded-[2rem] shadow-xl border border-slate-100 p-12 text-center max-w-md w-full">
+          <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${submitStatus === 'onaylandi' ? 'bg-emerald-50 text-emerald-500' : 'bg-amber-50 text-amber-500'}`}>
+            {submitStatus === 'onaylandi' ? <CheckCircle size={36} /> : <Clock size={36} />}
           </div>
-          <h2 className="text-3xl font-black tracking-tight mb-3">İnceleniyor</h2>
-          <p className="text-dark/70 leading-relaxed mb-8">
-            Öğrenci kartın sistemimize yüklendi. Ekibimiz <strong>24 saat</strong> içinde belgeni inceleyip hesabını aktif edecek.
+          <h2 className="text-3xl font-bold text-slate-900 tracking-tighter mb-3">
+            {submitStatus === 'onaylandi' ? 'Hesabınız Onaylandı!' : 'İnceleniyor'}
+          </h2>
+          <p className="text-slate-500 leading-relaxed mb-8 font-medium">
+            {submitStatus === 'onaylandi' 
+               ? 'Öğrenci belgeniz yapay zeka tarafından saniyeler içinde başarıyla doğrulandı. Artık indirimleri kullanmaya başlayabilirsiniz.'
+               : 'Öğrenci kartın sistemimize yüklendi. Ekibimiz 24 saat içinde belgeni inceleyip hesabını aktif edecek.'}
           </p>
-          <Link to="/" className="btn-primary flex items-center justify-center gap-2">
+          <Link to="/" className="bg-slate-900 text-white font-bold px-8 py-4 rounded-2xl shadow-xl shadow-slate-900/20 hover:shadow-2xl hover:shadow-slate-900/30 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2">
             <CheckCircle size={18} /> Ana Sayfaya Dön
           </Link>
         </motion.div>
@@ -97,20 +136,20 @@ const VerifyStudent = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-16">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-16">
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }} className="w-full max-w-lg">
         <div className="text-center mb-8">
-          <span className="text-primary font-bold text-sm uppercase tracking-widest">Son Adım</span>
-          <h1 className="text-4xl font-black tracking-tight mt-2 mb-3">Öğrenci Kartını Yükle</h1>
-          <p className="text-dark/70 max-w-sm mx-auto text-sm">Kartının net bir fotoğrafını yükle, ekibimiz 24 saat içinde onaylasın.</p>
+          <span className="text-emerald-500 font-bold text-xs uppercase tracking-widest bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">Son Adım</span>
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tighter mt-4 mb-3">Öğrenci Kartını Yükle</h1>
+          <p className="text-slate-500 max-w-sm mx-auto text-sm font-medium">Yapay zeka sistemimiz belgenizi okuyarak saniyeler içinde hesabınızı aktifleştirecektir.</p>
         </div>
-        <div className="bg-white rounded-2xl shadow-sm border border-dark p-8">
+        <div className="bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-slate-100 p-8">
           <label htmlFor="id-upload"
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
             onDragLeave={() => setIsDragging(false)} onDrop={handleDrop}
-            className={`block w-full h-60 rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200 ${
-              isDragging ? 'border-primary bg-primary/10' : file ? 'border-dark bg-secondary/20' : 'border-dark border-2 bg-white hover:bg-primary/5 hover:-translate-y-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'}`}>
+            className={`block w-full h-64 rounded-2xl border-2 border-dashed cursor-pointer transition-all duration-300 ${
+              isDragging ? 'border-primary bg-primary/10' : file ? 'border-slate-300 bg-slate-50' : 'border-slate-200 bg-slate-50 hover:bg-slate-100'}`}>
             {file ? (
               <div className="relative w-full h-full flex items-center justify-center p-3">
                 <img src={file} alt="Preview" className="max-h-full max-w-full rounded-xl object-contain" />
@@ -131,19 +170,20 @@ const VerifyStudent = () => {
           </label>
 
           {error && (
-            <div className="flex items-center gap-2 bg-red-50 border border-dark text-red-600 rounded-xl px-4 py-3 mt-4 text-sm">
-              <AlertCircle size={15} />{error}
+            <div className="flex items-center gap-2 bg-red-50 border border-red-100 text-red-600 rounded-2xl px-5 py-4 mt-4 text-sm font-medium">
+              <AlertCircle size={15} className="shrink-0" />
+              <p>{error}</p>
             </div>
           )}
 
           <button onClick={handleSubmit} disabled={!file || loading}
-            className={`mt-6 w-full py-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 ${
-              file && !loading ? 'btn-primary' : 'bg-dark/10 text-dark/50 cursor-not-allowed'}`}>
-            {loading ? <><Loader size={16} className="animate-spin" />Yükleniyor...</>
-              : <><CheckCircle size={16} />{file ? 'Kartı Gönder ve Bitir' : 'Önce Kart Yükleyin'}</>}
+            className={`mt-6 w-full py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 ${
+              file && !loading ? 'bg-primary text-slate-900 shadow-xl shadow-primary/20 hover:shadow-2xl hover:-translate-y-0.5' : 'bg-slate-100 text-slate-400 cursor-not-allowed'}`}>
+            {loading ? <><Loader size={16} className="animate-spin" /> {aiStatus || 'Yükleniyor...'} </>
+              : <><CheckCircle size={16} />{file ? 'Kartı Gönder ve Onayla' : 'Önce Kart Yükleyin'}</>}
           </button>
         </div>
-        <p className="text-center text-xs text-dark/50 mt-5">Bilgileriniz güvenle saklanır ve yalnızca doğrulama için kullanılır.</p>
+        <p className="text-center text-xs text-slate-400 mt-6 font-medium">Yapay zeka sistemimiz KVKK kurallarına uygun olarak belgenizi inceler ve verilerinizi kaydetmeden doğrular.</p>
       </motion.div>
     </div>
   );
