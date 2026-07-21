@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { QrCode, Smartphone, Zap, Store, Star, TrendingDown, ShieldCheck, Users } from 'lucide-react';
+import { QrCode, Smartphone, Zap, Store, Star, TrendingDown, ShieldCheck, Users, ChevronRight } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { MOCK_VENUES } from '../data/mockData';
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 30 },
@@ -12,6 +14,24 @@ const fadeUp = (delay = 0) => ({
 
 
 const Home = () => {
+  const [featuredVenues, setFeaturedVenues] = useState([]);
+
+  useEffect(() => {
+    const fetchVenues = async () => {
+      try {
+        const { data, error } = await supabase.from('venues').select('*').limit(6);
+        if (error || !data || data.length === 0) {
+          setFeaturedVenues(MOCK_VENUES.slice(0, 6));
+        } else {
+          setFeaturedVenues(data);
+        }
+      } catch (err) {
+        setFeaturedVenues(MOCK_VENUES.slice(0, 6));
+      }
+    };
+    fetchVenues();
+  }, []);
+
   return (
     <>
       {/* ─── HERO ─── */}
@@ -43,6 +63,62 @@ const Home = () => {
           </motion.div>
 
 
+        </div>
+      </section>
+
+      {/* ─── FEATURED VENUES ─── */}
+      <section className="py-20 px-4 bg-white border-t-4 border-dark overflow-hidden">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex justify-between items-end mb-10 px-2">
+            <div>
+              <span className="text-primary font-black text-sm uppercase tracking-widest bg-primary/10 px-3 py-1.5 rounded-md border border-primary/20">Popüler</span>
+              <h2 className="text-3xl md:text-5xl font-black text-dark tracking-tight mt-4">
+                İndirimleri Keşfet
+              </h2>
+            </div>
+            <Link to="/kayit" className="hidden md:flex items-center gap-2 text-dark font-bold hover:text-primary transition-colors">
+              Tümünü Gör <ChevronRight size={20} />
+            </Link>
+          </div>
+
+          <div className="flex gap-6 overflow-x-auto pb-8 pt-4 px-2 no-scrollbar snap-x snap-mandatory">
+            {featuredVenues.map((venue, index) => (
+              <motion.div
+                key={venue.id || index}
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="shrink-0 w-72 md:w-80 bg-white rounded-[2rem] border-4 border-dark shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 transition-all snap-start overflow-hidden flex flex-col"
+              >
+                <div className="h-40 bg-slate-100 relative">
+                  <img src={venue.image_url || 'https://via.placeholder.com/400x300?text=Mekan'} alt={venue.name} className="w-full h-full object-cover" />
+                  <div className="absolute top-4 right-4 bg-primary text-dark font-black px-3 py-1.5 rounded-xl border-2 border-dark shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rotate-3">
+                    {venue.discount || '%15'} İndirim
+                  </div>
+                </div>
+                <div className="p-6">
+                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+                    {venue.category}
+                  </div>
+                  <h3 className="text-xl font-black text-dark tracking-tight mb-2">{venue.name}</h3>
+                  <div className="flex items-center gap-1 text-amber-500 mb-6">
+                    <Star size={16} fill="currentColor" />
+                    <span className="text-sm font-black">{venue.rating || '4.5'}</span>
+                  </div>
+                  <Link to="/kayit" className="btn-primary w-full text-center block py-3 text-sm">
+                    Fırsatı Yakala
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          
+          <div className="mt-4 text-center md:hidden">
+            <Link to="/kayit" className="inline-flex items-center gap-2 text-dark font-bold hover:text-primary transition-colors border-2 border-dark px-6 py-3 rounded-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              Tüm Mekanları Gör <ChevronRight size={18} />
+            </Link>
+          </div>
         </div>
       </section>
 
