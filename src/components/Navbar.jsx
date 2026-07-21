@@ -61,7 +61,7 @@ const Navbar = () => {
             to="/kayit" 
             className="bg-dark text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-primary hover:text-dark transition-all active:scale-95 shadow-lg"
           >
-            Ön Kayıt Ol
+            Kayıt Ol
           </Link>
         </div>
 

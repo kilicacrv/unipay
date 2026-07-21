@@ -12,7 +12,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 // 'landing' → Sadece landing page + kayıt formları açık
 // 'full'    → Tüm platform açık
 // Launch günü: Vercel > Settings > Environment Variables > VITE_LAUNCH_MODE = full → Redeploy
-const LAUNCH_MODE = import.meta.env.VITE_LAUNCH_MODE || 'landing';
+const LAUNCH_MODE = import.meta.env.VITE_LAUNCH_MODE || 'full';
 const IS_FULL = LAUNCH_MODE === 'full';
 
 // Helper: Landing modunda rotaları ana sayfaya yönlendir

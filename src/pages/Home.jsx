@@ -31,13 +31,13 @@ const Home = () => {
           </motion.h1>
 
           <motion.p {...fadeUp(0.2)} className="text-xl text-dark font-medium leading-relaxed mb-10 max-w-2xl">
-            Konya Bosna'nın en popüler mekanlarında sadece öğrencilere özel dev indirim ağı. İlk katılanlardan olmak için ön kaydını hemen yap!
+            Konya Bosna'nın en popüler mekanlarında sadece öğrencilere özel dev indirim ağı. Kampüs Pay ile indirimleri yakalamak için hemen kayıt ol!
           </motion.p>
 
           <motion.div {...fadeUp(0.3)}>
             <Link to="/kayit" className="btn-primary text-lg md:text-xl px-8 py-4 md:px-10 md:py-5 inline-flex items-center justify-center gap-3 w-full sm:w-auto">
               <Zap size={24} />
-              Ön Kayıt Ol
+              Kayıt Ol
             </Link>
             <p className="mt-4 text-sm font-bold text-dark/70">Ücretsizdir. Kredi kartı gerekmez.</p>
           </motion.div>
@@ -56,12 +56,12 @@ const Home = () => {
             transition={{ duration: 0.5 }}
             className="mb-12"
           >
-            <span className="text-secondary font-black text-lg uppercase tracking-widest bg-secondary/10 px-4 py-2 rounded-full border-2 border-secondary">ÇOK YAKINDA</span>
+            <span className="text-secondary font-black text-lg uppercase tracking-widest bg-secondary/10 px-4 py-2 rounded-full border-2 border-secondary">KEŞFET</span>
             <h2 className="text-4xl md:text-5xl font-black text-dark tracking-tight mt-8 mb-6 uppercase">
-              Erkenden yerini al, ilk sen kullan!
+              Kampüs Pay ile İndirimleri Yakala!
             </h2>
             <p className="text-dark/80 text-xl max-w-2xl mx-auto font-medium leading-relaxed">
-              En sevdiğin kafeler, en cool mekanlar... Hepsi tek bir ağda birleşiyor. Bosna'nın yeni hareketine katıl, vibe'ı yakala. Hazır mısın?
+              En sevdiğin kafeler, en cool mekanlar... Hepsi tek bir ağda birleşiyor. Bosna'nın yeni hareketine katıl, ayrıcalıklı dünyanın tadını çıkar.
             </p>
           </motion.div>
 
@@ -90,7 +90,7 @@ const Home = () => {
             viewport={{ once: true }}
             className="text-4xl md:text-5xl font-black text-white mb-8"
           >
-            Kontenjan dolmadan<br/>yerini ayırt.
+            Hemen kayıt ol,<br/>indirimleri kaçırma.
           </motion.h2>
           <motion.div
              initial={{ opacity: 0, y: 20 }}
@@ -99,7 +99,7 @@ const Home = () => {
              transition={{ delay: 0.1 }}
           >
             <Link to="/kayit" className="btn-primary text-lg md:text-xl px-8 py-4 md:px-12 md:py-6 inline-block w-full sm:w-auto">
-                Hemen Ön Kayıt Ol
+                Hemen Kayıt Ol
              </Link>
           </motion.div>
         </div>
