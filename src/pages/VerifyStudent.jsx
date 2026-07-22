@@ -10,7 +10,6 @@ const VerifyStudent = () => {
   const [submitStatus, setSubmitStatus] = useState(null); // 'onaylandi', 'bekliyor'
   const [isDragging, setIsDragging] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [aiStatus, setAiStatus] = useState(''); // Doğrulama durum mesajı
   const [error, setError] = useState('');
 
   const handleFileChange = (e) => {
@@ -54,38 +53,8 @@ const VerifyStudent = () => {
 
       const { data: urlData } = supabase.storage.from('student-cards').getPublicUrl(fileName);
 
-      setAiStatus('Belgeniz taranıyor...');
-      
-      // 3. Akıllı Doğrulama ile Onay (Gemini Vision API)
-      let finalStatus = 'bekliyor';
-      try {
-        const verifyRes = await fetch('/api/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            imageUrl: urlData.publicUrl,
-            name: savedApplicant.name,
-            university: savedApplicant.university
-          })
-        });
-
-        const verifyResult = await verifyRes.json();
-        
-        if (verifyRes.ok) {
-          if (verifyResult.valid) {
-            finalStatus = 'onaylandi';
-          } else {
-            throw new Error(verifyResult.reason || 'Kimlik doğrulanamadı, lütfen daha net bir belge yükleyin.');
-          }
-        } else {
-          console.warn('AI Verification Error:', verifyResult.error);
-          throw new Error(verifyResult.error || 'Doğrulama sunucusuna şu anda ulaşılamıyor.');
-        }
-      } catch (aiErr) {
-        throw new Error(aiErr.message.includes('Sistem') ? aiErr.message : 'Belge doğrulama sürecinde bir aksaklık oldu. Lütfen tekrar deneyin.');
-      }
-
-      setAiStatus('Sisteme kaydediliyor...');
+      // 3. Başvuru tablosuna ekle
+      const finalStatus = 'bekliyor';
 
       // 4. Başvuru tablosuna ekle
       const { error: dbError } = await supabase.from('applications').insert([{
@@ -106,7 +75,6 @@ const VerifyStudent = () => {
       setError(err.message);
     } finally {
       setLoading(false);
-      setAiStatus('');
     }
   };
 
@@ -142,7 +110,7 @@ const VerifyStudent = () => {
         <div className="text-center mb-8">
           <span className="text-emerald-500 font-bold text-xs uppercase tracking-widest bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">Son Adım</span>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tighter mt-4 mb-3">Öğrenci Kartını Yükle</h1>
-          <p className="text-slate-500 max-w-sm mx-auto text-sm font-medium">Akıllı doğrulama sistemimiz belgenizi tarayarak saniyeler içinde hesabınızı aktifleştirecektir.</p>
+          <p className="text-slate-500 max-w-sm mx-auto text-sm font-medium">Öğrenci belgenizi yükleyin, ekibimiz en kısa sürede hesabınızı onaylasın.</p>
         </div>
         <div className="bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-slate-100 p-8">
           <label htmlFor="id-upload"
@@ -179,11 +147,11 @@ const VerifyStudent = () => {
           <button onClick={handleSubmit} disabled={!file || loading}
             className={`mt-6 w-full py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 ${
               file && !loading ? 'bg-primary text-slate-900 shadow-xl shadow-primary/20 hover:shadow-2xl hover:-translate-y-0.5' : 'bg-slate-100 text-slate-400 cursor-not-allowed'}`}>
-            {loading ? <><Loader size={16} className="animate-spin" /> {aiStatus || 'Yükleniyor...'} </>
-              : <><CheckCircle size={16} />{file ? 'Kartı Gönder ve Onayla' : 'Önce Kart Yükleyin'}</>}
+            {loading ? <><Loader size={16} className="animate-spin" /> Yükleniyor... </>
+              : <><CheckCircle size={16} />{file ? 'Kartı Gönder ve Tamamla' : 'Önce Kart Yükleyin'}</>}
           </button>
         </div>
-        <p className="text-center text-xs text-slate-400 mt-6 font-medium">Akıllı doğrulama sistemimiz KVKK kurallarına uygun olarak belgenizi tarar ve verilerinizi kaydetmeden doğrular.</p>
+        <p className="text-center text-xs text-slate-400 mt-6 font-medium">Bilgileriniz KVKK kurallarına uygun olarak şifrelenir ve yalnızca öğrenci doğrulama amacıyla kullanılır.</p>
       </motion.div>
     </div>
   );
