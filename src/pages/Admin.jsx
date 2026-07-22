@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { CheckCircle, XCircle, Clock, Eye, RefreshCw, Users, Store, Search, BarChart2, MapPin } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { CheckCircle, XCircle, Clock, Eye, RefreshCw, Users, Store, Search } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 
 // ─── EmailJS Config ───────────────────────────────────────────────
@@ -16,7 +15,6 @@ const statusConfig = {
 };
 
 const Admin = () => {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('students');
   const [students, setStudents] = useState([]);
   const [businesses, setBusinesses] = useState([]);

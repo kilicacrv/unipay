@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { useNavigate } from 'react-router-dom';
-import { BarChart2, Heart, MapPin, Users, Zap, TrendingUp, Store, Loader2, ChevronLeft } from 'lucide-react';
+import { BarChart2, Heart, MapPin, Users, Zap, TrendingUp, Store, Loader2 } from 'lucide-react';
 
 const StatCard = ({ label, value, icon, sub, color }) => (
   <div className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-sm flex items-start gap-6 hover:shadow-xl transition-all">
@@ -17,7 +16,6 @@ const StatCard = ({ label, value, icon, sub, color }) => (
 );
 
 const AdminAnalytics = () => {
-  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalVenues: 0,
     totalFavorites: 0,

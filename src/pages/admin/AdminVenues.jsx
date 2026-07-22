@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { useNavigate } from 'react-router-dom';
-import { Store, MapPin, Plus, Trash2, Edit2, Save, X, Search, Loader2, Image as ImageIcon, Upload, CheckCircle, AlertCircle, ChevronLeft } from 'lucide-react';
+import { MapPin, Plus, Trash2, Edit2, Save, X, Loader2, Image as ImageIcon, CheckCircle, AlertCircle } from 'lucide-react';
 
 const AdminVenues = () => {
-  const navigate = useNavigate();
   const [venues, setVenues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -129,6 +127,7 @@ const AdminVenues = () => {
   return (
     <div className="w-full">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+        <div>
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">Mekan Yönetimi</h1>
           <p className="text-slate-500 font-bold mt-1 uppercase text-[10px] tracking-widest">Sisteme yeni mekan ekleyin veya mevcutları düzenleyin.</p>
         </div>
