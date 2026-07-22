@@ -1,6 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { Tag, Plus, X, Loader2, CheckCircle, Trash2, ToggleLeft, ToggleRight, AlertCircle } from 'lucide-react';
+import { Tag, Plus, X, Loader2, CheckCircle, Trash2, AlertCircle, Coffee, Users, Star, Cake, Sparkles } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+
+const DISCOUNT_TEMPLATES = [
+  {
+    id: 'happy-hour',
+    icon: Coffee,
+    label: 'Mutlu Saatler',
+    title: 'Sabah 08:00 - 11:00 Arası Tüm Menüde İndirim',
+    rate: 20,
+    color: 'bg-amber-100 text-amber-600'
+  },
+  {
+    id: 'bring-friend',
+    icon: Users,
+    label: 'Arkadaşını Getir',
+    title: '1 Alana 1 Bedava (Grup İndirimi)',
+    rate: 50,
+    color: 'bg-blue-100 text-blue-600'
+  },
+  {
+    id: 'classic',
+    icon: Star,
+    label: 'Öğrenci Klasiği',
+    title: 'Tüm Menüde Geçerli Öğrenci İndirimi',
+    rate: 15,
+    color: 'bg-emerald-100 text-emerald-600'
+  },
+  {
+    id: 'cross-sell',
+    icon: Cake,
+    label: 'Çapraz Satış',
+    title: 'Kahve Yanına Tüm Tatlılar İndirimli',
+    rate: 25,
+    color: 'bg-rose-100 text-rose-600'
+  }
+];
 
 const ManageDiscounts = () => {
   const [showForm, setShowForm] = useState(false);
@@ -196,87 +231,130 @@ const ManageDiscounts = () => {
         </div>
       )}
 
-      {/* Slide-over Form */}
+      {/* Slide-over / Bottom Sheet Form */}
       {showForm && (
-        <div className="fixed inset-0 z-[60] overflow-hidden">
-          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowForm(false)} />
-          <div className="absolute inset-y-0 right-0 max-w-lg w-full bg-white shadow-2xl flex flex-col">
-            <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-              <h2 className="text-xl font-bold text-slate-900">Yeni İndirim Oluştur</h2>
-              <button onClick={() => setShowForm(false)} className="text-slate-400 hover:text-slate-900 transition-colors">
-                <X size={24} />
+        <div className="fixed inset-0 z-[60] overflow-hidden flex flex-col justify-end md:justify-start">
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onClick={() => setShowForm(false)} />
+          
+          <div className="relative w-full max-w-lg mx-auto md:mx-0 md:absolute md:right-0 md:inset-y-0 bg-white shadow-2xl flex flex-col rounded-t-[2rem] md:rounded-none md:rounded-l-[2rem] max-h-[90vh] md:max-h-none overflow-hidden animate-in slide-in-from-bottom-full md:slide-in-from-right-full duration-300">
+            
+            {/* Handle for mobile */}
+            <div className="w-full flex justify-center pt-3 pb-1 md:hidden">
+              <div className="w-12 h-1.5 bg-slate-200 rounded-full" />
+            </div>
+
+            <div className="px-6 md:px-8 py-4 border-b border-slate-100 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                <Tag size={20} className="text-primary" /> Yeni Kampanya
+              </h2>
+              <button onClick={() => setShowForm(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors">
+                <X size={18} />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-8">
+            <div className="flex-1 overflow-y-auto no-scrollbar p-6 md:p-8">
               {success ? (
-                <div className="h-full flex flex-col items-center justify-center text-center">
+                <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center">
                   <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-6 animate-bounce">
                     <CheckCircle size={48} />
                   </div>
-                  <h3 className="text-2xl font-black text-slate-900 mb-2">İndirim Eklendi!</h3>
-                  <p className="text-slate-500 font-medium">Kampanyanız yayında.</p>
+                  <h3 className="text-2xl font-black text-slate-900 mb-2">Harika!</h3>
+                  <p className="text-slate-500 font-medium">Kampanyanız anında yayına alındı.</p>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-8">
+                  
+                  {/* Templates Section */}
                   <div>
-                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Kampanya Başlığı</label>
-                    <input
-                      type="text"
-                      required
-                      className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-primary/20 font-bold text-slate-900 outline-none"
-                      placeholder="Örn: Tüm Kahvelerde Geçerli İndirim"
-                      value={formData.title}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">İndirim Oranı (%)</label>
-                    <input
-                      type="number"
-                      required
-                      min="1"
-                      max="100"
-                      className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-primary/20 font-bold text-slate-900 outline-none"
-                      placeholder="Örn: 20"
-                      value={formData.rate}
-                      onChange={(e) => setFormData({ ...formData, rate: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between p-5 bg-slate-50 rounded-2xl">
-                    <div>
-                      <p className="font-bold text-slate-900 text-sm">Hemen Yayınla</p>
-                      <p className="text-[10px] text-slate-400 font-medium mt-0.5">Ekledikten sonra anında aktif olsun</p>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Sparkles size={16} className="text-amber-500" />
+                      <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Hazır Şablonlar</h3>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setFormData({ ...formData, is_active: !formData.is_active })}
-                      className={`w-14 h-7 rounded-full relative transition-colors ${formData.is_active ? 'bg-emerald-500' : 'bg-slate-200'}`}
-                    >
-                      <div className={`absolute top-1.5 w-4 h-4 bg-white rounded-full shadow-sm transition-all ${formData.is_active ? 'left-8' : 'left-1.5'}`} />
-                    </button>
+                    
+                    <div className="flex overflow-x-auto gap-3 pb-4 -mx-6 px-6 md:mx-0 md:px-0 snap-x">
+                      {DISCOUNT_TEMPLATES.map(t => {
+                        const Icon = t.icon;
+                        return (
+                          <button
+                            key={t.id}
+                            type="button"
+                            onClick={() => setFormData({ ...formData, title: t.title, rate: t.rate })}
+                            className={`flex-none w-[140px] snap-start p-4 rounded-2xl border-2 transition-all text-left ${formData.title === t.title ? 'border-slate-900 bg-slate-900 shadow-lg scale-105' : 'border-slate-100 bg-white hover:border-slate-200'}`}
+                          >
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${formData.title === t.title ? 'bg-white/20 text-white' : t.color}`}>
+                              <Icon size={20} />
+                            </div>
+                            <h4 className={`text-sm font-bold leading-tight mb-1 ${formData.title === t.title ? 'text-white' : 'text-slate-900'}`}>{t.label}</h4>
+                            <p className={`text-[10px] font-medium ${formData.title === t.title ? 'text-slate-300' : 'text-slate-500'}`}>%{t.rate} Önerilen</p>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
 
-                  <div className="pt-4 flex gap-4">
-                    <button
-                      type="button"
-                      onClick={() => setShowForm(false)}
-                      className="flex-1 px-6 py-4 rounded-2xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors border border-slate-100"
-                    >
-                      İptal
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="flex-1 bg-slate-900 text-white px-6 py-4 rounded-2xl text-sm font-bold hover:bg-slate-800 transition-colors shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
-                    >
-                      {loading ? <Loader2 size={18} className="animate-spin" /> : <Tag size={18} />}
-                      Yayınla
-                    </button>
-                  </div>
-                </form>
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div>
+                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Kampanya Başlığı</label>
+                      <input
+                        type="text"
+                        required
+                        className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-primary/30 focus:ring-4 focus:ring-primary/10 font-bold text-slate-900 outline-none transition-all"
+                        placeholder="Örn: Tüm Kahvelerde Geçerli İndirim"
+                        value={formData.title}
+                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">İndirim Oranı (%)</label>
+                      <div className="relative">
+                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold">%</span>
+                        <input
+                          type="number"
+                          required
+                          min="1"
+                          max="100"
+                          className="w-full pl-10 pr-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-primary/30 focus:ring-4 focus:ring-primary/10 font-bold text-slate-900 outline-none transition-all"
+                          placeholder="Örn: 20"
+                          value={formData.rate}
+                          onChange={(e) => setFormData({ ...formData, rate: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between p-5 bg-slate-50 border border-slate-100 rounded-2xl">
+                      <div>
+                        <p className="font-bold text-slate-900 text-sm">Hemen Yayınla</p>
+                        <p className="text-[10px] text-slate-400 font-medium mt-0.5">Ekledikten sonra anında aktif olsun</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, is_active: !formData.is_active })}
+                        className={`w-14 h-7 rounded-full relative transition-colors ${formData.is_active ? 'bg-emerald-500' : 'bg-slate-200'}`}
+                      >
+                        <div className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-sm transition-all ${formData.is_active ? 'left-8' : 'left-1'}`} />
+                      </button>
+                    </div>
+
+                    <div className="pt-4 flex gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setShowForm(false)}
+                        className="flex-1 px-4 py-4 rounded-2xl text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                      >
+                        İptal
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="flex-[2] bg-slate-900 text-white px-6 py-4 rounded-2xl text-sm font-bold hover:bg-slate-800 transition-colors shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
+                      >
+                        {loading ? <Loader2 size={18} className="animate-spin" /> : <Tag size={18} />}
+                        Kampanyayı Yayınla
+                      </button>
+                    </div>
+                  </form>
+                </div>
               )}
             </div>
           </div>
