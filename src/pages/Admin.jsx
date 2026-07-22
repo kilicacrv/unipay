@@ -83,60 +83,32 @@ const Admin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans antialiased text-slate-900 pt-20">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-20 z-30 shadow-sm transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center font-black text-dark shadow-sm">Ü</div>
-              <div>
-                <h1 className="text-xl font-bold tracking-tight">Yönetim Paneli</h1>
-                <p className="text-xs text-slate-500 font-medium">Kampüs Pay Kontrol Merkezi</p>
-              </div>
-            </div>
-            
-            <button onClick={fetchData}
-              className="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 text-xs font-black uppercase tracking-widest px-4 py-2 rounded-xl hover:bg-slate-50 transition-colors shadow-sm">
-              <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> 
-              <span className="hidden sm:inline">Yenile</span>
+    <div className="w-full">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+        <div>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Başvurular</h1>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => { setActiveTab('students'); setFilter('all'); }}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-sm border ${activeTab === 'students' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'}`}
+            >
+              <Users size={14} /> Öğrenciler
+            </button>
+            <button 
+              onClick={() => { setActiveTab('businesses'); setFilter('all'); }}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-sm border ${activeTab === 'businesses' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'}`}
+            >
+              <Store size={14} /> İşletmeler
             </button>
           </div>
         </div>
-      </header>
-
-      {/* Sub-header Navigation */}
-      <div className="bg-white border-b border-slate-200 sticky top-[10rem] md:top-[10rem] z-20 py-4 px-4 overflow-x-auto no-scrollbar shadow-sm">
-        <div className="max-w-7xl mx-auto flex items-center gap-3">
-          <button 
-            onClick={() => { setActiveTab('students'); setFilter('all'); }}
-            className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-sm border ${activeTab === 'students' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'}`}
-          >
-            <Users size={14} /> Öğrenciler
-          </button>
-          <button 
-            onClick={() => { setActiveTab('businesses'); setFilter('all'); }}
-            className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-sm border ${activeTab === 'businesses' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'}`}
-          >
-            <Store size={14} /> İşletmeler
-          </button>
-          <button 
-            onClick={() => navigate('/admin/venues')}
-            className="flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest bg-white text-slate-500 border border-slate-200 hover:border-slate-300 transition-all whitespace-nowrap shadow-sm"
-          >
-            <MapPin size={14} /> Mekan Yönetimi
-          </button>
-          <button 
-            onClick={() => navigate('/admin/analytics')}
-            className="flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest bg-white text-slate-500 border border-slate-200 hover:border-slate-300 transition-all whitespace-nowrap shadow-sm"
-          >
-            <BarChart2 size={14} /> Analitik
-          </button>
-        </div>
+        
+        <button onClick={fetchData}
+          className="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 text-[10px] font-black uppercase tracking-widest px-5 py-3 rounded-xl hover:bg-slate-50 transition-colors shadow-sm">
+          <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> 
+          <span>Yenile</span>
+        </button>
       </div>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
             { key: 'all', label: 'Toplam Başvuru', value: counts.all, color: 'text-slate-600', bg: 'bg-white' },

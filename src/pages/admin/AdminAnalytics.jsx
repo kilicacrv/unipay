@@ -73,6 +73,7 @@ const AdminAnalytics = () => {
       if (topFavs) {
         const countMap = {};
         topFavs.forEach(f => {
+          if (!f.venues) return; // Prevent crashes from deleted venues
           const id = f.venue_id;
           countMap[id] = countMap[id] || { ...f.venues, count: 0 };
           countMap[id].count++;
@@ -88,28 +89,8 @@ const AdminAnalytics = () => {
   };
 
   return (
-    <div className="p-8 pt-32 max-w-6xl mx-auto font-sans">
-      <div className="bg-white border-b border-slate-200 sticky top-20 z-30 shadow-sm transition-all duration-300 -mx-8 -mt-32 mb-12">
-        <div className="max-w-6xl mx-auto px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center font-black text-dark shadow-sm">Ü</div>
-            <h1 className="text-xl font-bold tracking-tight">Platform Analitiği</h1>
-          </div>
-          <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
-            <button onClick={() => navigate('/admin')} className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-all">Başvurular</button>
-            <button onClick={() => navigate('/admin/venues')} className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-all">Mekanlar</button>
-            <button className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-slate-900 text-white shadow-lg">Analitik</button>
-          </div>
-        </div>
-      </div>
-
-      <div className="mb-10 mt-8">
-        <button 
-          onClick={() => window.history.back()}
-          className="flex items-center gap-1 text-slate-400 hover:text-slate-900 font-bold text-[10px] uppercase tracking-widest mb-4 transition-colors"
-        >
-          <ChevronLeft size={14} /> Geri Dön
-        </button>
+    <div className="w-full">
+      <div className="mb-10">
         <h1 className="text-3xl font-black text-slate-900 tracking-tight">Platform Analitiği</h1>
         <p className="text-slate-500 font-bold mt-1 uppercase text-[10px] tracking-widest">Gerçek zamanlı platform istatistikleri.</p>
       </div>

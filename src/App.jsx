@@ -84,6 +84,7 @@ const VenueDetail      = lazy(() => import('./pages/dashboard/VenueDetail'));
 const Favorites        = lazy(() => import('./pages/dashboard/Favorites'));
 
 // Admin Pages
+const AdminLayout    = lazy(() => import('./layouts/AdminLayout'));
 const AdminVenues    = lazy(() => import('./pages/admin/AdminVenues'));
 const AdminAnalytics = lazy(() => import('./pages/admin/AdminAnalytics'));
 
@@ -110,14 +111,12 @@ function App() {
 
               {/* ── Admin (Her zaman açık, sadece admin görebilir) ── */}
               <Route path="/admin" element={
-                <ProtectedRoute allowedRole="admin"><Admin /></ProtectedRoute>
-              } />
-              <Route path="/admin/venues" element={
-                <ProtectedRoute allowedRole="admin"><AdminVenues /></ProtectedRoute>
-              } />
-              <Route path="/admin/analytics" element={
-                <ProtectedRoute allowedRole="admin"><AdminAnalytics /></ProtectedRoute>
-              } />
+                <ProtectedRoute allowedRole="admin"><AdminLayout /></ProtectedRoute>
+              }>
+                <Route index element={<Admin />} />
+                <Route path="venues" element={<AdminVenues />} />
+                <Route path="analytics" element={<AdminAnalytics />} />
+              </Route>
 
               {/* ── Sadece Full Launch'ta Açık ── */}
               <Route path="/dogrulama" element={<VerifyStudent />} />
