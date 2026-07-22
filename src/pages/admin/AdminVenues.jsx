@@ -127,7 +127,6 @@ const AdminVenues = () => {
   };
 
   return (
-  return (
     <div className="w-full">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">Mekan Yönetimi</h1>
