@@ -82,7 +82,7 @@ const VerifyStudent = () => {
           throw new Error(verifyResult.error || 'Yapay zeka sunucusu yanıt vermedi.');
         }
       } catch (aiErr) {
-        throw new Error('Yapay Zeka Reddi: ' + aiErr.message);
+        throw new Error(aiErr.message.includes('Sistem') ? aiErr.message : 'Yapay zeka analiz sürecinde bir aksaklık oldu. Lütfen tekrar deneyin.');
       }
 
       setAiStatus('Sisteme kaydediliyor...');

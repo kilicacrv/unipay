@@ -53,7 +53,11 @@ const Login = () => {
         else navigate('/dashboard');
       }
     } catch (err) {
-      setError('Giriş başarısız: ' + err.message);
+      if (err.message.includes('Invalid login credentials')) {
+        setError('E-posta adresi veya şifre hatalı.');
+      } else {
+        setError('Giriş başarısız: Lütfen bilgilerinizi kontrol edip tekrar deneyin.');
+      }
     } finally {
       setLoading(false);
     }

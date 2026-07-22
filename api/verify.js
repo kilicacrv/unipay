@@ -76,6 +76,6 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Gemini API Error:', error);
-    return res.status(500).json({ valid: false, error: 'Yapay zeka analizinde beklenmeyen bir hata oluştu: ' + error.message });
+    return res.status(500).json({ valid: false, error: 'Sistem yoğunluğu nedeniyle yapay zeka analizi yapılamadı. Lütfen tekrar deneyiniz.' });
   }
 }
