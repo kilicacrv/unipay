@@ -76,6 +76,6 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Gemini API Error:', error);
-    return res.status(500).json({ valid: false, error: 'Sistem yoğunluğu nedeniyle belge doğrulaması yapılamadı. Lütfen birazdan tekrar deneyiniz.' });
+    return res.status(500).json({ valid: false, error: 'Sistem hatası: ' + error.message });
   }
 }
