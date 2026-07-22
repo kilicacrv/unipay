@@ -223,7 +223,6 @@ const Admin = () => {
             )}
           </div>
         </div>
-      </main>
 
       {/* Modal - Preview */}
       {preview && (
