@@ -57,7 +57,14 @@ const Admin = () => {
 
   const updateStatus = async (id, status, table) => {
     setUpdating(id);
-    await supabase.from(table).update({ status }).eq('id', id);
+    const { error } = await supabase.from(table).update({ status }).eq('id', id);
+    
+    if (error) {
+      alert('Güncelleme sırasında bir hata oluştu: ' + error.message);
+      setUpdating(null);
+      return;
+    }
+
     if (table === 'applications') {
       const updatedApp = students.find(a => a.id === id);
       setStudents(prev => prev.map(a => a.id === id ? { ...a, status } : a));
