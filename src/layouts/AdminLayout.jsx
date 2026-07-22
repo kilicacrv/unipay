@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
-import { Users, Store, MapPin, BarChart2, LogOut } from 'lucide-react';
+import { Users, MapPin, BarChart2, LogOut } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 const AdminLayout = () => {

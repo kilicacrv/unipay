@@ -1,6 +1,5 @@
-import React, { lazy, Suspense, useState, useEffect } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 
 // Components
 import Navbar from './components/Navbar';
@@ -21,35 +20,7 @@ const LaunchGate = ({ children }) => {
   return children;
 };
 
-// ─── Initial Loader ───────────────────────────────────────────────────────────
-const InitialLoader = ({ onComplete }) => {
-  useEffect(() => {
-    const timer = setTimeout(() => { onComplete(); }, 1500);
-    return () => clearTimeout(timer);
-  }, [onComplete]);
 
-  return (
-    <motion.div
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.6, ease: "easeInOut" } }}
-      className="fixed inset-0 z-[9999] bg-primary flex flex-col items-center justify-center overflow-hidden"
-    >
-      <motion.div
-        initial={{ y: 300, opacity: 0, scale: 0.9 }}
-        animate={{ y: 0, opacity: 1, scale: 1 }}
-        transition={{ type: "spring", stiffness: 400, damping: 25, duration: 0.6 }}
-        className="relative"
-      >
-        <motion.div
-          animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.7, 0.4] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute inset-0 bg-white/50 blur-3xl rounded-full"
-        />
-        <img src="/logo.png" alt="Kampüs Pay" className="h-28 md:h-36 w-auto relative z-10 drop-shadow-2xl" />
-      </motion.div>
-    </motion.div>
-  );
-};
 
 // Loading Spinner
 const LoadingSpinner = () => (
