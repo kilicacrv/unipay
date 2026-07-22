@@ -10,7 +10,7 @@ const VerifyStudent = () => {
   const [submitStatus, setSubmitStatus] = useState(null); // 'onaylandi', 'bekliyor'
   const [isDragging, setIsDragging] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [aiStatus, setAiStatus] = useState(''); // Yapay zeka durum mesajı
+  const [aiStatus, setAiStatus] = useState(''); // Doğrulama durum mesajı
   const [error, setError] = useState('');
 
   const handleFileChange = (e) => {
@@ -54,9 +54,9 @@ const VerifyStudent = () => {
 
       const { data: urlData } = supabase.storage.from('student-cards').getPublicUrl(fileName);
 
-      setAiStatus('Yapay zeka belgenizi inceliyor...');
+      setAiStatus('Belgeniz taranıyor...');
       
-      // 3. Yapay Zeka ile Doğrulama (Gemini Vision API)
+      // 3. Akıllı Doğrulama ile Onay (Gemini Vision API)
       let finalStatus = 'bekliyor';
       try {
         const verifyRes = await fetch('/api/verify', {
@@ -79,10 +79,10 @@ const VerifyStudent = () => {
           }
         } else {
           console.warn('AI Verification Error:', verifyResult.error);
-          throw new Error(verifyResult.error || 'Yapay zeka sunucusu yanıt vermedi.');
+          throw new Error(verifyResult.error || 'Doğrulama sunucusuna şu anda ulaşılamıyor.');
         }
       } catch (aiErr) {
-        throw new Error(aiErr.message.includes('Sistem') ? aiErr.message : 'Yapay zeka analiz sürecinde bir aksaklık oldu. Lütfen tekrar deneyin.');
+        throw new Error(aiErr.message.includes('Sistem') ? aiErr.message : 'Belge doğrulama sürecinde bir aksaklık oldu. Lütfen tekrar deneyin.');
       }
 
       setAiStatus('Sisteme kaydediliyor...');
@@ -124,8 +124,8 @@ const VerifyStudent = () => {
           </h2>
           <p className="text-slate-500 leading-relaxed mb-8 font-medium">
             {submitStatus === 'onaylandi' 
-               ? 'Öğrenci belgeniz yapay zeka tarafından saniyeler içinde başarıyla doğrulandı. Artık indirimleri kullanmaya başlayabilirsiniz.'
-               : 'Öğrenci kartın sistemimize yüklendi. Ekibimiz 24 saat içinde belgeni inceleyip hesabını aktif edecek.'}
+               ? 'Öğrenci belgeniz akıllı sistemimiz tarafından saniyeler içinde başarıyla doğrulandı. Artık indirimleri kullanmaya başlayabilirsiniz.'
+               : 'Öğrenci kartınız sistemimize yüklendi. Ekibimiz 24 saat içinde belgenizi inceleyip hesabınızı aktif edecek.'}
           </p>
           <Link to="/" className="bg-slate-900 text-white font-bold px-8 py-4 rounded-2xl shadow-xl shadow-slate-900/20 hover:shadow-2xl hover:shadow-slate-900/30 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2">
             <CheckCircle size={18} /> Ana Sayfaya Dön
@@ -142,7 +142,7 @@ const VerifyStudent = () => {
         <div className="text-center mb-8">
           <span className="text-emerald-500 font-bold text-xs uppercase tracking-widest bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">Son Adım</span>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tighter mt-4 mb-3">Öğrenci Kartını Yükle</h1>
-          <p className="text-slate-500 max-w-sm mx-auto text-sm font-medium">Yapay zeka sistemimiz belgenizi okuyarak saniyeler içinde hesabınızı aktifleştirecektir.</p>
+          <p className="text-slate-500 max-w-sm mx-auto text-sm font-medium">Akıllı doğrulama sistemimiz belgenizi tarayarak saniyeler içinde hesabınızı aktifleştirecektir.</p>
         </div>
         <div className="bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-slate-100 p-8">
           <label htmlFor="id-upload"
@@ -183,7 +183,7 @@ const VerifyStudent = () => {
               : <><CheckCircle size={16} />{file ? 'Kartı Gönder ve Onayla' : 'Önce Kart Yükleyin'}</>}
           </button>
         </div>
-        <p className="text-center text-xs text-slate-400 mt-6 font-medium">Yapay zeka sistemimiz KVKK kurallarına uygun olarak belgenizi inceler ve verilerinizi kaydetmeden doğrular.</p>
+        <p className="text-center text-xs text-slate-400 mt-6 font-medium">Akıllı doğrulama sistemimiz KVKK kurallarına uygun olarak belgenizi tarar ve verilerinizi kaydetmeden doğrular.</p>
       </motion.div>
     </div>
   );
