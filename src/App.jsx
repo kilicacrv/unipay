@@ -79,6 +79,8 @@ function App() {
               <Route path="/isletme-basvurusu" element={<BusinessForm />} />
               <Route path="/gizlilik" element={<Privacy />} />
               <Route path="/kullanim-kosullari" element={<Terms />} />
+              <Route path="/mekanlar" element={<LaunchGate><VenueExplore /></LaunchGate>} />
+              <Route path="/mekan/:id" element={<LaunchGate><VenueDetail /></LaunchGate>} />
 
               {/* ── Admin (Her zaman açık, sadece admin görebilir) ── */}
               <Route path="/admin" element={
@@ -122,17 +124,12 @@ function App() {
               } />
               <Route path="/dashboard/explore" element={
                 <LaunchGate>
-                  <ProtectedRoute allowedRole="student"><VenueExplore /></ProtectedRoute>
+                  <ProtectedRoute allowedRole="student"><Navigate to="/mekanlar" replace /></ProtectedRoute>
                 </LaunchGate>
               } />
               <Route path="/dashboard/favorites" element={
                 <LaunchGate>
                   <ProtectedRoute allowedRole="student"><Favorites /></ProtectedRoute>
-                </LaunchGate>
-              } />
-              <Route path="/venue/:id" element={
-                <LaunchGate>
-                  <ProtectedRoute allowedRole="student"><VenueDetail /></ProtectedRoute>
                 </LaunchGate>
               } />
 

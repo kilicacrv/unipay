@@ -10,6 +10,7 @@ const VenueDetail = () => {
   const [discounts, setDiscounts] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     fetchVenueDetails();
@@ -38,6 +39,7 @@ const VenueDetail = () => {
     // Fetch Favorite Status
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
+      setCurrentUser(user);
       const { data: favData } = await supabase
         .from('favorites')
         .select('*')
@@ -45,20 +47,25 @@ const VenueDetail = () => {
         .eq('venue_id', id)
         .single();
       setIsFavorite(!!favData);
+    } else {
+      setCurrentUser(null);
     }
 
     setLoading(false);
   };
 
   const toggleFavorite = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return alert('Lütfen giriş yapın.');
+    if (!currentUser) {
+      alert('Favorilere eklemek için Kampüs Pay\'e giriş yapmalısınız.');
+      navigate('/kayit');
+      return;
+    }
 
     if (isFavorite) {
-      await supabase.from('favorites').delete().eq('user_id', user.id).eq('venue_id', id);
+      await supabase.from('favorites').delete().eq('user_id', currentUser.id).eq('venue_id', id);
       setIsFavorite(false);
     } else {
-      await supabase.from('favorites').insert({ user_id: user.id, venue_id: id });
+      await supabase.from('favorites').insert({ user_id: currentUser.id, venue_id: id });
       setIsFavorite(true);
     }
   };
@@ -205,7 +212,14 @@ const VenueDetail = () => {
       {/* Floating CTA */}
       <div className="fixed bottom-8 inset-x-6 z-50 max-w-lg mx-auto">
         <button 
-          onClick={() => navigate('/dashboard/scan')}
+          onClick={() => {
+            if (!currentUser) {
+              alert('İndirimi kullanmak için Kampüs Pay\'e ücretsiz kayıt olun.');
+              navigate('/kayit');
+            } else {
+              navigate('/dashboard/scan');
+            }
+          }}
           className="w-full bg-slate-950 text-white py-5 rounded-[2.5rem] font-black text-sm uppercase tracking-widest shadow-2xl flex items-center justify-center gap-3 active:scale-95 transition-all border border-white/10 group"
         >
           <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-all">

@@ -62,6 +62,7 @@ const VenueExplore = () => {
   const [venues, setVenues] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -80,19 +81,25 @@ const VenueExplore = () => {
     // Fetch Favorites
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
+      setCurrentUser(user);
       const { data: favData } = await supabase
         .from('favorites')
         .select('venue_id')
         .eq('user_id', user.id);
       if (favData) setFavorites(favData.map(f => f.venue_id));
+    } else {
+      setCurrentUser(null);
     }
     
     setLoading(false);
   };
 
   const toggleFavorite = async (venueId) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return alert('Lütfen giriş yapın.');
+    if (!currentUser) {
+      alert('Favorilere eklemek için Kampüs Pay\'e giriş yapmalısınız.');
+      navigate('/kayit');
+      return;
+    }
 
     const isFav = favorites.includes(venueId);
 
@@ -101,7 +108,7 @@ const VenueExplore = () => {
       const { error } = await supabase
         .from('favorites')
         .delete()
-        .eq('user_id', user.id)
+        .eq('user_id', currentUser.id)
         .eq('venue_id', venueId);
       
       if (!error) setFavorites(prev => prev.filter(id => id !== venueId));
@@ -109,7 +116,7 @@ const VenueExplore = () => {
       // Add to favorites
       const { error } = await supabase
         .from('favorites')
-        .insert({ user_id: user.id, venue_id: venueId });
+        .insert({ user_id: currentUser.id, venue_id: venueId });
       
       if (!error) setFavorites(prev => [...prev, venueId]);
     }
@@ -179,7 +186,7 @@ const VenueExplore = () => {
                     <p className="font-black text-slate-900 text-sm mb-1">{venue.name}</p>
                     <p className="text-[10px] text-primary font-black uppercase tracking-widest bg-slate-900 px-2 py-1 rounded-lg">Mekanı İncele</p>
                     <button 
-                      onClick={() => navigate(`/venue/${venue.id}`)}
+                      onClick={() => navigate(`/mekan/${venue.id}`)}
                       className="mt-3 text-[10px] font-bold text-slate-400 hover:text-slate-900 underline"
                     >
                       Detaylara Git
@@ -212,32 +219,45 @@ const VenueExplore = () => {
                 venue={venue} 
                 isFavorite={favorites.includes(venue.id)}
                 onToggleFavorite={toggleFavorite}
-                onClick={() => navigate(`/venue/${venue.id}`)} 
+                onClick={() => navigate(`/mekan/${venue.id}`)} 
               />
             ))
           )}
         </main>
       )}
 
-      {/* Bottom Nav */}
-      <div className="fixed bottom-0 inset-x-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 px-8 py-5 flex justify-between items-center z-40 max-w-lg mx-auto rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.03)]">
-        <div onClick={() => navigate('/dashboard')} className="flex flex-col items-center gap-1.5 text-slate-300 hover:text-slate-500 transition-colors cursor-pointer">
-          <Tag size={20} strokeWidth={2.5} />
-          <span className="text-[9px] font-black uppercase tracking-tighter">Fırsatlar</span>
+      {/* Bottom Nav or Public Banner */}
+      {currentUser ? (
+        <div className="fixed bottom-0 inset-x-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 px-8 py-5 flex justify-between items-center z-40 max-w-lg mx-auto rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.03)]">
+          <div onClick={() => navigate('/dashboard')} className="flex flex-col items-center gap-1.5 text-slate-300 hover:text-slate-500 transition-colors cursor-pointer">
+            <Tag size={20} strokeWidth={2.5} />
+            <span className="text-[9px] font-black uppercase tracking-tighter">Fırsatlar</span>
+          </div>
+          <div onClick={() => navigate('/dashboard/favorites')} className="flex flex-col items-center gap-1.5 text-slate-300 hover:text-rose-500 transition-colors cursor-pointer">
+            <Heart size={20} strokeWidth={2.5} />
+            <span className="text-[9px] font-black uppercase tracking-tighter">Favoriler</span>
+          </div>
+          <div onClick={() => navigate('/mekanlar')} className="flex flex-col items-center gap-1.5 text-slate-900 cursor-pointer">
+            <MapPin size={20} strokeWidth={2.5} />
+            <span className="text-[9px] font-black uppercase tracking-tighter">Harita</span>
+          </div>
+          <div onClick={() => navigate('/dashboard/profile')} className="flex flex-col items-center gap-1.5 text-slate-300 hover:text-slate-500 transition-colors cursor-pointer">
+            <User size={20} strokeWidth={2.5} />
+            <span className="text-[9px] font-black uppercase tracking-tighter">Profil</span>
+          </div>
         </div>
-        <div onClick={() => navigate('/dashboard/favorites')} className="flex flex-col items-center gap-1.5 text-slate-300 hover:text-rose-500 transition-colors cursor-pointer">
-          <Heart size={20} strokeWidth={2.5} />
-          <span className="text-[9px] font-black uppercase tracking-tighter">Favoriler</span>
+      ) : (
+        <div className="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-xl border-t border-slate-100 p-6 z-40 max-w-lg mx-auto rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] text-center">
+          <p className="text-xs font-bold text-slate-500 mb-3 uppercase tracking-widest">Tüm indirimleri yakalamak için</p>
+          <button 
+            onClick={() => navigate('/kayit')} 
+            className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
+          >
+            <User size={18} />
+            Hemen Kayıt Ol
+          </button>
         </div>
-        <div onClick={() => navigate('/dashboard/explore')} className="flex flex-col items-center gap-1.5 text-slate-900 cursor-pointer">
-          <MapPin size={20} strokeWidth={2.5} />
-          <span className="text-[9px] font-black uppercase tracking-tighter">Harita</span>
-        </div>
-        <div onClick={() => navigate('/dashboard/profile')} className="flex flex-col items-center gap-1.5 text-slate-300 hover:text-slate-500 transition-colors cursor-pointer">
-          <User size={20} strokeWidth={2.5} />
-          <span className="text-[9px] font-black uppercase tracking-tighter">Profil</span>
-        </div>
-      </div>
+      )}
 
       <style dangerouslySetInnerHTML={{ __html: `
         .leaflet-popup-content-wrapper { border-radius: 1.5rem !important; padding: 0 !important; overflow: hidden !important; border: 1px solid #f1f5f9 !important; shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1) !important; }

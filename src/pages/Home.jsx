@@ -76,7 +76,7 @@ const Home = () => {
                 İndirimleri Keşfet
               </h2>
             </div>
-            <Link to="/kayit" className="hidden md:flex items-center gap-2 text-slate-500 font-semibold hover:text-slate-900 transition-colors">
+            <Link to="/mekanlar" className="hidden md:flex items-center gap-2 text-slate-500 font-semibold hover:text-slate-900 transition-colors">
               Tümünü Gör <ChevronRight size={20} />
             </Link>
           </div>
@@ -115,7 +115,7 @@ const Home = () => {
           </div>
           
           <div className="mt-4 text-center md:hidden">
-            <Link to="/kayit" className="inline-flex items-center gap-2 text-slate-700 font-bold hover:text-slate-900 transition-colors bg-white border border-slate-200 px-6 py-3.5 rounded-2xl shadow-sm">
+            <Link to="/mekanlar" className="inline-flex items-center gap-2 text-slate-700 font-bold hover:text-slate-900 transition-colors bg-white border border-slate-200 px-6 py-3.5 rounded-2xl shadow-sm">
               Tüm Mekanları Gör <ChevronRight size={18} />
             </Link>
           </div>

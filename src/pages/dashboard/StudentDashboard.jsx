@@ -122,7 +122,7 @@ const StudentDashboard = () => {
         {/* Discounts Section */}
         <div className="mb-6 flex justify-between items-end px-1">
           <h2 className="text-lg font-bold text-slate-900 leading-none">Popüler İndirimler</h2>
-          <button className="text-xs font-bold text-primary hover:underline">Tümünü Gör</button>
+          <button onClick={() => navigate('/mekanlar')} className="text-xs font-bold text-primary hover:underline">Tümünü Gör</button>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
