@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Star, MapPin, Smartphone, AtSign, Globe, Clock, Tag, Navigation, Share2, Loader2, Heart, MessageSquare, Send, X } from 'lucide-react';
+import { ChevronLeft, Star, MapPin, Smartphone, AtSign, Clock, Tag, Navigation, Share2, Loader2, Heart, MessageSquare, Send, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 const VenueDetail = () => {
