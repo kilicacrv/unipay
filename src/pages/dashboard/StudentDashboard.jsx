@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Scan, MapPin, Tag, History, ChevronRight, User, Loader2, Heart } from 'lucide-react';
+import { Scan, MapPin, Tag, History, ChevronRight, User, Loader2, Heart, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+
+const getTier = (pts) => {
+  if (pts >= 200) return { name: 'Altın', color: 'text-amber-500', bg: 'bg-amber-50', icon: '🥇' };
+  if (pts >= 100) return { name: 'Gümüş', color: 'text-slate-300', bg: 'bg-slate-800', icon: '🥈' };
+  return { name: 'Bronz', color: 'text-orange-400', bg: 'bg-orange-500/20', icon: '🥉' };
+};
 
 const DiscountCard = ({ title, biz, rate, image }) => (
   <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm flex flex-col hover:border-primary transition-all cursor-pointer group">
@@ -31,6 +37,7 @@ const StudentDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   const [student, setStudent] = useState({ id: '...', name: 'Yükleniyor', university: 'Selçuk Üniversitesi' });
+  const [points, setPoints] = useState(0);
 
   useEffect(() => {
     fetchUserData();
@@ -46,6 +53,14 @@ const StudentDashboard = () => {
         name: user.user_metadata?.full_name || 'Öğrenci',
         university: user.user_metadata?.university || 'Selçuk Üniversitesi'
       });
+
+      const { data: pts } = await supabase
+        .from('student_points')
+        .select('total_points')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (pts) setPoints(pts.total_points);
     }
   };
 
@@ -60,6 +75,8 @@ const StudentDashboard = () => {
     if (!error) setDiscounts(data);
     setLoading(false);
   };
+
+  const tier = getTier(points);
 
   return (
     <div className="min-h-screen bg-slate-50 pb-24">
@@ -92,9 +109,22 @@ const StudentDashboard = () => {
               />
             </div>
             <h2 className="text-xl font-bold mb-1 text-primary tracking-tight">Kampüs Pay ID</h2>
-            <p className="text-slate-400 text-xs font-medium opacity-80 tracking-widest uppercase">{student.id}</p>
+            <p className="text-slate-400 text-xs font-medium opacity-80 tracking-widest uppercase mb-6">{student.id}</p>
             
-            <div className="w-full h-px bg-white/10 my-8" />
+            {/* Loyalty Badge */}
+            <div className="flex items-center gap-3 bg-white/10 px-6 py-3 rounded-2xl border border-white/10 backdrop-blur-md cursor-pointer hover:bg-white/20 transition-all" onClick={() => navigate('/dashboard/profile')}>
+              <div className="flex items-center justify-center text-xl">{tier.icon}</div>
+              <div className="text-left">
+                <p className="text-[10px] font-black text-white/50 uppercase tracking-widest leading-none mb-1">Sadakat Puanı</p>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-lg font-black text-white leading-none">{points}</span>
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${tier.color}`}>{tier.name} Öğrenci</span>
+                </div>
+              </div>
+              <ChevronRight size={16} className="text-white/30 ml-2" />
+            </div>
+            
+            <div className="w-full h-px bg-white/10 my-6" />
             
             <button 
               onClick={() => navigate('/dashboard/scan')}
