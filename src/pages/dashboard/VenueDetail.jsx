@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Star, MapPin, Smartphone, AtSign, Globe, Clock, Tag, Navigation, Share2, Loader2, Heart } from 'lucide-react';
+import { ChevronLeft, Star, MapPin, Smartphone, AtSign, Globe, Clock, Tag, Navigation, Share2, Loader2, Heart, MessageSquare, Send, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 const VenueDetail = () => {
@@ -11,6 +11,10 @@ const VenueDetail = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [hasVisited, setHasVisited] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
 
   useEffect(() => {
     fetchVenueDetails();
@@ -36,7 +40,15 @@ const VenueDetail = () => {
 
     if (!discountError) setDiscounts(discountData);
 
-    // Fetch Favorite Status
+    // Fetch Reviews
+    const { data: revData } = await supabase
+      .from('reviews')
+      .select('*')
+      .eq('venue_id', id)
+      .order('created_at', { ascending: false });
+    if (revData) setReviews(revData);
+
+    // Fetch Favorite Status & Visit Status
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       setCurrentUser(user);
@@ -47,6 +59,16 @@ const VenueDetail = () => {
         .eq('venue_id', id)
         .single();
       setIsFavorite(!!favData);
+
+      const { data: visitData } = await supabase
+        .from('visits')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('venue_id', id)
+        .eq('status', 'onaylandi')
+        .limit(1);
+      
+      setHasVisited(visitData && visitData.length > 0);
     } else {
       setCurrentUser(null);
     }
@@ -69,6 +91,25 @@ const VenueDetail = () => {
       setIsFavorite(true);
     }
   };
+
+  const handleSubmitReview = async () => {
+    if (!reviewForm.rating) return;
+    
+    await supabase.from('reviews').insert({
+      venue_id: id,
+      user_id: currentUser.id,
+      rating: reviewForm.rating,
+      comment: reviewForm.comment
+    });
+    
+    setShowReviewForm(false);
+    setReviewForm({ rating: 5, comment: '' });
+    fetchVenueDetails(); // Refresh details
+  };
+
+  const averageRating = reviews.length > 0 
+    ? (reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length).toFixed(1)
+    : venue?.rating || '5.0';
 
   if (loading) {
     return (
@@ -125,7 +166,7 @@ const VenueDetail = () => {
                 <span className="bg-primary text-dark text-[8px] font-black px-2 py-0.5 rounded-md uppercase tracking-widest">{venue.category}</span>
                 <div className="flex items-center gap-1 text-amber-500">
                   <Star size={12} fill="currentColor" />
-                  <span className="text-[10px] font-black">{venue.rating}</span>
+                  <span className="text-[10px] font-black">{averageRating}</span>
                 </div>
               </div>
               <h1 className="text-3xl font-black text-slate-900 tracking-tighter leading-none">{venue.name}</h1>
@@ -205,6 +246,90 @@ const VenueDetail = () => {
                 <p className="text-sm font-bold text-slate-600">Her gün: <span className="text-slate-900">{venue.hours}</span></p>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Reviews Section */}
+        <section className="space-y-6 pt-4">
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-lg font-black text-slate-900 tracking-tight uppercase flex items-center gap-2">
+              <div className="w-2 h-2 bg-slate-900 rounded-full" />
+              Öğrenci Yorumları
+            </h2>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{reviews.length} YORUM</span>
+          </div>
+
+          {hasVisited && !showReviewForm && (
+            <button 
+              onClick={() => setShowReviewForm(true)}
+              className="w-full bg-slate-100 text-slate-900 py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-200 transition-colors mb-6"
+            >
+              <MessageSquare size={18} /> Değerlendirme Yaz
+            </button>
+          )}
+
+          {showReviewForm && (
+            <div className="bg-slate-900 rounded-[2.5rem] p-6 text-white mb-6 relative overflow-hidden animate-in slide-in-from-top-4 duration-300">
+              <button onClick={() => setShowReviewForm(false)} className="absolute top-4 right-4 text-white/50 hover:text-white">
+                <X size={20} />
+              </button>
+              <h3 className="text-sm font-black uppercase tracking-widest mb-4">Puanınız</h3>
+              <div className="flex gap-2 mb-6">
+                {[1,2,3,4,5].map(star => (
+                  <Star 
+                    key={star} 
+                    size={28} 
+                    className={`cursor-pointer transition-colors ${reviewForm.rating >= star ? 'text-amber-500' : 'text-white/20'}`} 
+                    fill={reviewForm.rating >= star ? "currentColor" : "none"}
+                    onClick={() => setReviewForm({...reviewForm, rating: star})}
+                  />
+                ))}
+              </div>
+              <textarea 
+                placeholder="Mekan hakkında ne düşünüyorsunuz?"
+                className="w-full bg-white/10 border border-white/10 rounded-2xl p-4 text-sm text-white placeholder-white/40 focus:outline-none focus:border-primary mb-4 min-h-[100px]"
+                value={reviewForm.comment}
+                onChange={(e) => setReviewForm({...reviewForm, comment: e.target.value})}
+              />
+              <button 
+                onClick={handleSubmitReview}
+                className="w-full bg-primary text-dark py-4 rounded-xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:brightness-110 transition-all"
+              >
+                <Send size={16} /> Gönder
+              </button>
+            </div>
+          )}
+
+          <div className="space-y-4">
+            {reviews.length > 0 ? reviews.map(review => (
+              <div key={review.id} className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-emerald-50 rounded-full flex items-center justify-center">
+                      <Star size={14} className="text-emerald-500" fill="currentColor" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-slate-900">Doğrulanmış Öğrenci</p>
+                      <p className="text-[10px] text-slate-400 font-bold">{new Date(review.created_at).toLocaleDateString('tr-TR')}</p>
+                    </div>
+                  </div>
+                  <div className="flex text-amber-500">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={12} fill={i < review.rating ? "currentColor" : "none"} className={i < review.rating ? "" : "text-slate-200"} />
+                    ))}
+                  </div>
+                </div>
+                {review.comment && (
+                  <p className="text-sm text-slate-600 leading-relaxed font-medium">{review.comment}</p>
+                )}
+              </div>
+            )) : (
+              <div className="text-center py-10 bg-slate-50 rounded-3xl border border-slate-100">
+                <MessageSquare size={32} className="mx-auto text-slate-300 mb-3" />
+                <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Henüz Yorum Yok</p>
+                <p className="text-[10px] font-bold text-slate-400 mt-1">İlk yorumu yapan sen ol!</p>
+              </div>
+            )}
           </div>
         </section>
       </main>

@@ -117,7 +117,11 @@ const BusinessDashboard = () => {
 
   const handleApprove = async (visit) => {
     try {
-      await supabase.from('visits').update({ status: 'onaylandi' }).eq('id', visit.id);
+      // 1. Update visit status and venue_id
+      await supabase.from('visits').update({ 
+        status: 'onaylandi',
+        venue_id: business.id 
+      }).eq('id', visit.id);
       
       const POINTS = 10;
       const { data: existingPoints } = await supabase.from('student_points').select('*').eq('user_id', visit.user_id).single();
