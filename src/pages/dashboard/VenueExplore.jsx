@@ -16,28 +16,27 @@ L.Icon.Default.mergeOptions({
 
 const VenueCard = ({ venue, isFavorite, onToggleFavorite, onClick }) => (
   <div 
-    className="bg-white rounded-3xl border border-slate-200 overflow-hidden flex shadow-sm mb-4 active:scale-[0.98] transition-all cursor-pointer hover:border-primary relative"
+    className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden flex flex-col shadow-sm cursor-pointer hover:border-primary transition-all relative group"
   >
-    <div onClick={onClick} className="w-28 h-28 bg-slate-100 shrink-0 relative">
-      <img src={venue.image_url || 'https://via.placeholder.com/400x400?text=Mekan'} className="w-full h-full object-cover" alt={venue.name} />
-      <div className="absolute top-2 left-2 bg-primary text-dark text-[8px] font-black px-1.5 py-0.5 rounded-md shadow-sm uppercase">
+    <div onClick={onClick} className="w-full aspect-square bg-slate-100 relative">
+      <img src={venue.image_url || 'https://via.placeholder.com/400x400?text=Mekan'} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={venue.name} />
+      <div className="absolute top-2 left-2 bg-primary text-dark text-[9px] font-black px-2 py-1 rounded-lg shadow-sm uppercase tracking-widest">
         {venue.category}
+      </div>
+      <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-black/60 backdrop-blur-md text-white px-2 py-1 rounded-lg">
+        <Star size={10} className="fill-amber-400 text-amber-400" />
+        <span className="text-[10px] font-black">{venue.rating}</span>
       </div>
     </div>
     
-    <div className="p-4 flex-1 flex flex-col">
-      <div className="flex justify-between items-start mb-1 pr-8">
-        <h3 onClick={onClick} className="font-black text-slate-900 text-sm tracking-tight">{venue.name}</h3>
-        <div className="flex items-center gap-1 text-amber-500">
-          <Star size={10} fill="currentColor" />
-          <span className="text-[10px] font-black">{venue.rating}</span>
-        </div>
-      </div>
-      <p onClick={onClick} className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-3">{venue.address?.split(',')[0] || 'Bosna Hersek Mahallesi'}</p>
-      <div className="mt-auto flex justify-between items-center">
-        <span onClick={onClick} className="bg-slate-900 text-white text-[10px] font-black px-3 py-1 rounded-xl shadow-lg uppercase tracking-wider">İncele</span>
-        <div onClick={onClick} className="w-8 h-8 bg-slate-50 rounded-xl flex items-center justify-center text-slate-300">
-          <ChevronRight size={18} />
+    <div className="p-3 flex-1 flex flex-col">
+      <h3 onClick={onClick} className="font-black text-slate-900 text-sm tracking-tight mb-0.5 line-clamp-1">{venue.name}</h3>
+      <p onClick={onClick} className="text-[9px] text-slate-400 font-bold uppercase tracking-widest line-clamp-1 mb-2">{venue.address?.split(',')[0] || 'Bosna Hersek Mahallesi'}</p>
+      
+      <div className="mt-auto flex justify-between items-center pt-2 border-t border-slate-100">
+        <span onClick={onClick} className="text-[10px] font-black text-primary uppercase tracking-widest">İncele</span>
+        <div onClick={onClick} className="w-6 h-6 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-dark transition-colors">
+          <ChevronRight size={14} />
         </div>
       </div>
     </div>
@@ -48,9 +47,9 @@ const VenueCard = ({ venue, isFavorite, onToggleFavorite, onClick }) => (
         e.stopPropagation();
         onToggleFavorite(venue.id);
       }}
-      className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all ${isFavorite ? 'bg-rose-500 text-white shadow-lg scale-110' : 'bg-white/80 backdrop-blur-md text-slate-400 border border-slate-100'}`}
+      className={`absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all z-10 ${isFavorite ? 'bg-rose-500 text-white shadow-lg scale-110' : 'bg-white/90 backdrop-blur-md text-slate-400 hover:text-rose-500'}`}
     >
-      <Heart size={18} fill={isFavorite ? "currentColor" : "none"} strokeWidth={2.5} />
+      <Heart size={14} fill={isFavorite ? "currentColor" : "none"} strokeWidth={2.5} />
     </button>
   </div>
 );
@@ -213,15 +212,17 @@ const VenueExplore = () => {
                <p className="text-slate-400 font-bold">Bu kategoride mekan bulunamadı.</p>
              </div>
           ) : (
-            venues.map(venue => (
-              <VenueCard 
-                key={venue.id} 
-                venue={venue} 
-                isFavorite={favorites.includes(venue.id)}
-                onToggleFavorite={toggleFavorite}
-                onClick={() => navigate(`/mekan/${venue.id}`)} 
-              />
-            ))
+            <div className="grid grid-cols-2 gap-4 pb-20">
+              {venues.map(venue => (
+                <VenueCard 
+                  key={venue.id} 
+                  venue={venue} 
+                  isFavorite={favorites.includes(venue.id)}
+                  onToggleFavorite={toggleFavorite}
+                  onClick={() => navigate(`/mekan/${venue.id}`)} 
+                />
+              ))}
+            </div>
           )}
         </main>
       )}
