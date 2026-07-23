@@ -173,7 +173,7 @@ const VenueDetail = () => {
             </div>
           </div>
           <p className="text-xs text-slate-400 font-bold uppercase tracking-widest flex items-center gap-2">
-             Bosna Hersek Mahallesi, Konya
+             {venue.address || 'Bosna Hersek Mahallesi, Konya'}
           </p>
         </div>
       </div>

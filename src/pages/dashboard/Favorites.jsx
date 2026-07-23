@@ -71,7 +71,7 @@ const Favorites = () => {
               <FavoriteItem 
                 key={venue.id} 
                 venue={venue} 
-                onClick={() => navigate(`/venue/${venue.id}`)} 
+                onClick={() => navigate(`/mekan/${venue.id}`)} 
               />
             ))}
           </div>
