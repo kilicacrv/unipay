@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, MousePointer2, Tag, TrendingUp, Users, Download, Printer, Loader2 } from 'lucide-react';
+import { Eye, Tag, TrendingUp, Users, Download, Printer, Loader2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { supabase } from '../../lib/supabase';
 

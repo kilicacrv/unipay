@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
-import { X, CheckCircle, Loader2, AlertTriangle, Star, Zap } from 'lucide-react';
+import { X, CheckCircle, Loader2, AlertTriangle, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 
