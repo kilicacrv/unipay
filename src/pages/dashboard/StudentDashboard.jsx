@@ -11,20 +11,25 @@ const getTier = (pts) => {
 };
 
 const DiscountCard = ({ title, biz, rate, image }) => (
-  <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm flex flex-col hover:border-primary transition-all cursor-pointer group">
-    <div className="h-32 bg-slate-100 flex items-center justify-center text-slate-300 relative">
-      <Tag size={32} />
-      <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg text-[10px] font-black text-slate-900 border border-slate-100">
+  <div className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden flex flex-col shadow-sm cursor-pointer hover:border-primary transition-all relative group">
+    <div className="w-full aspect-square bg-slate-100 relative">
+      <img src={image || 'https://via.placeholder.com/400x400?text=Fırsat'} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={title} />
+      <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg text-[9px] font-black text-slate-900 border border-slate-100 uppercase tracking-widest shadow-sm z-10">
         AKTİF
       </div>
+      <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-primary text-dark px-2 py-1 rounded-lg z-10 shadow-sm">
+        <span className="text-[12px] font-black">%{rate} İNDİRİM</span>
+      </div>
     </div>
-    <div className="p-4 flex-1">
-      <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-1">{biz}</p>
-      <h3 className="font-bold text-slate-900 text-sm leading-tight mb-2 group-hover:text-primary transition-colors">{title}</h3>
-      <div className="flex items-center justify-between mt-auto">
-        <span className="text-lg font-black text-slate-900">%{rate}</span>
-        <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-dark transition-all">
-          <ChevronRight size={18} />
+    
+    <div className="p-3 flex-1 flex flex-col">
+      <h3 className="font-black text-slate-900 text-sm tracking-tight mb-0.5 line-clamp-1">{biz}</h3>
+      <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest line-clamp-1 mb-2">{title}</p>
+      
+      <div className="mt-auto flex justify-between items-center pt-2 border-t border-slate-100">
+        <span className="text-[10px] font-black text-primary uppercase tracking-widest">Kodu Al</span>
+        <div className="w-6 h-6 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-dark transition-colors">
+          <ChevronRight size={14} />
         </div>
       </div>
     </div>
