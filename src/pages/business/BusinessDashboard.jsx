@@ -21,6 +21,7 @@ const StatCard = ({ title, value, icon, trend, color = "text-slate-900" }) => (
 const BusinessDashboard = () => {
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [pendingVisits, setPendingVisits] = useState([]);
 
   useEffect(() => {
     fetchBusinessData();
@@ -84,6 +85,62 @@ const BusinessDashboard = () => {
     }
   };
 
+  const fetchPendingVisits = async (qrCode) => {
+    const { data } = await supabase
+      .from('visits')
+      .select('*')
+      .eq('business_qr', qrCode)
+      .eq('status', 'bekliyor')
+      .order('created_at', { ascending: false });
+    if (data) setPendingVisits(data);
+  };
+
+  useEffect(() => {
+    if (!business?.id) return;
+    const qrCode = `unipay_biz_${business.id}`;
+    fetchPendingVisits(qrCode);
+
+    const channel = supabase
+      .channel('business_visits')
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'visits',
+        filter: `business_qr=eq.${qrCode}`
+      }, () => {
+        fetchPendingVisits(qrCode);
+      })
+      .subscribe();
+
+    return () => supabase.removeChannel(channel);
+  }, [business?.id]);
+
+  const handleApprove = async (visit) => {
+    try {
+      await supabase.from('visits').update({ status: 'onaylandi' }).eq('id', visit.id);
+      
+      const POINTS = 10;
+      const { data: existingPoints } = await supabase.from('student_points').select('*').eq('user_id', visit.user_id).single();
+      
+      if (existingPoints) {
+        await supabase.from('student_points').update({ total_points: existingPoints.total_points + POINTS }).eq('user_id', visit.user_id);
+      } else {
+        await supabase.from('student_points').insert({ user_id: visit.user_id, total_points: POINTS });
+      }
+      
+      await supabase.from('points_history').insert({ user_id: visit.user_id, points: POINTS, reason: `${business.name} ziyareti` });
+      
+      fetchPendingVisits(`unipay_biz_${business.id}`);
+    } catch (err) {
+      console.error('Onaylama hatası:', err);
+    }
+  };
+
+  const handleReject = async (visitId) => {
+    await supabase.from('visits').update({ status: 'reddedildi' }).eq('id', visitId);
+    fetchPendingVisits(`unipay_biz_${business.id}`);
+  };
+
   if (loading) {
     return (
       <div className="max-w-6xl mx-auto py-20 flex flex-col items-center opacity-50">
@@ -126,35 +183,50 @@ const BusinessDashboard = () => {
         {/* Visitor Tracking */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-            <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Son İndirim Kullanımları</h2>
-            <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase">Canlı</span>
+            <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Onay Bekleyen İşlemler</h2>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full uppercase animate-pulse">CANLI</span>
+              <span className="text-[10px] font-black text-white bg-slate-900 px-2 py-0.5 rounded-full">{pendingVisits.length} Bekleyen</span>
+            </div>
           </div>
           <div className="divide-y divide-slate-50">
-            {[
-              { id: '782341', name: 'Alperen K.', time: '5 dk önce', discount: '%20 Kahve' },
-              { id: '129384', name: 'Ayşe Y.', time: '24 dk önce', discount: '%20 Kahve' },
-              { id: '445212', name: 'Mehmet S.', time: '1 saat önce', discount: 'Öğrenci Menüsü' },
-              { id: '992834', name: 'Fatma G.', time: '2 saat önce', discount: '%20 Kahve' },
-            ].map((visitor) => (
-              <div key={visitor.id} className="p-4 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 font-bold text-xs">
-                    {visitor.name.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-900">{visitor.name}</p>
-                    <p className="text-[10px] text-slate-500 font-medium">ID: {visitor.id}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs font-bold text-slate-700">{visitor.discount}</p>
-                  <p className="text-[10px] text-slate-400 font-medium">{visitor.time}</p>
-                </div>
+            {pendingVisits.length === 0 ? (
+              <div className="p-8 text-center text-slate-400 font-medium text-sm">
+                Şu an onay bekleyen indirim işlemi bulunmuyor.
               </div>
-            ))}
+            ) : (
+              pendingVisits.map((visit) => (
+                <div key={visit.id} className="p-4 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center text-amber-600 font-black text-lg border-2 border-amber-200">
+                      Q
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">Onay Kodu</p>
+                      <p className="text-2xl font-black text-slate-900 tracking-widest">{visit.pin_code}</p>
+                      <p className="text-[10px] text-slate-400 font-medium">{new Date(visit.created_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => handleReject(visit.id)}
+                      className="px-4 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors"
+                    >
+                      Reddet
+                    </button>
+                    <button 
+                      onClick={() => handleApprove(visit)}
+                      className="px-6 py-2 rounded-xl text-xs font-black text-white bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition-all active:scale-95 uppercase tracking-widest"
+                    >
+                      Onayla
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
           <button className="w-full py-4 text-xs font-bold text-slate-500 hover:text-slate-900 border-t border-slate-50 transition-colors">
-            Tüm Geçmişi Gör
+            Geçmiş İşlemleri Gör
           </button>
         </div>
 

@@ -13,6 +13,8 @@ const QRScanner = () => {
   const [error, setError] = useState(null);
   const [earnedPoints, setEarnedPoints] = useState(0);
   const [confirmCode] = useState(Math.floor(Math.random() * 900000 + 100000));
+  const [visitId, setVisitId] = useState(null);
+  const [status, setStatus] = useState(null); // 'bekliyor', 'onaylandi', 'reddedildi'
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -46,6 +48,36 @@ const QRScanner = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    if (!visitId) return;
+
+    const channel = supabase
+      .channel(`visit_${visitId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'visits',
+          filter: `id=eq.${visitId}`
+        },
+        (payload) => {
+          if (payload.new.status === 'onaylandi') {
+            setStatus('onaylandi');
+            setEarnedPoints(10); // Show standard points on success
+          } else if (payload.new.status === 'reddedildi') {
+            setStatus('reddedildi');
+            setError('İşletme indirimi reddetti.');
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [visitId]);
+
   const processMatch = async (bizQrData) => {
     setIsProcessing(true);
 
@@ -56,45 +88,24 @@ const QRScanner = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Giriş yapmanız gerekiyor.');
 
-      // 1. Record the visit
-      await supabase.from('visits').insert({
+      // 1. Sadece ziyareti bekliyor olarak kaydet. (Puanı kasiyer onaylayınca vereceğiz)
+      const { data, error: insertError } = await supabase.from('visits').insert({
         user_id: user.id,
         business_qr: bizQrData,
-      });
+        pin_code: confirmCode.toString(),
+        status: 'bekliyor'
+      }).select().single();
 
-      // 2. Award points
-      const { data: existingPoints } = await supabase
-        .from('student_points')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+      if (insertError) throw insertError;
 
-      if (existingPoints) {
-        await supabase
-          .from('student_points')
-          .update({ 
-            total_points: existingPoints.total_points + POINTS_PER_VISIT,
-            updated_at: new Date().toISOString()
-          })
-          .eq('user_id', user.id);
-      } else {
-        await supabase
-          .from('student_points')
-          .insert({ user_id: user.id, total_points: POINTS_PER_VISIT });
-      }
-
-      // 3. Record points history
-      await supabase.from('points_history').insert({
-        user_id: user.id,
-        points: POINTS_PER_VISIT,
-        reason: `${bizSlug.split('_').join(' ')} ziyareti`,
-      });
-
-      setEarnedPoints(POINTS_PER_VISIT);
+      setVisitId(data.id);
+      setStatus('bekliyor');
+      setScanResult(bizQrData);
     } catch (err) {
       console.error('Visit recording error:', err.message);
+      setError('İşlem kaydedilemedi: ' + err.message);
+      setTimeout(() => setError(null), 3000);
     } finally {
-      setScanResult(bizQrData);
       setIsProcessing(false);
     }
   };
@@ -130,16 +141,45 @@ const QRScanner = () => {
               İndirim kodunu doğrulamak için işletmenin QR kodunu taratın
             </p>
           </div>
-        ) : isProcessing ? (
-          <div className="bg-white w-full max-w-sm rounded-[3rem] p-10 text-center shadow-2xl animate-in zoom-in duration-300 border border-slate-100">
-            <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-8 relative">
-              <Loader2 size={48} className="text-primary animate-spin" />
-              <div className="absolute inset-0 border-4 border-slate-100 rounded-full" />
+          </div>
+        ) : status === 'bekliyor' ? (
+          <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 text-center shadow-2xl animate-in zoom-in duration-300 border border-slate-100 flex flex-col items-center">
+            <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6 relative">
+              <Loader2 size={40} className="text-amber-500 animate-spin" />
+              <div className="absolute inset-0 border-4 border-amber-100/50 rounded-full" />
             </div>
-            <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">Doğrulanıyor...</h3>
-            <p className="text-slate-500 text-sm font-medium px-4 leading-relaxed">
-              Ziyaretiniz sisteme işleniyor, lütfen bekleyin.
+            <h3 className="text-2xl font-black text-slate-900 mb-2 tracking-tight">Kasiyer Onayı Bekleniyor</h3>
+            <p className="text-slate-500 text-sm font-medium px-4 leading-relaxed mb-8">
+              Lütfen aşağıdaki kodu kasa görevlisine gösterin.
             </p>
+            
+            <div className="bg-slate-50 w-full p-6 rounded-[2rem] border-2 border-slate-100 mb-6">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Onay Kodunuz</p>
+              <p className="text-5xl font-black tracking-widest text-slate-900">{confirmCode}</p>
+            </div>
+            
+            <button 
+              onClick={() => navigate('/dashboard')}
+              className="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors underline"
+            >
+              Vazgeç ve Çık
+            </button>
+          </div>
+        ) : status === 'reddedildi' ? (
+          <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 text-center shadow-2xl animate-in zoom-in duration-300 border border-rose-100">
+            <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <AlertTriangle size={40} className="text-rose-500" />
+            </div>
+            <h3 className="text-2xl font-black text-slate-900 mb-2 tracking-tight">İşlem Reddedildi</h3>
+            <p className="text-slate-500 text-sm font-medium px-4 leading-relaxed mb-8">
+              Kasiyer indirimi onaylamadı.
+            </p>
+            <button 
+              onClick={() => navigate('/dashboard')}
+              className="w-full bg-slate-900 text-white py-4 rounded-[1.5rem] font-black text-sm uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl"
+            >
+              Panoya Dön
+            </button>
           </div>
         ) : (
           <div className="fixed inset-0 bg-emerald-500 flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500 z-[110]">
@@ -171,9 +211,16 @@ const QRScanner = () => {
               </div>
             )}
 
-            <div className="mt-6 bg-white/10 p-6 rounded-[2rem] border border-white/10 w-full max-w-xs">
-              <p className="text-[10px] font-black text-emerald-100 uppercase tracking-widest mb-2 opacity-70">İşlem Onay Kodu</p>
-              <p className="text-white font-mono font-bold text-lg tracking-widest">#{confirmCode}</p>
+            <div className="mt-6 bg-white/10 p-5 rounded-[2rem] border border-white/10 w-full max-w-xs flex justify-between items-center px-8">
+              <div className="text-left">
+                <p className="text-[10px] font-black text-emerald-100 uppercase tracking-widest mb-1 opacity-70">Onay Kodu</p>
+                <p className="text-white font-mono font-bold text-lg tracking-widest">#{confirmCode}</p>
+              </div>
+              <div className="h-8 w-px bg-white/20" />
+              <div className="text-right">
+                <p className="text-[10px] font-black text-emerald-100 uppercase tracking-widest mb-1 opacity-70">Durum</p>
+                <p className="text-white font-bold text-sm tracking-widest uppercase text-emerald-300">ONAYLANDI</p>
+              </div>
             </div>
 
             <button 
