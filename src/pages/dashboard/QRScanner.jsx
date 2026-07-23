@@ -141,7 +141,6 @@ const QRScanner = () => {
               İndirim kodunu doğrulamak için işletmenin QR kodunu taratın
             </p>
           </div>
-          </div>
         ) : status === 'bekliyor' ? (
           <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 text-center shadow-2xl animate-in zoom-in duration-300 border border-slate-100 flex flex-col items-center">
             <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6 relative">

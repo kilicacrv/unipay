@@ -1,0 +1,86 @@
+
+> kampuspay@0.0.0 build
+> vite build
+
+file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs:507
+		if (loadErrors.length > 0) throw new Error("Cannot find native binding. npm has a bug related to optional dependencies (https://github.com/npm/cli/issues/4828). Please try `npm i` again after removing both package-lock.json and node_modules directory.", { cause: loadErrors.reduce((err, cur) => {
+		                                 ^
+
+Error: Cannot find native binding. npm has a bug related to optional dependencies (https://github.com/npm/cli/issues/4828). Please try `npm i` again after removing both package-lock.json and node_modules directory.
+    at file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs:507:36
+    at file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs:9:49
+    ... 2 lines matching cause stack trace ...
+    at async ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+    at async CAC.<anonymous> (file:///Users/alperenkilic/Desktop/unipay/node_modules/vite/dist/node/cli.js:764:28) {
+  [cause]: Error: Cannot find module '@rolldown/binding-darwin-arm64'
+  Require stack:
+  - /Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+      ... 2 lines matching cause stack trace ...
+      at require (node:internal/modules/helpers:182:18)
+      at requireNative (file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs:219:22)
+      at file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs:475:18
+      at file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs:9:49
+      at file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/parse-B_ZnWxLZ.mjs:3:46
+      at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+      at async ModuleLoader.import (node:internal/modules/esm/loader:606:24) {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [
+      '/Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs'
+    ],
+    cause: Error: Cannot find module './rolldown-binding.darwin-arm64.node'
+    Require stack:
+    - /Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs
+        at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+        ... 2 lines matching cause stack trace ...
+        at require (node:internal/modules/helpers:182:18)
+        at requireNative (file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs:214:13)
+        at file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs:475:18
+        at file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs:9:49
+        at file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/parse-B_ZnWxLZ.mjs:3:46
+        at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+        at async ModuleLoader.import (node:internal/modules/esm/loader:606:24) {
+      code: 'MODULE_NOT_FOUND',
+      requireStack: [
+        '/Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs'
+      ],
+      cause: Error: Cannot find module '@rolldown/binding-darwin-universal'
+      Require stack:
+      - /Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs
+          at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+          ... 2 lines matching cause stack trace ...
+          at require (node:internal/modules/helpers:182:18)
+          at requireNative (file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs:191:21)
+          at file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs:475:18
+          at file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs:9:49
+          at file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/parse-B_ZnWxLZ.mjs:3:46
+          at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+          at async ModuleLoader.import (node:internal/modules/esm/loader:606:24) {
+        code: 'MODULE_NOT_FOUND',
+        requireStack: [
+          '/Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs'
+        ],
+        cause: Error: Cannot find module './rolldown-binding.darwin-universal.node'
+        Require stack:
+        - /Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs
+            at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+            at Module._load (node:internal/modules/cjs/loader:1038:27)
+            at Module.require (node:internal/modules/cjs/loader:1289:19)
+            at require (node:internal/modules/helpers:182:18)
+            at requireNative (file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs:186:12)
+            at file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs:475:18
+            at file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs:9:49
+            at file:///Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/parse-B_ZnWxLZ.mjs:3:46
+            at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+            at async ModuleLoader.import (node:internal/modules/esm/loader:606:24) {
+          code: 'MODULE_NOT_FOUND',
+          requireStack: [
+            '/Users/alperenkilic/Desktop/unipay/node_modules/rolldown/dist/shared/binding-BeU_1iEk.mjs'
+          ]
+        }
+      }
+    }
+  }
+}
+
+Node.js v20.20.2
