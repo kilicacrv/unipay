@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, Tag, TrendingUp, Users, Download, Printer, Loader2 } from 'lucide-react';
+import { Eye, Tag, TrendingUp, Users, Download, Printer, Loader2, Zap, Clock } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { supabase } from '../../lib/supabase';
 
@@ -22,6 +22,12 @@ const BusinessDashboard = () => {
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
   const [pendingVisits, setPendingVisits] = useState([]);
+  
+  // Flash Campaign State
+  const [flashTitle, setFlashTitle] = useState('');
+  const [flashRate, setFlashRate] = useState(50);
+  const [flashHours, setFlashHours] = useState(2);
+  const [creatingFlash, setCreatingFlash] = useState(false);
 
   useEffect(() => {
     fetchBusinessData();
@@ -145,6 +151,27 @@ const BusinessDashboard = () => {
     fetchPendingVisits(`unipay_biz_${business.id}`);
   };
 
+  const handleCreateFlash = async () => {
+    if (!flashTitle || !flashRate || !flashHours) return;
+    setCreatingFlash(true);
+    
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + parseInt(flashHours));
+
+    await supabase.from('flash_campaigns').insert({
+      venue_id: business.id,
+      title: flashTitle,
+      rate: parseInt(flashRate),
+      expires_at: expiresAt.toISOString()
+    });
+
+    setFlashTitle('');
+    setFlashRate(50);
+    setFlashHours(2);
+    setCreatingFlash(false);
+    alert('Flaş kampanya başarıyla oluşturuldu ve öğrencilere bildirildi!');
+  };
+
   if (loading) {
     return (
       <div className="max-w-6xl mx-auto py-20 flex flex-col items-center opacity-50">
@@ -253,6 +280,62 @@ const BusinessDashboard = () => {
                 <Download size={14} /> İndir
               </button>
             </div>
+          </div>
+
+          {/* Flash Campaign Creator */}
+          <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-2xl shadow-xl text-white relative overflow-hidden">
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-2">
+                <Zap size={24} className="text-white fill-white animate-pulse" />
+                <h3 className="font-black text-xl tracking-tight">Flaş Kampanya</h3>
+              </div>
+              <p className="text-xs text-white/80 font-medium mb-6">Öğrencilere anlık indirim bildirimi gönderin.</p>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-white/70 mb-1 block">Kampanya Adı</label>
+                  <input 
+                    type="text" 
+                    placeholder="Örn: Tatlılarda Son Şans" 
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder-white/40 focus:outline-none focus:border-white"
+                    value={flashTitle}
+                    onChange={e => setFlashTitle(e.target.value)}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-white/70 mb-1 block">İndirim Oranı (%)</label>
+                    <input 
+                      type="number" 
+                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white"
+                      value={flashRate}
+                      onChange={e => setFlashRate(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-white/70 mb-1 block">Süre (Saat)</label>
+                    <input 
+                      type="number" 
+                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white"
+                      value={flashHours}
+                      onChange={e => setFlashHours(e.target.value)}
+                    />
+                  </div>
+                </div>
+                
+                <button 
+                  onClick={handleCreateFlash}
+                  disabled={creatingFlash}
+                  className="w-full bg-white text-orange-600 py-4 rounded-xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-50 transition-all mt-2 active:scale-95 shadow-lg"
+                >
+                  {creatingFlash ? <Loader2 className="animate-spin" size={16} /> : <Clock size={16} />}
+                  Kampanyayı Başlat
+                </button>
+              </div>
+            </div>
+            {/* Decorative background shapes */}
+            <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-black/10 rounded-full blur-2xl -ml-16 -mb-16 pointer-events-none" />
           </div>
 
           <div className="bg-slate-900 p-6 rounded-2xl text-white">

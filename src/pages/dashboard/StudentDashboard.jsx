@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Scan, MapPin, Tag, History, ChevronRight, User, Loader2, Heart } from 'lucide-react';
+import { Scan, MapPin, Tag, History, ChevronRight, User, Loader2, Heart, Zap, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 
@@ -38,10 +38,21 @@ const StudentDashboard = () => {
 
   const [student, setStudent] = useState({ id: '...', name: 'Yükleniyor', university: 'Selçuk Üniversitesi' });
   const [points, setPoints] = useState(0);
+  const [flashCampaigns, setFlashCampaigns] = useState([]);
 
   useEffect(() => {
     fetchUserData();
     fetchTopDiscounts();
+    fetchFlashCampaigns();
+
+    const channel = supabase
+      .channel('flash_campaigns_channel')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'flash_campaigns' }, () => {
+        fetchFlashCampaigns();
+      })
+      .subscribe();
+
+    return () => supabase.removeChannel(channel);
   }, []);
 
   const fetchUserData = async () => {
@@ -76,6 +87,17 @@ const StudentDashboard = () => {
     setLoading(false);
   };
 
+  const fetchFlashCampaigns = async () => {
+    const now = new Date().toISOString();
+    const { data } = await supabase
+      .from('flash_campaigns')
+      .select('*, venues(name)')
+      .gt('expires_at', now)
+      .order('created_at', { ascending: false });
+    
+    if (data) setFlashCampaigns(data);
+  };
+
   const tier = getTier(points);
 
   return (
@@ -97,6 +119,38 @@ const StudentDashboard = () => {
       </header>
 
       <main className="p-6 max-w-lg mx-auto">
+        {/* Flash Campaigns Banner */}
+        {flashCampaigns.length > 0 && (
+          <div className="mb-10 space-y-4">
+            {flashCampaigns.map(campaign => {
+              const expires = new Date(campaign.expires_at);
+              const timeString = expires.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+
+              return (
+                <div key={campaign.id} onClick={() => navigate(`/mekan/${campaign.venue_id}`)} className="bg-gradient-to-r from-rose-500 to-orange-500 rounded-[2rem] p-6 text-white shadow-xl relative overflow-hidden cursor-pointer hover:scale-[1.02] transition-transform animate-in slide-in-from-top-4 duration-500">
+                  <div className="relative z-10 flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <Zap size={14} className="fill-white animate-pulse" />
+                        <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full">Flaş İndirim</span>
+                      </div>
+                      <h3 className="text-xl font-black tracking-tight leading-tight mb-1">{campaign.title}</h3>
+                      <p className="text-sm font-medium text-white/90">{campaign.venues?.name}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-4xl font-black tracking-tighter leading-none mb-1">%{campaign.rate}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest mt-1 flex items-center justify-end gap-1">
+                        <Clock size={12} /> Bitiş: {timeString}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/20 rounded-full blur-3xl pointer-events-none" />
+                </div>
+              );
+            })}
+          </div>
+        )}
+
         {/* QR Card Section */}
         <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden mb-10 border border-white/5">
           <div className="relative z-10 flex flex-col items-center">
