@@ -34,7 +34,8 @@ const Login = () => {
           .from('applications')
           .select('status')
           .eq('auth_id', user.id)
-          .single();
+          .limit(1)
+          .maybeSingle();
 
         if (appError || !appData || appData.status !== 'onaylandi') {
           await supabase.auth.signOut();
@@ -55,8 +56,10 @@ const Login = () => {
     } catch (err) {
       if (err.message.includes('Invalid login credentials')) {
         setError('E-posta adresi veya şifre hatalı.');
+      } else if (err.message.includes('Email not confirmed')) {
+        setError('E-posta adresiniz henüz onaylanmamış. Lütfen gelen kutunuzu kontrol edin.');
       } else {
-        setError('Giriş başarısız: Lütfen bilgilerinizi kontrol edip tekrar deneyin.');
+        setError('Giriş başarısız: Lütfen bilgilerinizi kontrol edip tekrar deneyin. (' + err.message + ')');
       }
     } finally {
       setLoading(false);

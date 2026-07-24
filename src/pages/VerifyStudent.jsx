@@ -72,7 +72,14 @@ const VerifyStudent = () => {
       sessionStorage.removeItem('kampuspay.comlicant');
       setSubmitStatus(finalStatus);
     } catch (err) {
-      setError(err.message);
+      let msg = err.message;
+      if (msg.includes('Password should be at least')) msg = 'Şifreniz en az 6 karakter uzunluğunda olmalıdır.';
+      else if (msg.includes('User already registered')) msg = 'Bu e-posta adresiyle daha önce kayıt olunmuş.';
+      else if (msg.includes('Email link')) msg = 'Onay e-postası gönderildi, lütfen kutunuzu kontrol edin.';
+      else if (msg.includes('Weak password') || msg.includes('weak_password')) msg = 'Şifreniz çok zayıf. Lütfen daha güçlü bir şifre belirleyin.';
+      else if (msg.includes('Email not confirmed')) msg = 'E-posta adresinizi onaylamanız gerekiyor.';
+      else msg = `Kayıt işlemi başarısız: ${msg}`;
+      setError(msg);
     } finally {
       setLoading(false);
     }

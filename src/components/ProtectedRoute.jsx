@@ -55,7 +55,8 @@ const ProtectedRoute = ({ children, allowedRole }) => {
             .from('applications')
             .select('status')
             .eq('auth_id', user.id)
-            .single();
+            .limit(1)
+            .maybeSingle();
 
           if (!appError && appData?.status === 'onaylandi') {
             setAuthorized(true);
