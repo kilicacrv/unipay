@@ -26,6 +26,12 @@ const Navbar = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Belirli rotalarda Navbar'ı gizle
+  const hiddenRoutes = ['/dashboard', '/business', '/admin', '/mekanlar', '/mekan'];
+  const isHidden = hiddenRoutes.some(route => location.pathname.startsWith(route));
+
+  if (isHidden) return null;
+
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollPos = window.scrollY;

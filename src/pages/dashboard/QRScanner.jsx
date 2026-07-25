@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import React, { useEffect, useState, useRef } from 'react';
+import { Html5Qrcode } from 'html5-qrcode';
 import { X, CheckCircle, Loader2, AlertTriangle, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
@@ -17,6 +17,7 @@ const QRScanner = () => {
   const [status, setStatus] = useState(null); // 'bekliyor', 'onaylandi', 'reddedildi'
 
   const [isVerifying, setIsVerifying] = useState(true);
+  const html5QrCodeRef = useRef(null);
 
   useEffect(() => {
     checkStudentVerification();
@@ -67,34 +68,44 @@ const QRScanner = () => {
     if (isVerifying) return; // Doğrulama bitmeden kamerayı açma
 
     const timer = setTimeout(() => {
-      const scanner = new Html5QrcodeScanner('reader', {
-        qrbox: { width: 250, height: 250 },
-        fps: 10,
-        aspectRatio: 1.0,
+      const html5QrCode = new Html5Qrcode("reader");
+      html5QrCodeRef.current = html5QrCode;
+
+      html5QrCode.start(
+        { facingMode: "environment" },
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 250 }
+        },
+        (result) => {
+          if (result.startsWith('unipay_biz_')) {
+            html5QrCode.stop().catch(console.error);
+            processMatch(result);
+          } else {
+            setError('Geçersiz QR Kod. Lütfen bir işletme kodu okutun.');
+            setTimeout(() => setError(null), 3000);
+          }
+        },
+        (errorMessage) => {
+          // Sessiz hata yönetimi
+        }
+      ).catch((err) => {
+        console.error("Kamera başlatılamadı", err);
+        setError("Kamera başlatılamadı. Lütfen kamera izinlerini kontrol edin.");
       });
 
-      scanner.render(onScanSuccess, onScanError);
-
-      function onScanSuccess(result) {
-        if (result.startsWith('unipay_biz_')) {
-          scanner.clear().catch(e => console.error('Clear error:', e));
-          processMatch(result);
-        } else {
-          setError('Geçersiz QR Kod. Lütfen bir işletme kodu okutun.');
-          setTimeout(() => setError(null), 3000);
-        }
-      }
-
-      function onScanError(err) {
-        // Sessiz hata yönetimi
-      }
-
-      return () => {
-        scanner.clear().catch(e => console.error('Cleanup error:', e));
-      };
     }, 500);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      if (html5QrCodeRef.current) {
+        try {
+          html5QrCodeRef.current.stop().catch(console.error);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
   }, [isVerifying]);
 
   useEffect(() => {
