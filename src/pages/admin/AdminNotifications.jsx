@@ -10,7 +10,8 @@ const AdminNotifications = () => {
   const [formData, setFormData] = useState({
     title: '',
     message: '',
-    type: 'info'
+    type: 'info',
+    link_url: ''
   });
 
   useEffect(() => {
@@ -42,7 +43,7 @@ const AdminNotifications = () => {
         
       if (error) throw error;
       
-      setFormData({ title: '', message: '', type: 'info' });
+      setFormData({ title: '', message: '', type: 'info', link_url: '' });
       fetchNotifications();
       alert('Duyuru başarıyla gönderildi! Tüm öğrenciler panellerinde görecek.');
     } catch (err) {
@@ -125,6 +126,18 @@ const AdminNotifications = () => {
                 </select>
               </div>
 
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Yönlendirme Linki (Opsiyonel)</label>
+                <input 
+                  type="text" 
+                  value={formData.link_url}
+                  onChange={e => setFormData({...formData, link_url: e.target.value})}
+                  className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-primary/20 font-bold text-slate-900"
+                  placeholder="Örn: /mekan/123 veya /dashboard/profile"
+                />
+                <p className="text-[9px] font-medium text-slate-400 mt-2">Öğrenci bildirime tıkladığında bu sayfaya yönlendirilir.</p>
+              </div>
+
               <button 
                 type="submit"
                 disabled={submitting}
@@ -172,7 +185,7 @@ const AdminNotifications = () => {
                         </div>
                         <p className="text-sm text-slate-600 leading-relaxed mb-4">{notif.message}</p>
                         
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 mt-4">
                           <button 
                             onClick={() => handleToggleActive(notif.id, notif.is_active)}
                             className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors ${
@@ -190,6 +203,11 @@ const AdminNotifications = () => {
                             <Trash2 size={14} />
                           </button>
                         </div>
+                        {notif.link_url && (
+                           <div className="mt-3 text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                             <span>🔗 Link:</span> <span className="text-primary">{notif.link_url}</span>
+                           </div>
+                        )}
                       </div>
                       
                       {notif.is_active && (
