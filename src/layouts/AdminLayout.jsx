@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
-import { Users, MapPin, BarChart2, LogOut } from 'lucide-react';
+import { Users, MapPin, BarChart2, LogOut, Bell } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 const AdminLayout = () => {
@@ -56,6 +56,12 @@ const AdminLayout = () => {
             className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-sm border ${location.pathname.includes('/admin/analytics') ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'}`}
           >
             <BarChart2 size={14} /> Analitik
+          </Link>
+          <Link 
+            to="/admin/notifications"
+            className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-sm border ${location.pathname.includes('/admin/notifications') ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'}`}
+          >
+            <Bell size={14} /> Duyurular
           </Link>
         </div>
       </div>

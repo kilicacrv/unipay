@@ -57,6 +57,7 @@ const Favorites        = lazy(() => import('./pages/dashboard/Favorites'));
 const AdminLayout    = lazy(() => import('./layouts/AdminLayout'));
 const AdminVenues    = lazy(() => import('./pages/admin/AdminVenues'));
 const AdminAnalytics = lazy(() => import('./pages/admin/AdminAnalytics'));
+const AdminNotifications = lazy(() => import('./pages/admin/AdminNotifications'));
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 function App() {
@@ -88,6 +89,7 @@ function App() {
                 <Route index element={<Admin />} />
                 <Route path="venues" element={<AdminVenues />} />
                 <Route path="analytics" element={<AdminAnalytics />} />
+                <Route path="notifications" element={<AdminNotifications />} />
               </Route>
 
               {/* ── Sadece Full Launch'ta Açık ── */}

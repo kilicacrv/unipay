@@ -24,6 +24,7 @@ const AdminAnalytics = () => {
     totalPointsAwarded: 0,
   });
   const [topVenues, setTopVenues] = useState([]);
+  const [recentVisits, setRecentVisits] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -61,6 +62,23 @@ const AdminAnalytics = () => {
         totalStudents: studentCount || 0,
         totalPointsAwarded: totalPts,
       });
+
+      // Recent Visits (Son İşlemler)
+      const { data: recentVisitsData } = await supabase
+        .from('visits')
+        .select(`
+          id,
+          status,
+          created_at,
+          user_id,
+          venues (
+            name
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      if (recentVisitsData) setRecentVisits(recentVisitsData);
 
       // Top venues by favorites
       const { data: topFavs } = await supabase
@@ -173,7 +191,60 @@ const AdminAnalytics = () => {
                 ))}
               </div>
             </div>
-          )}
+          {/* Recent Visits (İndirim Geçmişi) */}
+          <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden mt-8">
+            <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+              <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
+                <MapPin size={18} /> Canlı İşlem Geçmişi
+              </h2>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-3 py-1 rounded-full animate-pulse">Son 10 İşlem</span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/50 border-b border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                    <th className="px-8 py-4">Tarih / Saat</th>
+                    <th className="px-8 py-4">Kullanıcı (ID)</th>
+                    <th className="px-8 py-4">Mekan</th>
+                    <th className="px-8 py-4 text-right">Durum</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {recentVisits.length > 0 ? (
+                    recentVisits.map((visit) => (
+                      <tr key={visit.id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-8 py-4 text-xs font-bold text-slate-500 whitespace-nowrap">
+                          {new Date(visit.created_at).toLocaleString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </td>
+                        <td className="px-8 py-4 text-xs font-bold text-slate-900 truncate max-w-[120px]">
+                          {visit.user_id ? visit.user_id.substring(0, 8).toUpperCase() : 'Bilinmiyor'}
+                        </td>
+                        <td className="px-8 py-4 text-xs font-bold text-slate-900">
+                          {visit.venues?.name || 'Mekan Bulunamadı'}
+                        </td>
+                        <td className="px-8 py-4 text-right">
+                          <span className={`inline-flex px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${
+                            visit.status === 'onaylandi' ? 'bg-emerald-50 text-emerald-600' :
+                            visit.status === 'reddedildi' ? 'bg-rose-50 text-rose-600' :
+                            'bg-amber-50 text-amber-600'
+                          }`}>
+                            {visit.status === 'onaylandi' ? 'Onaylandı' :
+                             visit.status === 'reddedildi' ? 'Reddedildi' : 'Bekliyor'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4" className="px-8 py-8 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">
+                        Henüz işlem bulunmuyor
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </>
       )}
     </div>

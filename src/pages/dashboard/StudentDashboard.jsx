@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Scan, MapPin, Tag, History, ChevronRight, User, Loader2, Heart, Zap, Clock } from 'lucide-react';
+import { Scan, MapPin, Tag, History, ChevronRight, User, Loader2, Heart, Zap, Clock, Bell, Info, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 
@@ -44,11 +44,13 @@ const StudentDashboard = () => {
   const [student, setStudent] = useState({ id: '...', name: 'Yükleniyor', university: 'Selçuk Üniversitesi' });
   const [points, setPoints] = useState(0);
   const [flashCampaigns, setFlashCampaigns] = useState([]);
+  const [adminNotification, setAdminNotification] = useState(null);
 
   useEffect(() => {
     fetchUserData();
     fetchTopDiscounts();
     fetchFlashCampaigns();
+    fetchAdminNotification();
 
     const channel = supabase
       .channel('flash_campaigns_channel')
@@ -103,6 +105,18 @@ const StudentDashboard = () => {
     if (data) setFlashCampaigns(data);
   };
 
+  const fetchAdminNotification = async () => {
+    const { data } = await supabase
+      .from('admin_notifications')
+      .select('*')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+    
+    if (data) setAdminNotification(data);
+  };
+
   const tier = getTier(points);
 
   return (
@@ -124,6 +138,39 @@ const StudentDashboard = () => {
       </header>
 
       <main className="p-6 max-w-lg mx-auto">
+        {/* Admin Notification */}
+        {adminNotification && (
+          <div className={`mb-6 p-5 rounded-[2rem] border shadow-lg flex gap-4 items-start ${
+            adminNotification.type === 'success' ? 'bg-emerald-50 border-emerald-200' :
+            adminNotification.type === 'warning' ? 'bg-amber-50 border-amber-200' :
+            'bg-blue-50 border-blue-200'
+          }`}>
+            <div className={`shrink-0 p-3 rounded-2xl ${
+              adminNotification.type === 'success' ? 'bg-emerald-100 text-emerald-600' :
+              adminNotification.type === 'warning' ? 'bg-amber-100 text-amber-600' :
+              'bg-blue-100 text-blue-600'
+            }`}>
+              {adminNotification.type === 'success' && <CheckCircle size={20} />}
+              {adminNotification.type === 'warning' && <AlertTriangle size={20} />}
+              {adminNotification.type === 'info' && <Bell size={20} />}
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className={`font-black text-sm tracking-tight ${
+                  adminNotification.type === 'success' ? 'text-emerald-900' :
+                  adminNotification.type === 'warning' ? 'text-amber-900' :
+                  'text-blue-900'
+                }`}>{adminNotification.title}</h3>
+              </div>
+              <p className={`text-xs font-medium leading-relaxed ${
+                adminNotification.type === 'success' ? 'text-emerald-700' :
+                adminNotification.type === 'warning' ? 'text-amber-700' :
+                'text-blue-700'
+              }`}>{adminNotification.message}</p>
+            </div>
+          </div>
+        )}
+
         {/* Flash Campaigns Banner */}
         {flashCampaigns.length > 0 && (
           <div className="mb-10 space-y-4">
