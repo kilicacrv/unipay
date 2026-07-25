@@ -76,7 +76,8 @@ const QRScanner = () => {
         { facingMode: "environment" },
         {
           fps: 10,
-          qrbox: { width: 250, height: 250 }
+          // Removing fixed qrbox to let it scan the whole screen on mobile
+          // which fixes scanning issues on smaller screens.
         },
         (result) => {
           if (result.startsWith('unipay_biz_')) {
