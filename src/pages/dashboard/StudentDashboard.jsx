@@ -3,6 +3,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Scan, MapPin, Tag, History, ChevronRight, User, Loader2, Heart, Zap, Clock, Bell, Info, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import StudentBottomNav from '../../components/StudentBottomNav';
 
 const getTier = (pts) => {
   if (pts >= 200) return { name: 'Altın', color: 'text-amber-500', bg: 'bg-amber-50', icon: '🥇' };
@@ -276,25 +277,8 @@ const StudentDashboard = () => {
         </div>
       </main>
 
-      {/* Floating Bottom Nav - App Style */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-sm bg-white/90 backdrop-blur-xl border border-slate-100 p-2 flex justify-between items-center z-40 rounded-[2rem] shadow-2xl">
-        <div onClick={() => navigate('/dashboard')} className="flex flex-col items-center justify-center w-14 h-12 rounded-2xl bg-slate-900 text-white cursor-pointer transition-transform active:scale-95 shadow-md">
-          <Tag size={18} strokeWidth={2.5} />
-          <span className="text-[8px] font-black uppercase tracking-tighter mt-0.5">Fırsatlar</span>
-        </div>
-        <div onClick={() => navigate('/dashboard/favorites')} className="flex flex-col items-center justify-center w-14 h-12 rounded-2xl text-slate-400 hover:bg-slate-50 hover:text-rose-500 cursor-pointer transition-all active:scale-95">
-          <Heart size={18} strokeWidth={2.5} />
-          <span className="text-[8px] font-black uppercase tracking-tighter mt-0.5">Favoriler</span>
-        </div>
-        <div onClick={() => navigate('/dashboard/explore')} className="flex flex-col items-center justify-center w-14 h-12 rounded-2xl text-slate-400 hover:bg-slate-50 hover:text-blue-500 cursor-pointer transition-all active:scale-95">
-          <MapPin size={18} strokeWidth={2.5} />
-          <span className="text-[8px] font-black uppercase tracking-tighter mt-0.5">Harita</span>
-        </div>
-        <div onClick={() => navigate('/dashboard/profile')} className="flex flex-col items-center justify-center w-14 h-12 rounded-2xl text-slate-400 hover:bg-slate-50 hover:text-slate-900 cursor-pointer transition-all active:scale-95">
-          <User size={18} strokeWidth={2.5} />
-          <span className="text-[8px] font-black uppercase tracking-tighter mt-0.5">Profil</span>
-        </div>
-      </div>
+      {/* Floating Bottom Nav */}
+      <StudentBottomNav />
     </div>
   );
 };

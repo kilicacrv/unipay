@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Heart, ChevronRight, Store, Loader2, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import StudentBottomNav from '../../components/StudentBottomNav';
 
 const FavoriteItem = ({ venue, onClick }) => (
   <button 
@@ -91,6 +92,7 @@ const Favorites = () => {
           </div>
         )}
       </main>
+      <StudentBottomNav />
     </div>
   );
 };
