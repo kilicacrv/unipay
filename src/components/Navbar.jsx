@@ -1,23 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ArrowRight, UserCircle2 } from 'lucide-react';
+import { Menu, X, ArrowRight, UserCircle2, LogOut, LayoutDashboard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '../lib/supabase';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [visible, setVisible] = useState(true);
   const [prevScrollPos, setPrevScrollPos] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [session, setSession] = useState(null);
   const location = useLocation();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollPos = window.scrollY;
       
-      // Aşağı mı yukarı mı kaydırıyor?
       const isScrollingUp = prevScrollPos > currentScrollPos;
       
-      // En üstteyse her zaman göster
       if (currentScrollPos < 50) {
         setVisible(true);
         setScrolled(false);
@@ -32,6 +46,11 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [prevScrollPos]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setMenuOpen(false);
+  };
 
   return (
     <div 
@@ -56,13 +75,31 @@ const Navbar = () => {
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-8">
-          <Link to="/login" className="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">Giriş Yap</Link>
-          <Link 
-            to="/kayit" 
-            className="bg-slate-900 text-white px-6 py-2.5 rounded-2xl font-bold text-sm hover:bg-primary hover:text-dark hover:shadow-lg hover:shadow-primary/20 transition-all active:scale-95"
-          >
-            Kayıt Ol
-          </Link>
+          {session ? (
+            <>
+              <Link to="/dashboard" className="text-sm font-bold text-slate-700 hover:text-primary transition-colors flex items-center gap-2">
+                <LayoutDashboard size={18} />
+                Panelim
+              </Link>
+              <button 
+                onClick={handleLogout}
+                className="bg-slate-100 text-slate-600 px-6 py-2.5 rounded-2xl font-bold text-sm hover:bg-rose-50 hover:text-rose-600 transition-all active:scale-95 flex items-center gap-2"
+              >
+                <LogOut size={16} />
+                Çıkış
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">Giriş Yap</Link>
+              <Link 
+                to="/kayit" 
+                className="bg-slate-900 text-white px-6 py-2.5 rounded-2xl font-bold text-sm hover:bg-primary hover:text-dark hover:shadow-lg hover:shadow-primary/20 transition-all active:scale-95"
+              >
+                Kayıt Ol
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Toggle */}
@@ -84,22 +121,44 @@ const Navbar = () => {
             className="md:hidden mt-2 max-w-[200px] ml-auto pointer-events-auto"
           >
             <div className="bg-white/90 backdrop-blur-xl border border-slate-100 rounded-[2rem] p-3 shadow-2xl flex flex-col overflow-hidden">
-              <Link 
-                to="/login" 
-                onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-3 px-5 py-4 text-sm font-semibold text-slate-600 hover:bg-slate-50 rounded-2xl transition-colors"
-              >
-                <UserCircle2 size={20} className="text-slate-400" />
-                Giriş Yap
-              </Link>
-              <Link 
-                to="/kayit" 
-                onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-3 px-5 py-4 text-sm font-bold text-white bg-slate-900 rounded-2xl transition-colors mt-2"
-              >
-                <ArrowRight size={20} />
-                Kayıt Ol
-              </Link>
+              {session ? (
+                <>
+                  <Link 
+                    to="/dashboard" 
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-3 px-5 py-4 text-sm font-bold text-slate-700 hover:bg-slate-50 rounded-2xl transition-colors"
+                  >
+                    <LayoutDashboard size={20} className="text-primary" />
+                    Panelim
+                  </Link>
+                  <button 
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 px-5 py-4 text-sm font-bold text-rose-600 hover:bg-rose-50 rounded-2xl transition-colors mt-2 text-left"
+                  >
+                    <LogOut size={20} />
+                    Çıkış
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link 
+                    to="/login" 
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-3 px-5 py-4 text-sm font-semibold text-slate-600 hover:bg-slate-50 rounded-2xl transition-colors"
+                  >
+                    <UserCircle2 size={20} className="text-slate-400" />
+                    Giriş Yap
+                  </Link>
+                  <Link 
+                    to="/kayit" 
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-3 px-5 py-4 text-sm font-bold text-white bg-slate-900 rounded-2xl transition-colors mt-2"
+                  >
+                    <ArrowRight size={20} />
+                    Kayıt Ol
+                  </Link>
+                </>
+              )}
             </div>
           </motion.div>
         )}
@@ -109,3 +168,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
