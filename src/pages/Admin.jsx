@@ -97,7 +97,7 @@ const Admin = () => {
         
         if (venueError) {
           console.error("Mekan oluşturulamadı:", venueError);
-          alert("İşletme onaylandı ancak mekanlar sekmesine eklenirken hata oluştu.");
+          alert("İşletme onaylandı ancak mekanlar sekmesine eklenirken hata oluştu: " + venueError.message + " Detaylar konsolda.");
         } else {
           alert("İşletme onaylandı ve mekan listesine otomatik eklendi. Detayları Mekan Yönetimi sayfasından düzenleyebilirsiniz.");
         }
