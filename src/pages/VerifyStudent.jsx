@@ -87,7 +87,10 @@ const VerifyStudent = () => {
       const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
       const { error: storageError } = await supabase.storage
         .from('student-cards').upload(fileName, fileObj, { contentType: fileObj.type });
-      if (storageError) throw storageError;
+      if (storageError) {
+        console.error("Storage Error:", storageError);
+        throw new Error("Görsel Yükleme Hatası: " + storageError.message);
+      }
 
       const { data: urlData } = supabase.storage.from('student-cards').getPublicUrl(fileName);
 
@@ -104,7 +107,10 @@ const VerifyStudent = () => {
             approved_at: null // Reset approval time if they are re-applying
           })
           .eq('id', appRecord.id);
-        if (updateError) throw updateError;
+        if (updateError) {
+          console.error("Update Error:", updateError);
+          throw new Error("Başvuru Güncelleme Hatası: " + updateError.message);
+        }
       } else {
         // Yeni Kayıt (Örn: Google ile gelmiş ve application kaydı yok)
         const { error: insertError } = await supabase.from('applications').insert([{
@@ -116,7 +122,10 @@ const VerifyStudent = () => {
           card_url: urlData.publicUrl,
           status: finalStatus,
         }]);
-        if (insertError) throw insertError;
+        if (insertError) {
+          console.error("Insert Error:", insertError);
+          throw new Error("Başvuru Ekleme Hatası: " + insertError.message);
+        }
       }
       
       setSubmitStatus(finalStatus);
