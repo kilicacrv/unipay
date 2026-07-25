@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { QrCode, Smartphone, Zap, Store, Star, TrendingDown, ShieldCheck, Users, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -15,8 +15,16 @@ const fadeUp = (delay = 0) => ({
 
 const Home = () => {
   const [featuredVenues, setFeaturedVenues] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Giriş yapmış kullanıcı ana sayfaya düşerse otomatik olarak panele yönlendir
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate('/dashboard');
+      }
+    });
+
     const fetchVenues = async () => {
       try {
         const { data, error } = await supabase.from('venues').select('*').limit(6);
@@ -30,7 +38,7 @@ const Home = () => {
       }
     };
     fetchVenues();
-  }, []);
+  }, [navigate]);
 
   return (
     <>
