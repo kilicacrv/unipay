@@ -128,9 +128,17 @@ const AdminVenues = () => {
         }
       }
 
-      const { error } = await supabase.from('venues').insert(venueToInsert);
+      console.log("Checking session before insert...");
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log("Current session:", session ? session.user.email : "NO SESSION");
+
+      console.log("Inserting venue:", venueToInsert);
+      const { data: insertedVenue, error } = await supabase.from('venues').insert(venueToInsert).select();
       
-      if (error) throw error;
+      if (error) {
+        console.error("Insert Error Details:", error);
+        throw new Error("Venues Insert Hata: " + error.message);
+      }
 
       setIsAdding(false);
       setNewVenue({ name: '', category: 'Cafe', lat: 37.99, lng: 32.51, image_url: '', address: '', phone: '', instagram: '', rating: 4.5, google_maps_url: '', owner_email: '', owner_password: '' });
