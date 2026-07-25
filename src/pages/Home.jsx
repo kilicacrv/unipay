@@ -16,18 +16,42 @@ const fadeUp = (delay = 0) => ({
 const Home = () => {
   const [featuredVenues, setFeaturedVenues] = useState([]);
   const [session, setSession] = useState(null);
+  const [dashboardUrl, setDashboardUrl] = useState('/dashboard');
 
   useEffect(() => {
     // Oturum durumunu al
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      updateDashboardUrl(session);
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      updateDashboardUrl(session);
     });
+
+    const updateDashboardUrl = (currentSession) => {
+      if (!currentSession) {
+        setDashboardUrl('/dashboard');
+        return;
+      }
+      const user = currentSession.user;
+      const role = user?.user_metadata?.role;
+      const email = user?.email;
+      const adminEmails = ['alperenklc55@gmail.com'];
+
+      if (adminEmails.includes(email)) {
+        setDashboardUrl('/admin');
+      } else if (role === 'admin') {
+        setDashboardUrl('/admin');
+      } else if (role === 'business') {
+        setDashboardUrl('/business');
+      } else {
+        setDashboardUrl('/dashboard');
+      }
+    };
 
     const fetchVenues = async () => {
       try {
@@ -69,7 +93,7 @@ const Home = () => {
           </motion.p>
 
           <motion.div {...fadeUp(0.3)}>
-            <Link to={session ? "/dashboard" : "/kayit"} className="btn-primary text-lg px-8 py-4 md:px-10 md:py-4 inline-flex items-center justify-center gap-3 w-full sm:w-auto">
+            <Link to={session ? dashboardUrl : "/kayit"} className="btn-primary text-lg px-8 py-4 md:px-10 md:py-4 inline-flex items-center justify-center gap-3 w-full sm:w-auto">
               <Zap size={20} />
               {session ? "Panelime Git" : "Kayıt Ol"}
             </Link>

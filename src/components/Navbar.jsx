@@ -10,21 +10,45 @@ const Navbar = () => {
   const [prevScrollPos, setPrevScrollPos] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [session, setSession] = useState(null);
+  const [dashboardUrl, setDashboardUrl] = useState('/dashboard');
   const location = useLocation();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      updateDashboardUrl(session);
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      updateDashboardUrl(session);
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const updateDashboardUrl = (currentSession) => {
+    if (!currentSession) {
+      setDashboardUrl('/dashboard');
+      return;
+    }
+    const user = currentSession.user;
+    const role = user?.user_metadata?.role;
+    const email = user?.email;
+    const adminEmails = ['alperenklc55@gmail.com'];
+
+    if (adminEmails.includes(email)) {
+      setDashboardUrl('/admin');
+    } else if (role === 'admin') {
+      setDashboardUrl('/admin');
+    } else if (role === 'business') {
+      setDashboardUrl('/business');
+    } else {
+      setDashboardUrl('/dashboard');
+    }
+  };
 
   // Belirli rotalarda Navbar'ı gizle
   const hiddenRoutes = ['/dashboard', '/business', '/admin', '/mekanlar', '/mekan'];
@@ -83,7 +107,7 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-8">
           {session ? (
             <>
-              <Link to="/dashboard" className="text-sm font-bold text-slate-700 hover:text-primary transition-colors flex items-center gap-2">
+              <Link to={dashboardUrl} className="text-sm font-bold text-slate-700 hover:text-primary transition-colors flex items-center gap-2">
                 <LayoutDashboard size={18} />
                 Panelim
               </Link>
@@ -130,7 +154,7 @@ const Navbar = () => {
               {session ? (
                 <>
                   <Link 
-                    to="/dashboard" 
+                    to={dashboardUrl} 
                     onClick={() => setMenuOpen(false)}
                     className="flex items-center gap-3 px-5 py-4 text-sm font-bold text-slate-700 hover:bg-slate-50 rounded-2xl transition-colors"
                   >
