@@ -21,7 +21,9 @@ const AdminVenues = () => {
     phone: '',
     instagram: '',
     rating: 4.5,
-    google_maps_url: ''
+    google_maps_url: '',
+    owner_email: '',
+    owner_password: ''
   });
 
   useEffect(() => {
@@ -97,15 +99,41 @@ const AdminVenues = () => {
         image_url: finalImageUrl
       };
       
-      // Remove temporary field before insert
+      // Remove temporary fields before insert
       delete venueToInsert.google_maps_url;
+      delete venueToInsert.owner_email;
+      delete venueToInsert.owner_password;
+
+      // 4. Create Auth User (Optional but Recommended)
+      if (newVenue.owner_email && newVenue.owner_password) {
+        // Create a temporary client to avoid logging the admin out
+        const { createClient } = await import('@supabase/supabase-js');
+        const tempAuth = createClient(
+          import.meta.env.VITE_SUPABASE_URL,
+          import.meta.env.VITE_SUPABASE_ANON_KEY,
+          { auth: { persistSession: false, autoRefreshToken: false } }
+        );
+
+        const { data: authData, error: authError } = await tempAuth.auth.signUp({
+          email: newVenue.owner_email,
+          password: newVenue.owner_password,
+          options: {
+            data: { role: 'business', full_name: newVenue.name }
+          }
+        });
+
+        if (authError) {
+          console.error("Auth User Creation Error:", authError);
+          throw new Error("Hesap oluşturulamadı: " + authError.message);
+        }
+      }
 
       const { error } = await supabase.from('venues').insert(venueToInsert);
       
       if (error) throw error;
 
       setIsAdding(false);
-      setNewVenue({ name: '', category: 'Cafe', lat: 37.99, lng: 32.51, image_url: '', address: '', phone: '', instagram: '', rating: 4.5, google_maps_url: '' });
+      setNewVenue({ name: '', category: 'Cafe', lat: 37.99, lng: 32.51, image_url: '', address: '', phone: '', instagram: '', rating: 4.5, google_maps_url: '', owner_email: '', owner_password: '' });
       setImageFile(null);
       setImagePreview(null);
       fetchVenues();
@@ -212,6 +240,38 @@ const AdminVenues = () => {
                     <p className="text-[9px] font-medium uppercase tracking-tight">Link girerseniz koordinatlar otomatik çekilir.</p>
                   </div>
                 </div>
+              </div>
+
+              <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+                  <AlertCircle size={16} className="text-amber-500" />
+                  İşletme Hesabı (Giriş Bilgileri)
+                </h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Giriş E-postası</label>
+                    <input 
+                      type="email" 
+                      className="w-full px-5 py-4 rounded-2xl bg-white border-none focus:ring-2 focus:ring-primary/20 font-bold text-slate-900 shadow-sm"
+                      placeholder="ornek@mekan.com"
+                      value={newVenue.owner_email}
+                      onChange={e => setNewVenue({...newVenue, owner_email: e.target.value})}
+                    />
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Şifre Belirle</label>
+                    <input 
+                      type="text" 
+                      className="w-full px-5 py-4 rounded-2xl bg-white border-none focus:ring-2 focus:ring-primary/20 font-bold text-slate-900 shadow-sm"
+                      placeholder="Mekan123!"
+                      value={newVenue.owner_password}
+                      onChange={e => setNewVenue({...newVenue, owner_password: e.target.value})}
+                    />
+                  </div>
+                </div>
+                <p className="text-[10px] font-medium text-slate-500 mt-3 ml-1">
+                  E-posta ve Şifre girerseniz, işletme için otomatik hesap açılır ve giriş yapabilir.
+                </p>
               </div>
 
               <div>
