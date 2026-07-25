@@ -1,13 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { X, CheckCircle, Loader2, AlertTriangle, Zap } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 
 
 
 const QRScanner = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [scanResult, setScanResult] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
@@ -148,12 +149,20 @@ const QRScanner = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Giriş yapmanız gerekiyor.');
 
+      const searchParams = new URLSearchParams(location.search);
+      const ref = searchParams.get('ref');
+      let notificationId = null;
+      if (ref && ref.startsWith('notif_')) {
+        notificationId = ref.replace('notif_', '');
+      }
+
       // 1. Sadece ziyareti bekliyor olarak kaydet. (Puanı kasiyer onaylayınca vereceğiz)
       const { data, error: insertError } = await supabase.from('visits').insert({
         user_id: user.id,
         business_qr: bizQrData,
         pin_code: confirmCode.toString(),
-        status: 'bekliyor'
+        status: 'bekliyor',
+        notification_id: notificationId
       }).select().single();
 
       if (insertError) throw insertError;

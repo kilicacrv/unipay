@@ -20,9 +20,14 @@ const AdminNotifications = () => {
 
   const fetchNotifications = async () => {
     setLoading(true);
+    // Join ile views ve conversions sayılarını alıyoruz
     const { data, error } = await supabase
       .from('admin_notifications')
-      .select('*')
+      .select(`
+        *,
+        notification_clicks(count),
+        visits(count)
+      `)
       .order('created_at', { ascending: false });
       
     if (!error && data) {
@@ -208,6 +213,28 @@ const AdminNotifications = () => {
                              <span>🔗 Link:</span> <span className="text-primary">{notif.link_url}</span>
                            </div>
                         )}
+
+                        {/* Analitik İstatistikleri */}
+                        <div className="mt-4 grid grid-cols-2 gap-3 pt-4 border-t border-slate-200">
+                          <div className="bg-white rounded-xl p-3 shadow-sm border border-slate-100 flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center">
+                              <Bell size={16} />
+                            </div>
+                            <div>
+                              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Erişim</p>
+                              <p className="text-sm font-bold text-slate-900">{notif.notification_clicks?.[0]?.count || 0} Kişi</p>
+                            </div>
+                          </div>
+                          <div className="bg-white rounded-xl p-3 shadow-sm border border-slate-100 flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-500 flex items-center justify-center">
+                              <CheckCircle size={16} />
+                            </div>
+                            <div>
+                              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Kullanım</p>
+                              <p className="text-sm font-bold text-slate-900">{notif.visits?.[0]?.count || 0} İndirim</p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                       
                       {notif.is_active && (

@@ -118,6 +118,39 @@ const StudentDashboard = () => {
     if (data) setAdminNotification(data);
   };
 
+  const handleNotificationClick = async (notif) => {
+    if (!notif) return;
+    
+    // 1. Tıklamayı kaydet (Analitik)
+    if (student.full_id) {
+      supabase.from('notification_clicks').insert({
+        notification_id: notif.id,
+        user_id: student.full_id
+      }).then(({error}) => {
+        if(error) console.error("Tıklama kaydedilemedi", error);
+      });
+    }
+
+    // 2. Yönlendirme ve Referans Ekleme (Dönüşüm Takibi)
+    if (notif.link_url) {
+      try {
+        // Absolute veya relative linkleri handle et
+        const isAbsolute = notif.link_url.startsWith('http');
+        const url = new URL(notif.link_url, isAbsolute ? undefined : window.location.origin);
+        url.searchParams.set('ref', `notif_${notif.id}`);
+        
+        if (isAbsolute) {
+          window.location.href = url.toString();
+        } else {
+          navigate(url.pathname + url.search);
+        }
+      } catch (e) {
+        // URL parse hatası olursa direkt yönlendir
+        navigate(notif.link_url);
+      }
+    }
+  };
+
   const tier = getTier(points);
 
   return (
@@ -142,7 +175,7 @@ const StudentDashboard = () => {
         {/* iOS Style Push Notification */}
         {adminNotification && (
           <div 
-            onClick={() => adminNotification.link_url ? navigate(adminNotification.link_url) : null}
+            onClick={() => handleNotificationClick(adminNotification)}
             className={`p-4 rounded-[1.5rem] shadow-xl flex gap-3 items-center backdrop-blur-xl animate-in slide-in-from-top-4 duration-500 cursor-pointer ${
               adminNotification.type === 'success' ? 'bg-emerald-500/90 text-white' :
               adminNotification.type === 'warning' ? 'bg-amber-500/90 text-white' :

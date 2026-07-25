@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ChevronLeft, Star, MapPin, Smartphone, AtSign, Clock, Tag, Navigation, Share2, Loader2, Heart, MessageSquare, Send, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 const VenueDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [venue, setVenue] = useState(null);
   const [discounts, setDiscounts] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -342,7 +343,9 @@ const VenueDetail = () => {
               alert('İndirimi kullanmak için Kampüs Pay\'e ücretsiz kayıt olun.');
               navigate('/kayit');
             } else {
-              navigate('/dashboard/scan');
+              const searchParams = new URLSearchParams(location.search);
+              const ref = searchParams.get('ref');
+              navigate(`/dashboard/scan${ref ? `?ref=${ref}` : ''}`);
             }
           }}
           className="w-full bg-slate-950 text-white py-5 rounded-[2.5rem] font-black text-sm uppercase tracking-widest shadow-2xl flex items-center justify-center gap-3 active:scale-95 transition-all border border-white/10 group"
