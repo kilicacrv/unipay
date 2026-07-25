@@ -50,23 +50,9 @@ const ProtectedRoute = ({ children, allowedRole }) => {
             return;
           }
 
-          // Öğrenci onay durumunu sorgula
-          const { data: appData, error: appError } = await supabase
-            .from('applications')
-            .select('status')
-            .or(`auth_id.eq.${user.id},email.eq.${userEmail}`)
-            .limit(1)
-            .maybeSingle();
-
-          if (!appError && appData?.status === 'onaylandi') {
-            setAuthorized(true);
-          } else if (!appError && appData?.status === 'bekliyor') {
-            // Hesap var ama henüz onaylanmamış
-            setPendingApproval(true);
-            setAuthorized(false);
-          } else {
-            setAuthorized(false);
-          }
+          // Öğrenciler artık onay beklemeden dashboard'a girebilir.
+          // Onay ve aktivasyon kontrolü sadece QRScanner (İndirim Kullanımı) aşamasında yapılacak.
+          setAuthorized(true);
         }
 
         setLoading(false);
@@ -89,29 +75,6 @@ const ProtectedRoute = ({ children, allowedRole }) => {
   }
 
   if (!authorized) {
-    // Onay bekleyen öğrenci → anlamlı mesaj göster
-    if (pendingApproval) {
-      return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
-          <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 p-12 text-center max-w-md w-full">
-            <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-              ⏳
-            </div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight mb-3">Hesabınız İnceleniyor</h2>
-            <p className="text-slate-500 font-medium leading-relaxed mb-8">
-              Öğrenci belgeniz yüklendi ve ekibimiz tarafından inceleniyor. Onaylandığında giriş yapabileceksiniz.<br/>
-              <span className="text-xs text-slate-400 mt-2 block">Bu işlem genellikle 24 saat içinde tamamlanır.</span>
-            </p>
-            <button
-              onClick={async () => { await supabase.auth.signOut(); window.location.href = '/'; }}
-              className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-800 transition-colors"
-            >
-              Ana Sayfaya Dön
-            </button>
-          </div>
-        </div>
-      );
-    }
     // Yetkisi yoksa login sayfasına gönder
     return <Navigate to="/login" state={{ from: location }} replace />;
   }

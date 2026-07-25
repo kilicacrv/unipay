@@ -57,7 +57,13 @@ const Admin = () => {
 
   const updateStatus = async (id, status, table) => {
     setUpdating(id);
-    const { error } = await supabase.from(table).update({ status }).eq('id', id);
+    
+    const updatePayload = { status };
+    if (table === 'applications' && status === 'onaylandi') {
+      updatePayload.approved_at = new Date().toISOString();
+    }
+    
+    const { error } = await supabase.from(table).update(updatePayload).eq('id', id);
     
     if (error) {
       alert('Güncelleme sırasında bir hata oluştu: ' + error.message);

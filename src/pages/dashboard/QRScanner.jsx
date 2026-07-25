@@ -16,7 +16,56 @@ const QRScanner = () => {
   const [visitId, setVisitId] = useState(null);
   const [status, setStatus] = useState(null); // 'bekliyor', 'onaylandi', 'reddedildi'
 
+  const [isVerifying, setIsVerifying] = useState(true);
+
   useEffect(() => {
+    checkStudentVerification();
+  }, []);
+
+  const checkStudentVerification = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+
+      const { data: appData, error: appError } = await supabase
+        .from('applications')
+        .select('status, approved_at')
+        .or(`auth_id.eq.${user.id},email.eq.${user.email}`)
+        .limit(1)
+        .maybeSingle();
+
+      if (appError || !appData || appData.status !== 'onaylandi') {
+        // Hiç başvurusu yoksa veya henüz onaylanmadıysa
+        navigate('/dogrulama');
+        return;
+      }
+
+      // 1 Yıllık Aktivasyon Kontrolü
+      if (appData.approved_at) {
+        const approvedDate = new Date(appData.approved_at);
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+        if (approvedDate < oneYearAgo) {
+          // Süresi dolmuş
+          navigate('/dogrulama', { state: { expired: true } });
+          return;
+        }
+      }
+
+      setIsVerifying(false);
+    } catch (err) {
+      console.error('Doğrulama hatası:', err);
+      navigate('/dashboard');
+    }
+  };
+
+  useEffect(() => {
+    if (isVerifying) return; // Doğrulama bitmeden kamerayı açma
+
     const timer = setTimeout(() => {
       const scanner = new Html5QrcodeScanner('reader', {
         qrbox: { width: 250, height: 250 },
@@ -46,7 +95,7 @@ const QRScanner = () => {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [isVerifying]);
 
   useEffect(() => {
     if (!visitId) return;
@@ -127,7 +176,12 @@ const QRScanner = () => {
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center p-6 relative">
-        {!scanResult ? (
+        {isVerifying ? (
+          <div className="w-full flex flex-col items-center justify-center text-white">
+            <Loader2 size={40} className="animate-spin mb-4" />
+            <p className="text-sm font-bold tracking-widest uppercase opacity-70">Hesabınız Kontrol Ediliyor...</p>
+          </div>
+        ) : !scanResult ? (
           <div className="w-full max-w-sm flex flex-col items-center">
             <div className="relative w-full aspect-square max-w-[300px]">
               <div id="reader" className="overflow-hidden rounded-[2.5rem] border-4 border-white/10 shadow-2xl bg-black/40"></div>
