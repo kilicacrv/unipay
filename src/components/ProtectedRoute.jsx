@@ -54,7 +54,7 @@ const ProtectedRoute = ({ children, allowedRole }) => {
           const { data: appData, error: appError } = await supabase
             .from('applications')
             .select('status')
-            .eq('auth_id', user.id)
+            .or(`auth_id.eq.${user.id},email.eq.${userEmail}`)
             .limit(1)
             .maybeSingle();
 

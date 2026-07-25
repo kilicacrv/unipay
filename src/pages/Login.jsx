@@ -33,7 +33,7 @@ const Login = () => {
         const { data: appData, error: appError } = await supabase
           .from('applications')
           .select('status')
-          .eq('auth_id', user.id)
+          .or(`auth_id.eq.${user.id},email.eq.${email}`)
           .limit(1)
           .maybeSingle();
 
