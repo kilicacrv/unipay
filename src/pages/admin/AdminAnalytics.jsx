@@ -191,6 +191,7 @@ const AdminAnalytics = () => {
                 ))}
               </div>
             </div>
+          )}
           {/* Recent Visits (İndirim Geçmişi) */}
           <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden mt-8">
             <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
