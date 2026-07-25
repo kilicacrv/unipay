@@ -78,7 +78,30 @@ const Admin = () => {
         await sendApprovalEmail({ ...updatedApp, status });
       }
     } else {
+      const updatedBiz = businesses.find(a => a.id === id);
       setBusinesses(prev => prev.map(a => a.id === id ? { ...a, status } : a));
+      
+      // İşletme onaylandığında otomatik Mekan (Venue) oluştur
+      if (status === 'onaylandi' && updatedBiz) {
+        const { error: venueError } = await supabase.from('venues').insert({
+          name: updatedBiz.business_name,
+          category: 'Cafe', // Varsayılan kategori
+          phone: updatedBiz.phone,
+          instagram: updatedBiz.instagram || '',
+          lat: 38.0232, // Bosna default koordinatları
+          lng: 32.5103,
+          rating: 5.0,
+          address: 'Bosna Hersek Mh.', // Varsayılan
+          image_url: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&q=80&w=800' // Varsayılan resim
+        });
+        
+        if (venueError) {
+          console.error("Mekan oluşturulamadı:", venueError);
+          alert("İşletme onaylandı ancak mekanlar sekmesine eklenirken hata oluştu.");
+        } else {
+          alert("İşletme onaylandı ve mekan listesine otomatik eklendi. Detayları Mekan Yönetimi sayfasından düzenleyebilirsiniz.");
+        }
+      }
     }
     setUpdating(null);
   };
