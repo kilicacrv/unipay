@@ -69,13 +69,22 @@ const ManageDiscounts = () => {
       .eq('status', 'onaylandi')
       .single();
 
+    let searchName = '';
+
     if (bizApp) {
+      searchName = bizApp.business_name;
+    } else {
+      // Fallback for businesses created directly via Admin Panel
+      searchName = user.user_metadata?.full_name;
+    }
+
+    if (searchName) {
       // Match venue by business name
       const { data: venue } = await supabase
         .from('venues')
         .select('id, name')
-        .ilike('name', `%${bizApp.business_name}%`)
-        .single();
+        .ilike('name', `%${searchName}%`)
+        .maybeSingle();
 
       if (venue) {
         setVenueId(venue.id);
