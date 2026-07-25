@@ -5,6 +5,7 @@ import L from 'leaflet';
 import { Search, Map as MapIcon, List, Filter, Navigation, Star, ChevronRight, Tag, User, MapPin, Loader2, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import StudentBottomNav from '../../components/StudentBottomNav';
 
 // Fix for default marker icon in Leaflet + React
 delete L.Icon.Default.prototype._getIconUrl;
@@ -124,30 +125,30 @@ const VenueExplore = () => {
   return (
     <div className="h-screen bg-slate-50 flex flex-col relative font-sans overflow-hidden">
       {/* Search & Filters Overlay */}
-      <div className="absolute top-28 inset-x-6 z-[1000] pointer-events-none">
-        <div className="max-w-lg mx-auto space-y-4">
+      <div className="absolute top-12 inset-x-4 z-[1000] pointer-events-none">
+        <div className="max-w-lg mx-auto space-y-3">
           {/* Search Bar */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-white/20 p-2 flex items-center gap-2 pointer-events-auto">
-            <div className="w-12 h-12 flex items-center justify-center text-slate-400">
-              <Search size={20} />
+          <div className="bg-white/90 backdrop-blur-2xl rounded-full shadow-xl border border-white/40 p-1.5 flex items-center gap-2 pointer-events-auto">
+            <div className="w-10 h-10 flex items-center justify-center text-slate-400">
+              <Search size={18} />
             </div>
             <input 
               type="text" 
-              placeholder="Mekan veya indirim ara..." 
-              className="flex-1 bg-transparent outline-none text-sm font-bold text-slate-900 placeholder:text-slate-300"
+              placeholder="Mekan veya kategori ara..." 
+              className="flex-1 bg-transparent outline-none text-sm font-bold text-slate-900 placeholder:text-slate-400"
             />
-            <button className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-xl">
-              <Filter size={18} />
+            <button className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-white shadow-md active:scale-95 transition-transform">
+              <Filter size={16} />
             </button>
           </div>
 
           {/* Categories */}
-          <div className="flex gap-2 overflow-x-auto no-scrollbar pointer-events-auto px-1">
-            {['Tümü', 'Cafe', 'Restoran', 'Tatlı', 'Giyim'].map(cat => (
+          <div className="flex gap-2 overflow-x-auto no-scrollbar pointer-events-auto px-1 py-1">
+            {['Tümü', 'Cafe', 'Restoran', 'Tatlı', 'Giyim', 'Kırtasiye'].map(cat => (
               <button 
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all shadow-lg whitespace-nowrap ${selectedCategory === cat ? 'bg-primary text-dark border-primary scale-105' : 'bg-white/80 backdrop-blur-md text-slate-500 border-white/20'}`}
+                className={`px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all whitespace-nowrap shadow-sm ${selectedCategory === cat ? 'bg-slate-900 text-white border-slate-900' : 'bg-white/90 backdrop-blur-md text-slate-500 border-white/40 hover:bg-white'}`}
               >
                 {cat}
               </button>
@@ -159,10 +160,9 @@ const VenueExplore = () => {
       {/* View Toggle */}
       <button 
         onClick={() => setView(view === 'map' ? 'list' : 'map')}
-        className="absolute bottom-28 right-6 z-[1000] bg-slate-900 text-white px-8 py-5 rounded-[2rem] font-black text-xs uppercase tracking-widest flex items-center gap-3 shadow-2xl active:scale-95 transition-all border border-white/10"
+        className="absolute bottom-24 right-4 z-[1000] bg-slate-900 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-xl active:scale-95 transition-all border border-white/10"
       >
-        {view === 'map' ? <List size={20} strokeWidth={2.5} /> : <MapIcon size={20} strokeWidth={2.5} />}
-        {view === 'map' ? 'Liste Görünümü' : 'Harita Görünümü'}
+        {view === 'map' ? <List size={22} /> : <MapIcon size={22} />}
       </button>
 
       {/* Map View */}
@@ -229,24 +229,7 @@ const VenueExplore = () => {
 
       {/* Bottom Nav or Public Banner */}
       {currentUser ? (
-        <div className="fixed bottom-0 inset-x-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 px-8 py-5 flex justify-between items-center z-40 max-w-lg mx-auto rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.03)]">
-          <div onClick={() => navigate('/dashboard')} className="flex flex-col items-center gap-1.5 text-slate-300 hover:text-slate-500 transition-colors cursor-pointer">
-            <Tag size={20} strokeWidth={2.5} />
-            <span className="text-[9px] font-black uppercase tracking-tighter">Fırsatlar</span>
-          </div>
-          <div onClick={() => navigate('/dashboard/favorites')} className="flex flex-col items-center gap-1.5 text-slate-300 hover:text-rose-500 transition-colors cursor-pointer">
-            <Heart size={20} strokeWidth={2.5} />
-            <span className="text-[9px] font-black uppercase tracking-tighter">Favoriler</span>
-          </div>
-          <div onClick={() => navigate('/mekanlar')} className="flex flex-col items-center gap-1.5 text-slate-900 cursor-pointer">
-            <MapPin size={20} strokeWidth={2.5} />
-            <span className="text-[9px] font-black uppercase tracking-tighter">Harita</span>
-          </div>
-          <div onClick={() => navigate('/dashboard/profile')} className="flex flex-col items-center gap-1.5 text-slate-300 hover:text-slate-500 transition-colors cursor-pointer">
-            <User size={20} strokeWidth={2.5} />
-            <span className="text-[9px] font-black uppercase tracking-tighter">Profil</span>
-          </div>
-        </div>
+        <StudentBottomNav />
       ) : (
         <div className="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-xl border-t border-slate-100 p-6 z-40 max-w-lg mx-auto rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] text-center">
           <p className="text-xs font-bold text-slate-500 mb-3 uppercase tracking-widest">Tüm indirimleri yakalamak için</p>
