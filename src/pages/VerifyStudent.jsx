@@ -129,7 +129,7 @@ const VerifyStudent = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background pt-32 pb-16 px-4 flex flex-col items-center">
         <Loader size={40} className="animate-spin text-primary" />
       </div>
     );
@@ -137,7 +137,7 @@ const VerifyStudent = () => {
 
   if (submitStatus) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-16">
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center pt-32 pb-16 px-4">
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4, type: 'spring', bounce: 0.4 }}
           className="bg-white rounded-[2rem] shadow-xl border border-slate-100 p-12 text-center max-w-md w-full">
@@ -160,7 +160,7 @@ const VerifyStudent = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-16">
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center pt-32 pb-16 px-4">
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }} className="w-full max-w-lg">
         

@@ -91,7 +91,7 @@ const Register = () => {
   const inputBase = "flex-1 py-3.5 pr-4 font-medium text-dark outline-none placeholder:text-dark/50 bg-transparent text-sm";
 
   return (
-    <div className="min-h-screen bg-background py-16 px-4 flex items-center justify-center">
+    <div className="min-h-screen bg-background pt-32 pb-16 px-4 flex flex-col items-center">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
