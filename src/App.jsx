@@ -14,9 +14,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 const LAUNCH_MODE = import.meta.env.VITE_LAUNCH_MODE || 'full';
 const IS_FULL = LAUNCH_MODE === 'full';
 
-// Helper: Landing modunda rotaları ana sayfaya yönlendir
+// Helper: Landing modunda rotaları ana sayfaya yönlendir (Artık devre dışı)
 const LaunchGate = ({ children }) => {
-  if (!IS_FULL) return <Navigate to="/" replace />;
   return children;
 };
 
