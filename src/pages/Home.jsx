@@ -15,14 +15,18 @@ const fadeUp = (delay = 0) => ({
 
 const Home = () => {
   const [featuredVenues, setFeaturedVenues] = useState([]);
-  const navigate = useNavigate();
+  const [session, setSession] = useState(null);
 
   useEffect(() => {
-    // Giriş yapmış kullanıcı ana sayfaya düşerse otomatik olarak panele yönlendir
+    // Oturum durumunu al
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate('/dashboard');
-      }
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
     });
 
     const fetchVenues = async () => {
@@ -38,7 +42,9 @@ const Home = () => {
       }
     };
     fetchVenues();
-  }, [navigate]);
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   return (
     <>
@@ -63,11 +69,11 @@ const Home = () => {
           </motion.p>
 
           <motion.div {...fadeUp(0.3)}>
-            <Link to="/kayit" className="btn-primary text-lg px-8 py-4 md:px-10 md:py-4 inline-flex items-center justify-center gap-3 w-full sm:w-auto">
+            <Link to={session ? "/dashboard" : "/kayit"} className="btn-primary text-lg px-8 py-4 md:px-10 md:py-4 inline-flex items-center justify-center gap-3 w-full sm:w-auto">
               <Zap size={20} />
-              Kayıt Ol
+              {session ? "Panelime Git" : "Kayıt Ol"}
             </Link>
-            <p className="mt-4 text-sm font-semibold text-slate-500">Ücretsizdir. Kredi kartı gerekmez.</p>
+            {!session && <p className="mt-4 text-sm font-semibold text-slate-500">Ücretsizdir. Kredi kartı gerekmez.</p>}
           </motion.div>
 
 
@@ -114,8 +120,8 @@ const Home = () => {
                     <Star size={16} fill="currentColor" />
                     <span className="text-sm font-bold">{venue.rating || '4.5'}</span>
                   </div>
-                  <Link to="/kayit" className="bg-slate-900 text-white font-bold rounded-2xl w-full text-center block py-3.5 text-sm hover:bg-slate-800 transition-colors shadow-lg shadow-slate-900/20 hover:-translate-y-0.5">
-                    Fırsatı Yakala
+                  <Link to={session ? "/dashboard" : "/kayit"} className="bg-slate-900 text-white font-bold rounded-2xl w-full text-center block py-3.5 text-sm hover:bg-slate-800 transition-colors shadow-lg shadow-slate-900/20 hover:-translate-y-0.5">
+                    {session ? "Mekanı İncele" : "Fırsatı Yakala"}
                   </Link>
                 </div>
               </motion.div>
@@ -169,13 +175,13 @@ const Home = () => {
       <section id="avantajlar" className="py-24 px-4 bg-slate-900 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-tr from-slate-900 to-slate-800" />
         <div className="max-w-4xl mx-auto text-center relative z-10">
-           <motion.h2 
+          <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-3xl md:text-5xl font-bold text-white mb-8 tracking-tighter"
           >
-            Hemen kayıt ol,<br/>indirimleri kaçırma.
+            {session ? "İndirimleri yakalamaya" : "Hemen kayıt ol,"}<br/>{session ? "hemen başla." : "indirimleri kaçırma."}
           </motion.h2>
           <motion.div
              initial={{ opacity: 0, y: 20 }}
@@ -183,8 +189,8 @@ const Home = () => {
              viewport={{ once: true }}
              transition={{ delay: 0.1 }}
           >
-            <Link to="/kayit" className="bg-primary text-slate-900 font-bold text-lg px-8 py-4 md:px-10 md:py-4 rounded-2xl shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-1 transition-all duration-300 inline-block w-full sm:w-auto">
-                Hemen Kayıt Ol
+            <Link to={session ? "/dashboard" : "/kayit"} className="bg-primary text-slate-900 font-bold text-lg px-8 py-4 md:px-10 md:py-4 rounded-2xl shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-1 transition-all duration-300 inline-block w-full sm:w-auto">
+                {session ? "Panelime Git" : "Hemen Kayıt Ol"}
              </Link>
           </motion.div>
         </div>
