@@ -22,6 +22,7 @@ const Footer = () => {
             <p className="font-bold text-sm uppercase tracking-widest text-slate-400 mb-4">Platform</p>
             <div className="flex flex-col gap-3">
               <Link to="/kayit" className="text-slate-300 hover:text-white text-sm transition-colors">Öğrenci Ön Kaydı</Link>
+              <Link to="/login" className="text-slate-300 hover:text-white text-sm transition-colors">İşletme Girişi</Link>
               <Link to="/isletme-basvurusu" className="text-slate-300 hover:text-white text-sm transition-colors font-semibold text-secondary">İşletme Başvurusu</Link>
               <Link to="/gizlilik" className="text-slate-300 hover:text-white text-sm transition-colors">Gizlilik Politikası</Link>
               <Link to="/kullanim-kosullari" className="text-slate-300 hover:text-white text-sm transition-colors">Kullanım Koşulları</Link>
