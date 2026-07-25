@@ -41,40 +41,26 @@ const BusinessDashboard = () => {
         return;
       }
 
-      // 1. Check business application
-      const { data: bizApp } = await supabase
-        .from('business_applications')
-        .select('business_name')
-        .eq('user_id', user.id)
-        .eq('status', 'onaylandi')
-        .single();
+      const businessName = user.user_metadata?.full_name || 'İşletme Hesabı';
 
-      if (bizApp) {
-        // 2. Try to find the venue
-        const { data: venue } = await supabase
-          .from('venues')
-          .select('*')
-          .ilike('name', `%${bizApp.business_name}%`)
-          .single();
+      // 1. Try to find the venue by business name
+      const { data: venue } = await supabase
+        .from('venues')
+        .select('*')
+        .ilike('name', `%${businessName}%`)
+        .maybeSingle();
 
-        if (venue) {
-          setBusiness({
-            id: venue.id,
-            name: venue.name,
-            branch: venue.address || 'Merkez'
-          });
-        } else {
-          setBusiness({
-            id: user.id,
-            name: bizApp.business_name,
-            branch: 'Merkez'
-          });
-        }
+      if (venue) {
+        setBusiness({
+          id: venue.id,
+          name: venue.name,
+          branch: venue.address || 'Merkez'
+        });
       } else {
-        // Fallback for test/admin accounts without a business application
+        // Fallback
         setBusiness({
           id: user.id,
-          name: user.user_metadata?.full_name || 'İşletme Hesabı',
+          name: businessName,
           branch: 'Merkez'
         });
       }
