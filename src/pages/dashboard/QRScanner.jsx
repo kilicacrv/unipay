@@ -159,7 +159,8 @@ const QRScanner = () => {
 
       // 1. Sadece ziyareti bekliyor olarak kaydet. (Puanı kasiyer onaylayınca vereceğiz)
       const { data, error: insertError } = await supabase.from('visits').insert({
-        user_id: user.id,
+        student_id: user.id,
+        user_id: user.id, // Fallback in case both are needed
         business_qr: bizQrData,
         pin_code: confirmCode.toString(),
         status: 'bekliyor',
