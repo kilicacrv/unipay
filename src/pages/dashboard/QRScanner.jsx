@@ -16,6 +16,7 @@ const QRScanner = () => {
   const [confirmCode] = useState(Math.floor(Math.random() * 900000 + 100000));
   const [visitId, setVisitId] = useState(null);
   const [status, setStatus] = useState(null); // 'bekliyor', 'onaylandi', 'reddedildi'
+  const [businessName, setBusinessName] = useState(null);
 
   const [isVerifying, setIsVerifying] = useState(true);
   const html5QrCodeRef = useRef(null);
@@ -143,22 +144,28 @@ const QRScanner = () => {
   const processMatch = async (bizQrData) => {
     setIsProcessing(true);
 
-    // Extract business/venue info from QR data
-    const bizSlug = bizQrData.replace('unipay_biz_', '');
-
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Giriş yapmanız gerekiyor.');
-
-      const searchParams = new URLSearchParams(location.search);
-      const ref = searchParams.get('ref');
-      let notificationId = null;
-      if (ref && ref.startsWith('notif_')) {
-        notificationId = ref.replace('notif_', '');
+      // Extract business/venue info from QR data
+      const bizSlug = bizQrData.replace('unipay_biz_', '');
+      
+      // Try to fetch business name
+      const { data: venue } = await supabase.from('venues').select('name').eq('id', bizSlug).single();
+      if (venue && venue.name) {
+        setBusinessName(venue.name);
       }
 
-      // 1. Sadece ziyareti bekliyor olarak kaydet. (Puanı kasiyer onaylayınca vereceğiz)
-      const { data, error: insertError } = await supabase.from('visits').insert({
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('Giriş yapmanız gerekiyor.');
+
+        const searchParams = new URLSearchParams(location.search);
+        const ref = searchParams.get('ref');
+        let notificationId = null;
+        if (ref && ref.startsWith('notif_')) {
+          notificationId = ref.replace('notif_', '');
+        }
+
+        // 1. Sadece ziyareti bekliyor olarak kaydet. (Puanı kasiyer onaylayınca vereceğiz)
+        const { data, error: insertError } = await supabase.from('visits').insert({
         student_id: user.id,
         user_id: user.id, // Fallback
         business_id: bizSlug, // The missing column!
@@ -268,7 +275,7 @@ const QRScanner = () => {
               <h3 className="text-4xl font-black text-white tracking-tight">TEBRİKLER!</h3>
               <div className="h-1 w-20 bg-white/30 mx-auto rounded-full" />
               <p className="text-xl font-bold text-white leading-tight">
-                Kampüs Pay <span className="underline decoration-white/40">{scanResult.replace('unipay_biz_', '').split('_').join(' ').toUpperCase()}</span> işletmesinde indiriminiz onaylanmıştır!
+                Kampüs Pay <span className="underline decoration-white/40">{businessName ? businessName.toUpperCase() : scanResult.replace('unipay_biz_', '').split('_').join(' ').toUpperCase()}</span> işletmesinde indiriminiz onaylanmıştır!
               </p>
               <p className="text-emerald-100 text-sm font-medium opacity-90">
                 Keyifli vakit geçirmenizi dileriz.
