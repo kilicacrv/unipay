@@ -36,6 +36,7 @@ const Login        = lazy(() => import('./pages/Login'));
 const ResetPassword= lazy(() => import('./pages/ResetPassword'));
 const VerifyStudent= lazy(() => import('./pages/VerifyStudent'));
 const Admin        = lazy(() => import('./pages/Admin'));
+const AdminStudents = lazy(() => import('./pages/admin/AdminStudents'));
 const Privacy      = lazy(() => import('./pages/Privacy'));
 const Terms        = lazy(() => import('./pages/Terms'));
 const AdminLogs    = lazy(() => import('./pages/admin/AdminLogs'));
@@ -92,6 +93,7 @@ function App() {
                 <ProtectedRoute allowedRole="admin"><AdminLayout /></ProtectedRoute>
               }>
                 <Route index element={<Admin />} />
+                <Route path="students" element={<AdminStudents />} />
                 <Route path="venues" element={<AdminVenues />} />
                 <Route path="analytics" element={<AdminAnalytics />} />
                 <Route path="notifications" element={<AdminNotifications />} />

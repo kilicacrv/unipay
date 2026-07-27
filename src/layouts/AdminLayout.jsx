@@ -15,6 +15,7 @@ const AdminLayout = () => {
 
   const navItems = [
     { name: 'Başvurular', path: '/admin', icon: <Users size={18} /> },
+    { name: 'Öğrenci Yönetimi', path: '/admin/students', icon: <Users size={18} /> },
     { name: 'Banner Yönetimi', path: '/admin/banners', icon: <Image size={18} /> },
     { name: 'Mekan Yönetimi', path: '/admin/venues', icon: <MapPin size={18} /> },
     { name: 'Analitik', path: '/admin/analytics', icon: <BarChart2 size={18} /> },
