@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Image as ImageIcon, Plus, Trash2, Clock, Loader2, Search } from 'lucide-react';
-import { format } from 'date-fns';
-import { tr } from 'date-fns/locale';
 
 const AdminBanners = () => {
   const [banners, setBanners] = useState([]);
