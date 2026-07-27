@@ -11,7 +11,7 @@ const AdminBanners = () => {
   const [title, setTitle] = useState('');
   const [subtitle, setSubtitle] = useState('');
   const [description, setDescription] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageFile, setImageFile] = useState(null);
   const [linkUrl, setLinkUrl] = useState('/mekanlar');
   const [colorFrom, setColorFrom] = useState('from-amber-600');
   const [colorTo, setColorTo] = useState('to-orange-500');
@@ -35,30 +35,57 @@ const AdminBanners = () => {
 
   const handleCreate = async (e) => {
     e.preventDefault();
+    if (!imageFile) {
+      alert('Lütfen bir görsel seçin.');
+      return;
+    }
+    
     setCreating(true);
 
-    const { error } = await supabase.from('banners').insert({
-      title,
-      subtitle,
-      description,
-      image_url: imageUrl,
-      link_url: linkUrl,
-      color_from: colorFrom,
-      color_to: colorTo,
-      is_active: true
-    });
+    try {
+      // 1. Upload image to Supabase Storage
+      const fileExt = imageFile.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
 
-    setCreating(false);
+      const { error: uploadError, data: uploadData } = await supabase.storage
+        .from('banners')
+        .upload(filePath, imageFile);
 
-    if (error) {
-      alert('Hata oluştu: ' + error.message);
-    } else {
+      if (uploadError) throw uploadError;
+
+      // 2. Get Public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('banners')
+        .getPublicUrl(filePath);
+
+      // 3. Insert into Database
+      const { error: dbError } = await supabase.from('banners').insert({
+        title,
+        subtitle,
+        description,
+        image_url: publicUrl,
+        link_url: linkUrl,
+        color_from: colorFrom,
+        color_to: colorTo,
+        is_active: true
+      });
+
+      if (dbError) throw dbError;
+
       alert('Banner başarıyla eklendi!');
       setTitle('');
       setSubtitle('');
       setDescription('');
-      setImageUrl('');
+      setImageFile(null);
+      // Reset file input value
+      document.getElementById('banner-image').value = '';
       fetchBanners();
+
+    } catch (error) {
+      alert('Hata oluştu: ' + error.message);
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -121,8 +148,18 @@ const AdminBanners = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1.5">Görsel URL</label>
-                  <input required type="url" value={imageUrl} onChange={(e)=>setImageUrl(e.target.value)} placeholder="https://..." className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:border-slate-400 focus:ring-0 outline-none transition-all" />
+                  <label className="block text-xs font-semibold text-slate-600 mb-1.5">Görsel Seç</label>
+                  <input 
+                    id="banner-image"
+                    required 
+                    type="file" 
+                    accept="image/*"
+                    onChange={(e)=>setImageFile(e.target.files[0])} 
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:border-slate-400 focus:ring-0 outline-none transition-all file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" 
+                  />
+                  {imageFile && (
+                    <div className="mt-2 text-xs text-emerald-600 font-medium">Seçilen: {imageFile.name}</div>
+                  )}
                 </div>
                 
                 <div>
