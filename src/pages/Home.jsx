@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { QrCode, Smartphone, Zap, Store, Star, TrendingDown, ShieldCheck, Users, ChevronRight, MapPin } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import BannerCarousel from '../components/BannerCarousel';
 
 
 const fadeUp = (delay = 0) => ({
@@ -103,6 +104,9 @@ const Home = () => {
 
         </div>
       </section>
+
+      {/* ─── BANNER CAROUSEL ─── */}
+      <BannerCarousel />
 
       {/* ─── FEATURED VENUES ─── */}
       <section className="py-20 px-4 bg-slate-50 border-t border-slate-100 overflow-hidden">

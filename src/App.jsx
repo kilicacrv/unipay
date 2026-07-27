@@ -33,11 +33,13 @@ const Home         = lazy(() => import('./pages/Home'));
 const BusinessForm = lazy(() => import('./pages/BusinessForm'));
 const Register     = lazy(() => import('./pages/Register'));
 const Login        = lazy(() => import('./pages/Login'));
+const ResetPassword= lazy(() => import('./pages/ResetPassword'));
 const VerifyStudent= lazy(() => import('./pages/VerifyStudent'));
 const Admin        = lazy(() => import('./pages/Admin'));
 const Privacy      = lazy(() => import('./pages/Privacy'));
 const Terms        = lazy(() => import('./pages/Terms'));
 const AdminLogs    = lazy(() => import('./pages/admin/AdminLogs'));
+const AdminBanners = lazy(() => import('./pages/admin/AdminBanners'));
 
 // Business Panel
 const BusinessLayout   = lazy(() => import('./layouts/BusinessLayout'));
@@ -78,6 +80,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/kayit" element={<Register />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/isletme-basvurusu" element={<BusinessForm />} />
               <Route path="/gizlilik" element={<Privacy />} />
               <Route path="/kullanim-kosullari" element={<Terms />} />
@@ -94,6 +97,7 @@ function App() {
                 <Route path="notifications" element={<AdminNotifications />} />
                 <Route path="flash-campaigns" element={<AdminFlashCampaigns />} />
                 <Route path="logs" element={<AdminLogs />} />
+                <Route path="banners" element={<AdminBanners />} />
               </Route>
 
               {/* ── Sadece Full Launch'ta Açık ── */}

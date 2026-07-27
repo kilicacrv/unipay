@@ -10,6 +10,8 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isResetMode, setIsResetMode] = useState(false);
+  const [resetMessage, setResetMessage] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -49,6 +51,28 @@ const Login = () => {
     }
   };
 
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    if (!email) {
+      setError('Lütfen e-posta adresinizi girin.');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    setResetMessage('');
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/reset-password',
+      });
+      if (error) throw error;
+      setResetMessage('Şifre sıfırlama bağlantısı e-posta adresinize gönderildi. (Spam/Gereksiz kutusunu kontrol etmeyi unutmayın)');
+    } catch (err) {
+      setError('İşlem başarısız: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleGoogleLogin = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -80,14 +104,22 @@ const Login = () => {
         <div className="bg-white rounded-2xl shadow-sm border border-dark p-8">
           {error && (
             <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 mb-6 text-sm font-medium">
-              <AlertCircle size={15} />
+              <AlertCircle size={15} className="shrink-0" />
               {error}
             </div>
           )}
+          {resetMessage && (
+            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-600 rounded-xl px-4 py-3 mb-6 text-sm font-medium">
+              <AlertCircle size={15} className="shrink-0" />
+              {resetMessage}
+            </div>
+          )}
 
-          <button 
-            type="button" 
-            onClick={handleGoogleLogin}
+          {!isResetMode && (
+            <>
+              <button 
+                type="button" 
+                onClick={handleGoogleLogin}
             className="w-full bg-white border border-slate-200 text-slate-700 py-4 rounded-xl text-sm font-bold flex items-center justify-center gap-3 hover:bg-slate-50 transition-colors shadow-sm mb-4"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -104,8 +136,10 @@ const Login = () => {
             <span className="text-xs text-slate-400 font-semibold uppercase tracking-widest text-center">veya E-Posta ile</span>
             <div className="flex-1 h-px bg-slate-200"></div>
           </div>
+          </>
+          )}
 
-          <form onSubmit={handleLogin} className="flex flex-col gap-5">
+          <form onSubmit={isResetMode ? handleResetPassword : handleLogin} className="flex flex-col gap-5">
             <div>
               <label className="block text-sm font-semibold text-dark/80 mb-1.5">E-posta Adresi</label>
               <div className="flex items-center bg-white border border-dark rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary transition-all duration-200">
@@ -123,31 +157,52 @@ const Login = () => {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-dark/80 mb-1.5">Şifre</label>
-              <div className="flex items-center bg-white border border-dark rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary transition-all duration-200">
-                <div className="flex items-center pl-4 pr-3 shrink-0 text-dark/50">
-                  <Lock size={16} />
+            {!isResetMode && (
+              <div>
+                <div className="flex justify-between items-center mb-1.5">
+                  <label className="block text-sm font-semibold text-dark/80">Şifre</label>
+                  <button 
+                    type="button" 
+                    onClick={() => { setIsResetMode(true); setError(''); setResetMessage(''); }} 
+                    className="text-xs font-semibold text-primary hover:underline"
+                  >
+                    Şifremi Unuttum
+                  </button>
                 </div>
-                <input 
-                  type="password" 
-                  value={password} 
-                  onChange={(e) => setPassword(e.target.value)} 
-                  placeholder="••••••••" 
-                  className="flex-1 py-3.5 pr-4 font-medium text-dark outline-none placeholder:text-dark/50 bg-transparent text-sm" 
-                  required
-                />
+                <div className="flex items-center bg-white border border-dark rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary transition-all duration-200">
+                  <div className="flex items-center pl-4 pr-3 shrink-0 text-dark/50">
+                    <Lock size={16} />
+                  </div>
+                  <input 
+                    type="password" 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    placeholder="••••••••" 
+                    className="flex-1 py-3.5 pr-4 font-medium text-dark outline-none placeholder:text-dark/50 bg-transparent text-sm" 
+                    required
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             <button 
               type="submit" 
               disabled={loading}
               className="btn-primary w-full py-4 text-sm mt-2 justify-center flex items-center gap-2"
             >
-              {loading ? <Loader size={18} className="animate-spin" /> : null}
-              {loading ? 'Giriş Yapılıyor...' : 'Giriş Yap →'}
+              {loading && <Loader size={18} className="animate-spin" />}
+              {!loading && (isResetMode ? 'Sıfırlama Linki Gönder' : 'Giriş Yap →')}
             </button>
+            
+            {isResetMode && (
+              <button 
+                type="button"
+                onClick={() => { setIsResetMode(false); setError(''); setResetMessage(''); }}
+                className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors text-center mt-2"
+              >
+                Giriş Ekranına Dön
+              </button>
+            )}
           </form>
 
           <p className="text-center text-sm text-dark/70 mt-6">
