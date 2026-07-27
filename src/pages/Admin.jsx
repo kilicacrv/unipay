@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { CheckCircle, XCircle, Clock, Eye, RefreshCw, Users, Store, Search } from 'lucide-react';
 import emailjs from '@emailjs/browser';
+import { logSystemEvent } from '../lib/logger';
 
 // ─── EmailJS Config ───────────────────────────────────────────────
 const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';
@@ -81,9 +82,11 @@ const Admin = () => {
     if (table === 'applications') {
       setStudents(prev => prev.map(a => a.id === id ? { ...a, status } : a));
       await sendEmailNotification({ ...app, status }, status);
+      await logSystemEvent(`student_${status}`, app.user_id || null, null, { name: app.name, email: app.email, message: `Öğrenci ${status}` });
     } else {
       const updatedBiz = businesses.find(a => a.id === id);
       setBusinesses(prev => prev.map(a => a.id === id ? { ...a, status } : a));
+      await logSystemEvent(`business_${status}`, updatedBiz?.user_id || null, updatedBiz?.id || null, { name: updatedBiz?.business_name, email: updatedBiz?.email, message: `İşletme ${status}` });
       
       // İşletme onaylandığında otomatik Mekan (Venue) oluştur
       if (status === 'onaylandi' && updatedBiz) {

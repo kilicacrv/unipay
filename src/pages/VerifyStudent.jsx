@@ -3,6 +3,7 @@ import { Upload, CheckCircle, Clock, AlertCircle, Loader } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
+import { logSystemEvent } from '../lib/logger';
 
 const VerifyStudent = () => {
   const navigate = useNavigate();
@@ -128,9 +129,17 @@ const VerifyStudent = () => {
         }
       }
       
+      await logSystemEvent('student_registered', user.id, null, { name: user.user_metadata?.full_name || 'Öğrenci', phone, university, message: 'Öğrenci belgesi yükledi, onay bekliyor' });
+      
       setSubmitStatus(finalStatus);
     } catch (err) {
       setError(`İşlem başarısız: ${err.message}`);
+      
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        await logSystemEvent('student_register_error', user?.id || null, null, { error: err.message, message: 'Öğrenci belge yüklerken hata oluştu' });
+      } catch(e) {}
+      
     } finally {
       setSubmitting(false);
     }

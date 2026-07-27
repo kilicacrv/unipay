@@ -3,6 +3,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { X, CheckCircle, Loader2, AlertTriangle, Zap } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { logSystemEvent } from '../../lib/logger';
 
 
 
@@ -199,9 +200,17 @@ const QRScanner = () => {
       setVisitId(data.id);
       setStatus('bekliyor');
       setScanResult(bizQrData);
+      
+      await logSystemEvent('qr_scan_pending', user.id, bizSlug, { business_name: venue?.name, qr_data: bizQrData, message: 'Öğrenci QR okuttu, onay bekliyor' });
     } catch (err) {
       console.error('Visit recording error:', err.message);
       setError('İşlem kaydedilemedi: ' + err.message);
+      
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        await logSystemEvent('qr_scan_error', user?.id || null, bizSlug || null, { qr_data: bizQrData, error: err.message, message: 'QR okutma sırasında hata oluştu' });
+      } catch(e) {}
+      
       setTimeout(() => setError(null), 3000);
     } finally {
       setIsProcessing(false);

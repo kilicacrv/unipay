@@ -37,6 +37,7 @@ const VerifyStudent= lazy(() => import('./pages/VerifyStudent'));
 const Admin        = lazy(() => import('./pages/Admin'));
 const Privacy      = lazy(() => import('./pages/Privacy'));
 const Terms        = lazy(() => import('./pages/Terms'));
+const AdminLogs    = lazy(() => import('./pages/admin/AdminLogs'));
 
 // Business Panel
 const BusinessLayout   = lazy(() => import('./layouts/BusinessLayout'));
@@ -92,6 +93,7 @@ function App() {
                 <Route path="analytics" element={<AdminAnalytics />} />
                 <Route path="notifications" element={<AdminNotifications />} />
                 <Route path="flash-campaigns" element={<AdminFlashCampaigns />} />
+                <Route path="logs" element={<AdminLogs />} />
               </Route>
 
               {/* ── Sadece Full Launch'ta Açık ── */}
