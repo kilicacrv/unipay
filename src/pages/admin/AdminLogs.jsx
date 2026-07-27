@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Terminal, Clock, Search, AlertCircle, CheckCircle, Zap, Eye, Trash2 } from 'lucide-react';
-import { format } from 'date-fns';
-import { tr } from 'date-fns/locale';
 
 const AdminLogs = () => {
   const [logs, setLogs] = useState([]);
@@ -131,7 +129,7 @@ const AdminLogs = () => {
               return (
                 <div key={log.id} className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 transition-colors border border-slate-700/50 group">
                   <div className="text-slate-500 text-xs shrink-0 w-24">
-                    {format(new Date(log.created_at), 'HH:mm:ss', { locale: tr })}
+                    {new Date(log.created_at).toLocaleTimeString('tr-TR')}
                   </div>
                   <div className={`flex items-center gap-2 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-widest ${style.bg.replace('50', '500/10')} ${style.text.replace('600', '400')} shrink-0`}>
                     {style.icon} {log.event_type}
