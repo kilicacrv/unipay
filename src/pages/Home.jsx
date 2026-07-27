@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { QrCode, Smartphone, Zap, Store, Star, TrendingDown, ShieldCheck, Users, ChevronRight } from 'lucide-react';
+import { QrCode, Smartphone, Zap, Store, Star, TrendingDown, ShieldCheck, Users, ChevronRight, MapPin } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { MOCK_VENUES } from '../data/mockData';
+
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 30 },
@@ -57,12 +57,12 @@ const Home = () => {
       try {
         const { data, error } = await supabase.from('venues').select('*').limit(6);
         if (error || !data || data.length === 0) {
-          setFeaturedVenues(MOCK_VENUES.slice(0, 6));
+          setFeaturedVenues([]);
         } else {
           setFeaturedVenues(data);
         }
       } catch (err) {
-        setFeaturedVenues(MOCK_VENUES.slice(0, 6));
+        setFeaturedVenues([]);
       }
     };
     fetchVenues();
@@ -160,40 +160,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ─── CURIOSITY & MAP ─── */}
-      <section className="py-28 px-4 bg-white border-t border-slate-100">
-        <div className="max-w-5xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="mb-12"
-          >
-            <span className="text-emerald-500 font-bold text-xs uppercase tracking-widest bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">KEŞFET</span>
-            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 tracking-tighter mt-8 mb-6">
-              Kampüs Pay ile İndirimleri Yakala!
-            </h2>
-            <p className="text-slate-500 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
-              En sevdiğin kafeler, en cool mekanlar... Hepsi tek bir ağda birleşiyor. Bosna'nın yeni hareketine katıl, ayrıcalıklı dünyanın tadını çıkar.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-[0_20px_50px_rgba(0,0,0,0.06)] bg-white p-2 md:p-3"
-          >
-            <img 
-              src="/bosna-map.png" 
-              alt="Bosna Hersek Mahallesi Sanatsal Harita" 
-              className="w-full h-auto object-cover rounded-[2rem] hover:scale-105 transition-transform duration-700 cursor-zoom-in"
-            />
-          </motion.div>
-        </div>
-      </section>
 
       {/* ─── CTA ─── */}
       <section id="avantajlar" className="py-24 px-4 bg-slate-900 relative overflow-hidden">

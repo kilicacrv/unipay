@@ -81,7 +81,7 @@ const QRScanner = () => {
           // which fixes scanning issues on smaller screens.
         },
         (result) => {
-          if (result.startsWith('unipay_biz_')) {
+          if (result.startsWith('unipay_biz_') || result.startsWith('unipay_flash_')) {
             html5QrCode.stop().catch(console.error);
             processMatch(result);
           } else {
@@ -144,8 +144,25 @@ const QRScanner = () => {
   const processMatch = async (bizQrData) => {
     setIsProcessing(true);
 
-      // Extract business/venue info from QR data
-      const bizSlug = bizQrData.replace('unipay_biz_', '');
+      let bizSlug = null;
+      let campaignId = null;
+
+      if (bizQrData.startsWith('unipay_flash_')) {
+        campaignId = bizQrData.replace('unipay_flash_', '');
+        // Fetch flash campaign to get the venue_id
+        const { data: campaign } = await supabase.from('flash_campaigns').select('venue_id').eq('id', campaignId).single();
+        if (campaign) {
+           bizSlug = campaign.venue_id;
+        }
+      } else {
+        bizSlug = bizQrData.replace('unipay_biz_', '');
+      }
+
+      if (!bizSlug) {
+        setError('Geçersiz QR Kod veya süresi dolmuş kampanya.');
+        setIsProcessing(false);
+        return;
+      }
       
       // Try to fetch business name
       const { data: venue } = await supabase.from('venues').select('name').eq('id', bizSlug).single();
@@ -170,6 +187,7 @@ const QRScanner = () => {
         user_id: user.id, // Fallback
         business_id: bizSlug, // The missing column!
         venue_id: bizSlug, // Fallback in case both are used
+        campaign_id: campaignId, // Flash kampanya id'si
         business_qr: bizQrData,
         pin_code: confirmCode.toString(),
         status: 'bekliyor',

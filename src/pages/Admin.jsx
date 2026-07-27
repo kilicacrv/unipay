@@ -20,6 +20,7 @@ const Admin = () => {
   const [businesses, setBusinesses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [preview, setPreview] = useState(null);
+  const [confirmModal, setConfirmModal] = useState(null);
   const [filter, setFilter] = useState('all');
   const [updating, setUpdating] = useState(null);
 
@@ -36,7 +37,7 @@ const Admin = () => {
 
   useEffect(() => { fetchData(); }, []);
 
-  const sendApprovalEmail = async (app) => {
+  const sendEmailNotification = async (app, status) => {
     if (!app.email || EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID') return;
     try {
       await emailjs.send(
@@ -44,7 +45,10 @@ const Admin = () => {
         EMAILJS_TEMPLATE_ID,
         {
           to_email:   app.email,
-          to_name:    app.name,
+          to_name:    app.name || app.contact_name || 'Öğrenci',
+          status_message: status === 'onaylandi' 
+            ? 'Tebrikler! Kampüs Pay öğrenci hesabınız onaylandı. Hemen indirimleri kullanmaya başlayabilirsiniz.' 
+            : 'Öğrenci belgeniz doğrulanamadı. Lütfen E-Devlet üzerinden aldığınız güncel bir öğrenci belgesini (PDF) veya öğrenci kartınızı net bir şekilde tekrar yükleyin.',
           from_name:  'Kampüs Pay',
           reply_to:   'info@kampuspay.com',
         },
@@ -55,7 +59,9 @@ const Admin = () => {
     }
   };
 
-  const updateStatus = async (id, status, table) => {
+  const processUpdateStatus = async () => {
+    if (!confirmModal) return;
+    const { id, status, table, app } = confirmModal;
     setUpdating(id);
     
     const updatePayload = { status };
@@ -68,15 +74,13 @@ const Admin = () => {
     if (error) {
       alert('Güncelleme sırasında bir hata oluştu: ' + error.message);
       setUpdating(null);
+      setConfirmModal(null);
       return;
     }
 
     if (table === 'applications') {
-      const updatedApp = students.find(a => a.id === id);
       setStudents(prev => prev.map(a => a.id === id ? { ...a, status } : a));
-      if (status === 'onaylandi' && updatedApp) {
-        await sendApprovalEmail({ ...updatedApp, status });
-      }
+      await sendEmailNotification({ ...app, status }, status);
     } else {
       const updatedBiz = businesses.find(a => a.id === id);
       setBusinesses(prev => prev.map(a => a.id === id ? { ...a, status } : a));
@@ -104,6 +108,7 @@ const Admin = () => {
       }
     }
     setUpdating(null);
+    setConfirmModal(null);
   };
 
   const currentData = activeTab === 'students' ? students : businesses;
@@ -235,7 +240,7 @@ const Admin = () => {
                       <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
                         {app.status !== 'onaylandi' && (
                           <button 
-                            onClick={() => updateStatus(app.id, 'onaylandi', tableName)} 
+                            onClick={() => setConfirmModal({ id: app.id, status: 'onaylandi', table: tableName, app })} 
                             disabled={updating === app.id}
                             className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-sm disabled:opacity-50"
                           >
@@ -244,7 +249,7 @@ const Admin = () => {
                         )}
                         {app.status !== 'reddedildi' && (
                           <button 
-                            onClick={() => updateStatus(app.id, 'reddedildi', tableName)} 
+                            onClick={() => setConfirmModal({ id: app.id, status: 'reddedildi', table: tableName, app })} 
                             disabled={updating === app.id}
                             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-colors disabled:opacity-50 ${app.status === 'onaylandi' ? 'text-slate-600 hover:bg-slate-200' : 'bg-white text-rose-600 border border-slate-200 hover:bg-rose-50 ml-1'}`}
                           >
@@ -263,23 +268,58 @@ const Admin = () => {
       {/* Modal - Preview */}
       {preview && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setPreview(null)}>
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full border border-slate-200 overflow-hidden" onClick={e => e.stopPropagation()}>
-            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/80">
-              <h3 className="font-bold text-slate-900">Öğrenci Kartı Önizleme</h3>
-              <button onClick={() => setPreview(null)} className="text-slate-400 hover:text-slate-600 transition-colors">
-                <XCircle size={24} />
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
+            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
+              <h3 className="font-bold text-slate-900 text-lg">Belge Önizleme</h3>
+              <button onClick={() => setPreview(null)} className="text-slate-400 hover:text-slate-600 transition-colors p-1 bg-white rounded-md border border-slate-200">
+                <XCircle size={20} />
               </button>
             </div>
-            <div className="p-6 bg-slate-100 flex items-center justify-center">
-              <img src={preview} alt="Öğrenci Kartı" className="max-w-full rounded-lg shadow-md border border-slate-200 object-contain max-h-[60vh]" />
+            <div className="p-6 bg-slate-100/50 flex-1 overflow-auto flex items-center justify-center">
+              {preview.toLowerCase().includes('.pdf') ? (
+                <iframe src={preview} className="w-full h-full min-h-[60vh] rounded-xl shadow-sm border border-slate-200 bg-white" title="PDF Preview" />
+              ) : (
+                <img src={preview} alt="Öğrenci Kartı" className="max-w-full rounded-xl shadow-md border border-slate-200 object-contain" />
+              )}
             </div>
-            <div className="px-6 py-4 bg-white flex justify-end">
-              <button 
-                onClick={() => setPreview(null)}
-                className="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-colors shadow-sm"
-              >
-                Kapat
-              </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal - Confirmation */}
+      {confirmModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setConfirmModal(null)}>
+          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full border border-slate-200 overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="p-8 text-center">
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 ${confirmModal.status === 'onaylandi' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}`}>
+                {confirmModal.status === 'onaylandi' ? <CheckCircle size={32} /> : <XCircle size={32} />}
+              </div>
+              <h3 className="text-2xl font-black text-slate-900 mb-2">
+                {confirmModal.status === 'onaylandi' ? 'Onaylıyor musunuz?' : 'Reddediyor musunuz?'}
+              </h3>
+              <p className="text-slate-500 font-medium mb-8">
+                <span className="font-bold text-slate-700">{confirmModal.app.name || confirmModal.app.business_name}</span> adlı kullanıcının başvurusu 
+                {confirmModal.status === 'onaylandi' ? ' onaylanacak' : ' reddedilecek'}. 
+                <br/><br/>
+                İşlem sonucunda kullanıcıya otomatik bir e-posta bildirimi gönderilecektir. (EmailJS aktifse)
+              </p>
+              
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setConfirmModal(null)}
+                  className="flex-1 px-6 py-4 rounded-2xl font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
+                >
+                  İptal Et
+                </button>
+                <button 
+                  onClick={processUpdateStatus}
+                  className={`flex-1 px-6 py-4 rounded-2xl font-bold text-white transition-colors flex items-center justify-center gap-2 ${
+                    confirmModal.status === 'onaylandi' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-rose-600 hover:bg-rose-700'
+                  }`}
+                >
+                  {updating ? 'İşleniyor...' : 'Evet, Onayla'}
+                </button>
+              </div>
             </div>
           </div>
         </div>

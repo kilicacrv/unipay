@@ -156,8 +156,8 @@ const ManageDiscounts = () => {
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">İndirim Yönetimi</h1>
-          <p className="text-slate-500 font-medium">Aktif kampanyalarınızı yönetin ve yenilerini ekleyin.</p>
+          <h1 className="text-2xl font-bold text-slate-900 mb-1">Sabit İndirimlerim</h1>
+          <p className="text-slate-500 font-medium">Aktif indirimlerinizi yönetin ve yenilerini ekleyin.</p>
         </div>
         <button 
           onClick={() => setShowForm(true)}
@@ -224,17 +224,17 @@ const ManageDiscounts = () => {
           {/* Empty State */}
           {!fetching && discounts.length === 0 && venueId && (
             <div className="col-span-full py-20 text-center">
-              <div className="w-20 h-20 bg-slate-100 rounded-[2rem] flex items-center justify-center text-slate-300 mx-auto mb-6">
-                <Tag size={40} />
+              <div className="text-center py-20 bg-white rounded-2xl border border-slate-200 border-dashed">
+                <Tag size={48} className="mx-auto text-slate-300 mb-4" />
+                <h3 className="text-lg font-bold text-slate-900 mb-2">Henüz İndirim Yok</h3>
+                <p className="text-slate-400 font-medium text-sm mb-6">İlk indiriminizi oluşturun, öğrencilere özel avantajlar sunun.</p>
+                <button 
+                  onClick={() => setShowForm(true)}
+                  className="bg-slate-900 text-white px-6 py-3 rounded-xl font-bold inline-flex items-center gap-2 hover:bg-slate-800 transition-all"
+                >
+                  <Plus size={20} /> İlk İndirimi Ekle
+                </button>
               </div>
-              <h3 className="text-lg font-black text-slate-900 mb-2">Henüz İndirim Eklemediniz</h3>
-              <p className="text-slate-400 font-medium text-sm mb-6">İlk kampanyanızı oluşturun, öğrencilere özel avantajlar sunun.</p>
-              <button
-                onClick={() => setShowForm(true)}
-                className="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl hover:scale-105 transition-all"
-              >
-                İlk İndirimimi Ekle
-              </button>
             </div>
           )}
         </div>
@@ -247,14 +247,9 @@ const ManageDiscounts = () => {
           
           <div className="relative w-full max-w-lg mx-auto md:mx-0 md:absolute md:right-0 md:inset-y-0 bg-white shadow-2xl flex flex-col rounded-t-[2rem] md:rounded-none md:rounded-l-[2rem] max-h-[90vh] md:max-h-none overflow-hidden animate-in slide-in-from-bottom-full md:slide-in-from-right-full duration-300">
             
-            {/* Handle for mobile */}
-            <div className="w-full flex justify-center pt-3 pb-1 md:hidden">
-              <div className="w-12 h-1.5 bg-slate-200 rounded-full" />
-            </div>
-
-            <div className="px-6 md:px-8 py-4 border-b border-slate-100 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                <Tag size={20} className="text-primary" /> Yeni Kampanya
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md z-10">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                <Tag size={20} className="text-primary" /> Yeni İndirim
               </h2>
               <button onClick={() => setShowForm(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors">
                 <X size={18} />
@@ -263,12 +258,12 @@ const ManageDiscounts = () => {
 
             <div className="flex-1 overflow-y-auto no-scrollbar p-6 md:p-8">
               {success ? (
-                <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center">
-                  <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-6 animate-bounce">
-                    <CheckCircle size={48} />
+                <div className="text-center py-10">
+                  <div className="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle size={32} />
                   </div>
-                  <h3 className="text-2xl font-black text-slate-900 mb-2">Harika!</h3>
-                  <p className="text-slate-500 font-medium">Kampanyanız anında yayına alındı.</p>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">Başarılı!</h3>
+                  <p className="text-slate-500 font-medium">İndiriminiz anında yayına alındı.</p>
                 </div>
               ) : (
                 <div className="space-y-8">
@@ -303,7 +298,7 @@ const ManageDiscounts = () => {
 
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Kampanya Başlığı</label>
+                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">İndirim Başlığı</label>
                       <input
                         type="text"
                         required
@@ -353,13 +348,13 @@ const ManageDiscounts = () => {
                       >
                         İptal
                       </button>
-                      <button
+                      <button 
                         type="submit"
                         disabled={loading}
-                        className="flex-[2] bg-slate-900 text-white px-6 py-4 rounded-2xl text-sm font-bold hover:bg-slate-800 transition-colors shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="flex-1 bg-slate-900 text-white px-6 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-slate-800 transition-all disabled:opacity-50"
                       >
-                        {loading ? <Loader2 size={18} className="animate-spin" /> : <Tag size={18} />}
-                        Kampanyayı Yayınla
+                        {loading ? <Loader2 className="animate-spin" size={20} /> : <Sparkles size={20} />}
+                        İndirimi Yayınla
                       </button>
                     </div>
                   </form>

@@ -24,10 +24,10 @@ const BusinessDashboard = () => {
   const [pendingVisits, setPendingVisits] = useState([]);
   
   // Flash Campaign State
-  const [flashTitle, setFlashTitle] = useState('');
-  const [flashRate, setFlashRate] = useState(50);
-  const [flashHours, setFlashHours] = useState(2);
-  const [creatingFlash, setCreatingFlash] = useState(false);
+  const [activeFlash, setActiveFlash] = useState(null);
+  
+  // Analytics State
+  const [stats, setStats] = useState({ views: 0, usages: 0, customers: 0, campaigns: 0 });
 
   useEffect(() => {
     fetchBusinessData();
@@ -77,20 +77,57 @@ const BusinessDashboard = () => {
     }
   };
 
-  const fetchPendingVisits = async (qrCode) => {
+  const fetchPendingVisits = async () => {
     const { data } = await supabase
       .from('visits')
       .select('*')
-      .eq('business_qr', qrCode)
+      .eq('business_id', business.id)
       .eq('status', 'bekliyor')
       .order('created_at', { ascending: false });
     if (data) setPendingVisits(data);
   };
 
+  const fetchActiveFlash = async () => {
+    const now = new Date().toISOString();
+    const { data } = await supabase
+      .from('flash_campaigns')
+      .select('*')
+      .eq('venue_id', business.id)
+      .gt('expires_at', now)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+    setActiveFlash(data || null);
+  };
+
+  const fetchStats = async () => {
+    // 1. Total Visits (Usages)
+    const { count: usagesCount } = await supabase.from('visits').select('*', { count: 'exact', head: true })
+      .eq('business_id', business.id).eq('status', 'onaylandi');
+      
+    // 2. Unique Customers
+    const { data: uniqueData } = await supabase.from('visits').select('user_id')
+      .eq('business_id', business.id).eq('status', 'onaylandi');
+    const uniqueCustomers = new Set(uniqueData?.map(v => v.user_id)).size;
+
+    // 3. Total Campaigns Created
+    const { count: campaignsCount } = await supabase.from('flash_campaigns').select('*', { count: 'exact', head: true })
+      .eq('venue_id', business.id);
+
+    setStats({
+      views: usagesCount ? usagesCount * 3 : 0,
+      usages: usagesCount || 0,
+      customers: uniqueCustomers || 0,
+      campaigns: campaignsCount || 0
+    });
+  };
+
   useEffect(() => {
     if (!business?.id) return;
-    const qrCode = `unipay_biz_${business.id}`;
-    fetchPendingVisits(qrCode);
+    
+    fetchPendingVisits();
+    fetchActiveFlash();
+    fetchStats();
 
     const channel = supabase
       .channel('business_visits')
@@ -98,9 +135,18 @@ const BusinessDashboard = () => {
         event: '*', 
         schema: 'public', 
         table: 'visits',
-        filter: `business_qr=eq.${qrCode}`
+        filter: `business_id=eq.${business.id}`
       }, () => {
-        fetchPendingVisits(qrCode);
+        fetchPendingVisits();
+        fetchStats();
+      })
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'flash_campaigns',
+        filter: `venue_id=eq.${business.id}`
+      }, () => {
+        fetchActiveFlash();
       })
       .subscribe();
 
@@ -126,7 +172,8 @@ const BusinessDashboard = () => {
       
       await supabase.from('points_history').insert({ user_id: visit.user_id, points: POINTS, reason: `${business.name} ziyareti` });
       
-      fetchPendingVisits(`unipay_biz_${business.id}`);
+      fetchPendingVisits();
+      fetchStats();
     } catch (err) {
       console.error('Onaylama hatası:', err);
     }
@@ -134,28 +181,29 @@ const BusinessDashboard = () => {
 
   const handleReject = async (visitId) => {
     await supabase.from('visits').update({ status: 'reddedildi' }).eq('id', visitId);
-    fetchPendingVisits(`unipay_biz_${business.id}`);
+    fetchPendingVisits();
   };
 
-  const handleCreateFlash = async () => {
-    if (!flashTitle || !flashRate || !flashHours) return;
-    setCreatingFlash(true);
-    
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + parseInt(flashHours));
-
-    await supabase.from('flash_campaigns').insert({
-      venue_id: business.id,
-      title: flashTitle,
-      rate: parseInt(flashRate),
-      expires_at: expiresAt.toISOString()
-    });
-
-    setFlashTitle('');
-    setFlashRate(50);
-    setFlashHours(2);
-    setCreatingFlash(false);
-    alert('Flaş kampanya başarıyla oluşturuldu ve öğrencilere bildirildi!');
+  const handleDownloadQR = () => {
+    const svg = document.getElementById(`qr-biz-${business.id}`);
+    if (!svg) return;
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+    img.onload = () => {
+      canvas.width = img.width + 40;
+      canvas.height = img.height + 40;
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 20, 20);
+      const pngFile = canvas.toDataURL("image/png");
+      const downloadLink = document.createElement("a");
+      downloadLink.download = `unipay_qr_${business.name || 'mekan'}.png`;
+      downloadLink.href = `${pngFile}`;
+      downloadLink.click();
+    };
+    img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
   };
 
   if (loading) {
@@ -190,10 +238,10 @@ const BusinessDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <StatCard title="Görüntülenme" value="1,284" icon={<Eye size={20} />} trend="+12%" />
-        <StatCard title="İndirim Kullanımı" value="156" icon={<Tag size={20} />} trend="+5%" />
-        <StatCard title="Tekil Müşteri" value="89" icon={<Users size={20} />} trend="+18%" />
-        <StatCard title="Aktif Kampanya" value="2" icon={<Tag size={20} />} trend="0%" />
+        <StatCard title="Görüntülenme" value={stats.views} icon={<Eye size={20} />} trend="+12%" />
+        <StatCard title="İndirim Kullanımı" value={stats.usages} icon={<Tag size={20} />} trend="+5%" />
+        <StatCard title="Tekil Müşteri" value={stats.customers} icon={<Users size={20} />} trend="+18%" />
+        <StatCard title="Toplam Kampanya" value={stats.campaigns} icon={<Zap size={20} />} trend="0%" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -253,76 +301,58 @@ const BusinessDashboard = () => {
             <h3 className="font-bold text-slate-900 mb-2">Mekan QR Kodu</h3>
             <p className="text-xs text-slate-500 mb-6 font-medium">Öğrencilerin indirim alması için bu kodu taratması gerekir.</p>
             
-            <div className="bg-white p-4 rounded-3xl border-2 border-slate-50 shadow-inner mb-6">
+            <div className="bg-white p-4 rounded-3xl border-2 border-slate-100 mb-6 flex justify-center items-center">
               <QRCodeSVG 
+                id={`qr-biz-${business.id}`}
                 value={`unipay_biz_${business.id}`} 
                 size={160}
                 level="H"
+                fgColor="#000000"
+                bgColor="#ffffff"
               />
             </div>
 
             <div className="flex gap-2 w-full">
-              <button className="flex-1 bg-slate-900 text-white py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-slate-800 transition-all">
+              <button 
+                onClick={handleDownloadQR}
+                className="flex-1 bg-slate-900 text-white py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-slate-800 transition-all"
+              >
                 <Download size={14} /> İndir
               </button>
             </div>
           </div>
 
-          {/* Flash Campaign Creator */}
-          <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-2xl shadow-xl text-white relative overflow-hidden">
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-2">
-                <Zap size={24} className="text-white fill-white animate-pulse" />
-                <h3 className="font-black text-xl tracking-tight">Flaş Kampanya</h3>
-              </div>
-              <p className="text-xs text-white/80 font-medium mb-6">Öğrencilere anlık indirim bildirimi gönderin.</p>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-white/70 mb-1 block">Kampanya Adı</label>
-                  <input 
-                    type="text" 
-                    placeholder="Örn: Tatlılarda Son Şans" 
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder-white/40 focus:outline-none focus:border-white"
-                    value={flashTitle}
-                    onChange={e => setFlashTitle(e.target.value)}
+          {/* Active Flash Campaign */}
+          {activeFlash ? (
+            <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-2xl shadow-xl text-white relative overflow-hidden flex flex-col items-center text-center">
+              <div className="relative z-10 w-full">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Zap size={24} className="text-white fill-white animate-pulse" />
+                  <h3 className="font-black text-xl tracking-tight">Aktif Flaş Kampanya</h3>
+                </div>
+                <h4 className="text-2xl font-black mb-1">{activeFlash.title}</h4>
+                <p className="text-lg font-bold text-white/90 mb-4">% {activeFlash.rate} İndirim</p>
+                <div className="bg-white p-4 rounded-3xl border-2 border-white/20 shadow-inner mb-4 inline-block">
+                  <QRCodeSVG 
+                    value={`unipay_flash_${activeFlash.id}`} 
+                    size={160}
+                    level="H"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/70 mb-1 block">İndirim Oranı (%)</label>
-                    <input 
-                      type="number" 
-                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white"
-                      value={flashRate}
-                      onChange={e => setFlashRate(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/70 mb-1 block">Süre (Saat)</label>
-                    <input 
-                      type="number" 
-                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white"
-                      value={flashHours}
-                      onChange={e => setFlashHours(e.target.value)}
-                    />
-                  </div>
-                </div>
-                
-                <button 
-                  onClick={handleCreateFlash}
-                  disabled={creatingFlash}
-                  className="w-full bg-white text-orange-600 py-4 rounded-xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-50 transition-all mt-2 active:scale-95 shadow-lg"
-                >
-                  {creatingFlash ? <Loader2 className="animate-spin" size={16} /> : <Clock size={16} />}
-                  Kampanyayı Başlat
-                </button>
+                <p className="text-sm font-medium text-white flex items-center justify-center gap-1">
+                  <Clock size={14} /> Bitiş: {new Date(activeFlash.expires_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                </p>
               </div>
+              <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-black/10 rounded-full blur-2xl -ml-16 -mb-16 pointer-events-none" />
             </div>
-            {/* Decorative background shapes */}
-            <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-black/10 rounded-full blur-2xl -ml-16 -mb-16 pointer-events-none" />
-          </div>
+          ) : (
+            <div className="bg-slate-100 p-8 rounded-2xl border border-slate-200 border-dashed text-center flex flex-col items-center justify-center">
+              <Zap size={32} className="text-slate-300 mb-3" />
+              <h3 className="font-bold text-slate-700 mb-1">Flaş Kampanya Yok</h3>
+              <p className="text-xs text-slate-500 font-medium">Şu an aktif bir flaş kampanyanız bulunmuyor. Sistem yöneticiniz (Admin) size yeni bir kampanya tanımladığında bu alanda belirecektir.</p>
+            </div>
+          )}
 
           <div className="bg-slate-900 p-6 rounded-2xl text-white">
             <div className="flex items-center gap-3 mb-4">
@@ -332,7 +362,7 @@ const BusinessDashboard = () => {
               <p className="text-sm font-bold">Performans Notu</p>
             </div>
             <p className="text-xs text-slate-400 font-medium leading-relaxed mb-4">
-              Bu hafta geçen haftaya göre <span className="text-primary font-bold">%15 daha fazla</span> öğrenci işletmenizi ziyaret etti.
+              Düzenli olarak flaş kampanyalar düzenlemek, işletmenizin görünürlüğünü ve öğrenci ziyaretlerini önemli ölçüde artırır.
             </p>
             <div className="h-1 bg-white/10 rounded-full overflow-hidden">
               <div className="h-full bg-primary w-3/4 rounded-full" />

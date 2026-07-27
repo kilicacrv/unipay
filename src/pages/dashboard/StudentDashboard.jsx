@@ -201,13 +201,13 @@ const StudentDashboard = () => {
 
         {/* Flash Campaigns Banner */}
         {flashCampaigns.length > 0 && (
-          <div className="space-y-4">
+          <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4 snap-x">
             {flashCampaigns.map(campaign => {
               const expires = new Date(campaign.expires_at);
               const timeString = expires.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
 
               return (
-                <div key={campaign.id} onClick={() => navigate(`/mekan/${campaign.venue_id}`)} className="bg-gradient-to-r from-rose-500 to-orange-500 rounded-[2rem] p-5 text-white shadow-xl relative overflow-hidden cursor-pointer hover:scale-[1.02] active:scale-95 transition-transform">
+                <div key={campaign.id} onClick={() => navigate(`/mekan/${campaign.venue_id}`)} className="shrink-0 w-[85%] snap-center bg-gradient-to-r from-rose-500 to-orange-500 rounded-[2rem] p-5 text-white shadow-xl relative overflow-hidden cursor-pointer hover:scale-[1.02] active:scale-95 transition-transform">
                   <div className="relative z-10 flex items-center justify-between">
                     <div>
                       <div className="flex items-center gap-2 mb-1">

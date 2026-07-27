@@ -70,10 +70,33 @@ const BusinessLayout = () => {
           </div>
         </header>
         
-        <main className="p-8">
+        <main className="p-8 pb-24 lg:pb-8">
           <Outlet />
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around items-center h-16 z-50 px-2 pb-safe">
+        {menuItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <Link
+              key={item.name}
+              to={item.path}
+              className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${
+                isActive ? 'text-primary' : 'text-slate-400 hover:text-slate-900'
+              }`}
+            >
+              <div className={`${isActive ? 'scale-110' : 'scale-100'} transition-transform`}>
+                {item.icon}
+              </div>
+              <span className={`text-[10px] font-bold ${isActive ? 'text-primary' : 'text-slate-500'}`}>
+                {item.name}
+              </span>
+            </Link>
+          );
+        })}
+      </nav>
     </div>
   );
 };

@@ -219,15 +219,24 @@ const VerifyStudent = () => {
           </div>
 
           <div className="pt-2">
-            <label className="block text-xs font-bold text-slate-900 uppercase tracking-widest mb-2">Öğrenci Kartı (Zorunlu)</label>
+            <label className="block text-xs font-bold text-slate-900 uppercase tracking-widest mb-2">E-Devlet Belgesi veya Öğrenci Kartı</label>
             <label htmlFor="id-upload"
               onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
               onDragLeave={() => setIsDragging(false)} onDrop={handleDrop}
               className={`block w-full h-48 rounded-2xl border-2 border-dashed cursor-pointer transition-all duration-300 ${
                 isDragging ? 'border-primary bg-primary/10' : file ? 'border-slate-300 bg-slate-50' : 'border-slate-200 bg-slate-50 hover:bg-slate-100'}`}>
               {file ? (
-                <div className="relative w-full h-full flex items-center justify-center p-3">
-                  <img src={file} alt="Preview" className="max-h-full max-w-full rounded-xl object-contain" />
+                <div className="relative w-full h-full flex flex-col items-center justify-center p-3">
+                  {fileObj?.type === 'application/pdf' ? (
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <div className="w-16 h-16 bg-red-100 text-red-500 rounded-xl flex items-center justify-center">
+                        <Upload size={32} />
+                      </div>
+                      <span className="font-bold text-slate-700 text-sm">{fileObj.name}</span>
+                    </div>
+                  ) : (
+                    <img src={file} alt="Preview" className="max-h-full max-w-full rounded-xl object-contain" />
+                  )}
                   <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 hover:opacity-100 transition-opacity">
                     <span className="text-white font-bold text-sm bg-black/50 px-4 py-2 rounded-lg">Değiştir</span>
                   </div>
@@ -238,7 +247,7 @@ const VerifyStudent = () => {
                     <Upload size={22} className="text-primary" />
                   </div>
                   <p className="font-semibold text-dark text-sm">Dosya seç veya sürükle bırak</p>
-                  <p className="text-dark/50 text-xs">JPG, PNG, PDF · Maks 5MB</p>
+                  <p className="text-dark/50 text-xs">PDF, JPG, PNG · Maks 5MB</p>
                 </div>
               )}
               <input id="id-upload" type="file" accept="image/*,.pdf" className="hidden" onChange={handleFileChange} />

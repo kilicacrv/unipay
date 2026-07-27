@@ -58,6 +58,7 @@ const AdminLayout    = lazy(() => import('./layouts/AdminLayout'));
 const AdminVenues    = lazy(() => import('./pages/admin/AdminVenues'));
 const AdminAnalytics = lazy(() => import('./pages/admin/AdminAnalytics'));
 const AdminNotifications = lazy(() => import('./pages/admin/AdminNotifications'));
+const AdminFlashCampaigns = lazy(() => import('./pages/admin/AdminFlashCampaigns'));
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 function App() {
@@ -90,6 +91,7 @@ function App() {
                 <Route path="venues" element={<AdminVenues />} />
                 <Route path="analytics" element={<AdminAnalytics />} />
                 <Route path="notifications" element={<AdminNotifications />} />
+                <Route path="flash-campaigns" element={<AdminFlashCampaigns />} />
               </Route>
 
               {/* ── Sadece Full Launch'ta Açık ── */}

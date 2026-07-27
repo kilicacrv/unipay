@@ -22,6 +22,7 @@ const AdminAnalytics = () => {
     totalVisits: 0,
     totalStudents: 0,
     totalPointsAwarded: 0,
+    totalFlash: 0,
   });
   const [topVenues, setTopVenues] = useState([]);
   const [recentVisits, setRecentVisits] = useState([]);
@@ -55,12 +56,17 @@ const AdminAnalytics = () => {
       const { count: studentCount } = await supabase
         .from('student_points').select('*', { count: 'exact', head: true });
 
+      // Total Flash Campaigns
+      const { count: flashCount } = await supabase
+        .from('flash_campaigns').select('*', { count: 'exact', head: true });
+
       setStats({
         totalVenues: venueCount || 0,
         totalFavorites: favCount || 0,
         totalVisits: visitCount || 0,
         totalStudents: studentCount || 0,
         totalPointsAwarded: totalPts,
+        totalFlash: flashCount || 0,
       });
 
       // Recent Visits (Son İşlemler)
@@ -140,6 +146,13 @@ const AdminAnalytics = () => {
               icon={<MapPin size={24} className="text-white" />}
               color="bg-emerald-500"
               sub="QR kod ile gerçekleşen indirim"
+            />
+            <StatCard 
+              label="Flaş Kampanyalar" 
+              value={stats.totalFlash} 
+              icon={<Zap size={24} className="text-white fill-white" />} 
+              color="bg-amber-500"
+              sub="Aktif flaş kampanya sayısı"
             />
             <StatCard
               label="Aktif Öğrenci"

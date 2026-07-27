@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Search, MapPin, Star, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { MOCK_VENUES, CATEGORIES } from '../data/mockData';
+import { CATEGORIES } from '../data/mockData';
+import { supabase } from '../lib/supabase';
 
 const categoryMap = {
   all: null,
@@ -21,10 +22,30 @@ const tagColors = {
 const Venues = () => {
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
+  const [venues, setVenues] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filtered = MOCK_VENUES.filter((v) => {
-    const matchSearch = v.name.toLowerCase().includes(search.toLowerCase()) || v.category.toLowerCase().includes(search.toLowerCase());
-    const matchCat = categoryMap[activeCategory] ? v.category === categoryMap[activeCategory] : true;
+  useEffect(() => {
+    fetchVenues();
+  }, []);
+
+  const fetchVenues = async () => {
+    setLoading(true);
+    const { data, error } = await supabase.from('venues').select('*');
+    if (!error && data) {
+      setVenues(data);
+    }
+    setLoading(false);
+  };
+
+  const filtered = venues.filter((v) => {
+    const venueName = v.name || '';
+    const venueCat = v.category || '';
+    const matchSearch = venueName.toLowerCase().includes(search.toLowerCase()) || venueCat.toLowerCase().includes(search.toLowerCase());
+    
+    // categoryMap uses uppercase categories (e.g. 'KAFE'), match with venueCat case-insensitively
+    const matchCat = categoryMap[activeCategory] ? venueCat.toUpperCase() === categoryMap[activeCategory] : true;
+    
     return matchSearch && matchCat;
   });
 
@@ -108,40 +129,43 @@ const Venues = () => {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((venue, index) => (
-              <motion.div
-                key={venue.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.07 }}
-                className="card p-6 group cursor-pointer"
-              >
-                {/* Discount badge */}
-                <div className="flex justify-between items-start mb-5">
-                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${tagColors[venue.category] || 'bg-slate-100 text-slate-600'}`}>
-                    {venue.category}
-                  </span>
-                  <span className="text-lg font-black text-secondary">{venue.discount}</span>
-                </div>
-
-                <h3 className="text-xl font-black text-dark mb-2 group-hover:text-primary transition-colors">{venue.name}</h3>
-
-                <div className="flex items-center gap-1.5 text-slate-400 text-sm mb-5">
-                  <MapPin size={14} />
-                  <span>{venue.address}</span>
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                  <div className="flex items-center gap-1 text-amber-400">
-                    <Star size={15} fill="currentColor" />
-                    <span className="text-sm font-bold text-dark">{venue.rating}</span>
+            {filtered.map((venue, index) => {
+              const categoryUpper = (venue.category || '').toUpperCase();
+              return (
+                <motion.div
+                  key={venue.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.07 }}
+                  className="card p-6 group cursor-pointer"
+                >
+                  {/* Discount badge */}
+                  <div className="flex justify-between items-start mb-5">
+                    <span className={`text-xs font-bold px-3 py-1 rounded-full ${tagColors[categoryUpper] || 'bg-slate-100 text-slate-600'}`}>
+                      {venue.category || 'Mekan'}
+                    </span>
+                    <span className="text-lg font-black text-secondary">%15</span>
                   </div>
-                  <button className="flex items-center gap-1 text-primary text-sm font-semibold hover:underline">
-                    Detay <ChevronRight size={15} />
-                  </button>
-                </div>
-              </motion.div>
-            ))}
+
+                  <h3 className="text-xl font-black text-dark mb-2 group-hover:text-primary transition-colors">{venue.name}</h3>
+
+                  <div className="flex items-center gap-1.5 text-slate-400 text-sm mb-5">
+                    <MapPin size={14} />
+                    <span>{venue.address || 'Bosna Hersek'}</span>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                    <div className="flex items-center gap-1 text-amber-400">
+                      <Star size={15} fill="currentColor" />
+                      <span className="text-sm font-bold text-dark">{venue.rating || '4.5'}</span>
+                    </div>
+                    <button className="flex items-center gap-1 text-primary text-sm font-semibold hover:underline">
+                      Detay <ChevronRight size={15} />
+                    </button>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </div>

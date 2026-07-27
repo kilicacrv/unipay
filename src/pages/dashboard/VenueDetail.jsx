@@ -182,15 +182,34 @@ const VenueDetail = () => {
       <main className="p-6 space-y-10 max-w-lg mx-auto">
         {/* Actions Row */}
         <div className="flex gap-4 overflow-x-auto no-scrollbar py-2">
-          <button className="flex-1 min-w-[140px] bg-primary text-dark py-5 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-[0_10px_30px_rgba(255,214,0,0.3)] hover:scale-105 transition-all">
+          <button 
+            onClick={() => {
+              if (venue.lat && venue.lng) {
+                window.open(`https://www.google.com/maps/dir/?api=1&destination=${venue.lat},${venue.lng}`, '_blank');
+              } else if (venue.address) {
+                window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(venue.address)}`, '_blank');
+              }
+            }}
+            className="flex-1 min-w-[140px] bg-primary text-dark py-5 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-[0_10px_30px_rgba(255,214,0,0.3)] hover:scale-105 transition-all"
+          >
             <Navigation size={18} strokeWidth={2.5} /> Yol Tarifi
           </button>
-          <button className="w-16 h-16 bg-slate-50 text-slate-900 rounded-2xl flex items-center justify-center border border-slate-100 shadow-sm active:scale-90 transition-all">
-            <Smartphone size={22} />
-          </button>
-          <button className="w-16 h-16 bg-slate-50 text-slate-900 rounded-2xl flex items-center justify-center border border-slate-100 shadow-sm active:scale-90 transition-all">
-            <AtSign size={22} />
-          </button>
+          {venue.phone && (
+            <button 
+              onClick={() => window.open(`tel:${venue.phone}`, '_self')}
+              className="w-16 h-16 bg-slate-50 text-slate-900 rounded-2xl flex items-center justify-center border border-slate-100 shadow-sm active:scale-90 transition-all shrink-0"
+            >
+              <Smartphone size={22} />
+            </button>
+          )}
+          {venue.instagram && (
+            <button 
+              onClick={() => window.open(`https://instagram.com/${venue.instagram.replace('@', '')}`, '_blank')}
+              className="w-16 h-16 bg-slate-50 text-slate-900 rounded-2xl flex items-center justify-center border border-slate-100 shadow-sm active:scale-90 transition-all shrink-0"
+            >
+              <AtSign size={22} />
+            </button>
+          )}
         </div>
 
         {/* Discounts Section */}
