@@ -49,7 +49,14 @@ const AdminNotifications = () => {
       if (error) throw error;
       
       setFormData({ title: '', message: '', type: 'info', link_url: '' });
-      fetchNotifications();
+      
+      // Optimistic refresh
+      const { data: nData } = await supabase
+        .from('admin_notifications')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (nData) setNotifications(nData);
+      
       alert('Duyuru başarıyla gönderildi! Tüm öğrenciler panellerinde görecek.');
     } catch (err) {
       console.error(err);
@@ -61,17 +68,19 @@ const AdminNotifications = () => {
 
   const handleDelete = async (id) => {
     if (window.confirm('Bu duyuruyu silmek istediğinize emin misiniz?')) {
+      // Optimistic update
+      setNotifications(prev => prev.filter(n => n.id !== id));
       await supabase.from('admin_notifications').delete().eq('id', id);
-      fetchNotifications();
     }
   };
 
   const handleToggleActive = async (id, currentStatus) => {
+    // Optimistic update
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_active: !currentStatus } : n));
     await supabase
       .from('admin_notifications')
       .update({ is_active: !currentStatus })
       .eq('id', id);
-    fetchNotifications();
   };
 
   return (

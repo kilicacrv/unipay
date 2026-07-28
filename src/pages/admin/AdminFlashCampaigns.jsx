@@ -63,15 +63,24 @@ const AdminFlashCampaigns = () => {
       setRate(50);
       setHours(2);
       setSelectedVenue('');
-      fetchData(); // refresh list
+      // Optimistic refresh without full page loader
+      const { data: cData } = await supabase
+        .from('flash_campaigns')
+        .select(`
+          *,
+          venues ( name, image_url )
+        `)
+        .order('created_at', { ascending: false });
+      if (cData) setActiveCampaigns(cData);
     }
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm('Bu kampanyayı sonlandırmak istediğinize emin misiniz?')) return;
     
+    // Optimistic delete
+    setActiveCampaigns(prev => prev.filter(c => c.id !== id));
     await supabase.from('flash_campaigns').delete().eq('id', id);
-    fetchData();
   };
 
   if (loading) {
