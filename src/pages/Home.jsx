@@ -123,9 +123,9 @@ const Home = () => {
             </h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-8 relative">
             {/* Connecting Line */}
-            <div className="hidden md:block absolute top-12 left-1/6 right-1/6 w-2/3 h-0.5 bg-slate-100 z-0" style={{ left: '16.66%', right: '16.66%', width: '66.66%' }} />
+            <div className="absolute top-8 md:top-12 left-1/6 right-1/6 w-2/3 h-0.5 bg-slate-100 z-0" style={{ left: '16.66%', right: '16.66%', width: '66.66%' }} />
 
             {/* Step 1 */}
             <motion.div 
@@ -135,13 +135,13 @@ const Home = () => {
               transition={{ delay: 0.1 }}
               className="relative z-10 flex flex-col items-center text-center group"
             >
-              <div className="w-24 h-24 bg-white rounded-[2rem] border border-slate-200 shadow-xl shadow-slate-200/50 flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform duration-300">
-                <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center">
-                  <QrCode size={32} className="text-slate-900" />
+              <div className="w-16 h-16 md:w-24 md:h-24 bg-white rounded-2xl md:rounded-[2rem] border border-slate-200 shadow-lg md:shadow-xl shadow-slate-200/50 flex items-center justify-center mb-3 md:mb-6 group-hover:-translate-y-1 md:group-hover:-translate-y-2 transition-transform duration-300">
+                <div className="w-10 h-10 md:w-16 md:h-16 bg-slate-50 rounded-xl md:rounded-2xl flex items-center justify-center">
+                  <QrCode className="w-5 h-5 md:w-8 md:h-8 text-slate-900" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">1. QR Kodu Okut</h3>
-              <p className="text-slate-500 font-medium">Kasadaki Kampüs Pay QR kodunu okut, sistem öğrenci olduğunu işletmeye anında bildirsin.</p>
+              <h3 className="text-[10px] sm:text-xs md:text-xl font-black text-slate-900 mb-1 md:mb-2 leading-tight">1. QR Okut</h3>
+              <p className="text-[9px] md:text-base text-slate-500 font-medium hidden sm:block">Kasadaki Kampüs Pay QR kodunu okut, sistem öğrenci olduğunu işletmeye anında bildirsin.</p>
             </motion.div>
 
             {/* Step 2 */}
@@ -150,15 +150,15 @@ const Home = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="relative z-10 flex flex-col items-center text-center mt-8 md:mt-0 group"
+              className="relative z-10 flex flex-col items-center text-center group"
             >
-              <div className="w-24 h-24 bg-white rounded-[2rem] border border-primary shadow-xl shadow-primary/20 flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform duration-300">
-                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
-                  <Zap size={32} className="text-slate-900" />
+              <div className="w-16 h-16 md:w-24 md:h-24 bg-white rounded-2xl md:rounded-[2rem] border border-primary shadow-lg md:shadow-xl shadow-primary/20 flex items-center justify-center mb-3 md:mb-6 group-hover:-translate-y-1 md:group-hover:-translate-y-2 transition-transform duration-300">
+                <div className="w-10 h-10 md:w-16 md:h-16 bg-primary/10 rounded-xl md:rounded-2xl flex items-center justify-center">
+                  <Zap className="w-5 h-5 md:w-8 md:h-8 text-slate-900" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">2. İndirimi Kap</h3>
-              <p className="text-slate-500 font-medium">İşletme ödemeyi onaylasın, sadece öğrencilere özel olan bu dev indirimden anında faydalan.</p>
+              <h3 className="text-[10px] sm:text-xs md:text-xl font-black text-slate-900 mb-1 md:mb-2 leading-tight">2. İndirimi Kap</h3>
+              <p className="text-[9px] md:text-base text-slate-500 font-medium hidden sm:block">İşletme ödemeyi onaylasın, sadece öğrencilere özel olan bu dev indirimden anında faydalan.</p>
             </motion.div>
 
             {/* Step 3 */}
@@ -167,15 +167,15 @@ const Home = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="relative z-10 flex flex-col items-center text-center mt-8 md:mt-0 group"
+              className="relative z-10 flex flex-col items-center text-center group"
             >
-              <div className="w-24 h-24 bg-white rounded-[2rem] border border-amber-200 shadow-xl shadow-amber-200/50 flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform duration-300">
-                <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center">
-                  <Star size={32} className="text-amber-500" />
+              <div className="w-16 h-16 md:w-24 md:h-24 bg-white rounded-2xl md:rounded-[2rem] border border-amber-200 shadow-lg md:shadow-xl shadow-amber-200/50 flex items-center justify-center mb-3 md:mb-6 group-hover:-translate-y-1 md:group-hover:-translate-y-2 transition-transform duration-300">
+                <div className="w-10 h-10 md:w-16 md:h-16 bg-amber-50 rounded-xl md:rounded-2xl flex items-center justify-center">
+                  <Star className="w-5 h-5 md:w-8 md:h-8 text-amber-500" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">3. Puan Kazan</h3>
-              <p className="text-slate-500 font-medium">Her işleminizden Kampüs Puan (KP) kazanın, daha fazla fırsatın kilidini açın.</p>
+              <h3 className="text-[10px] sm:text-xs md:text-xl font-black text-slate-900 mb-1 md:mb-2 leading-tight">3. Puan Kazan</h3>
+              <p className="text-[9px] md:text-base text-slate-500 font-medium hidden sm:block">Her işleminizden Kampüs Puan (KP) kazanın, daha fazla fırsatın kilidini açın.</p>
             </motion.div>
           </div>
         </div>
