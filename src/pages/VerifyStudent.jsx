@@ -95,7 +95,7 @@ const VerifyStudent = () => {
 
       const { data: urlData } = supabase.storage.from('student-cards').getPublicUrl(fileName);
 
-      const finalStatus = 'bekliyor';
+      const finalStatus = appRecord ? 'bekliyor' : 'onaylandi';
 
       if (appRecord) {
         // Güncelle
@@ -105,7 +105,7 @@ const VerifyStudent = () => {
             university: university,
             card_url: urlData.publicUrl,
             status: finalStatus,
-            approved_at: null // Reset approval time if they are re-applying
+            approved_at: null
           })
           .eq('id', appRecord.id);
         if (updateError) {
@@ -122,6 +122,7 @@ const VerifyStudent = () => {
           university: university,
           card_url: urlData.publicUrl,
           status: finalStatus,
+          approved_at: new Date().toISOString(),
         }]);
         if (insertError) {
           console.error("Insert Error:", insertError);
@@ -154,18 +155,27 @@ const VerifyStudent = () => {
   }
 
   if (submitStatus) {
+    const isOnaylandi = submitStatus === 'onaylandi';
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center pt-32 pb-16 px-4">
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4, type: 'spring', bounce: 0.4 }}
           className="bg-white rounded-[2rem] shadow-xl border border-slate-100 p-12 text-center max-w-md w-full">
-          <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6 text-amber-500">
-            <Clock size={36} />
+          
+          <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${isOnaylandi ? 'bg-emerald-50 text-emerald-500' : 'bg-amber-50 text-amber-500'}`}>
+            {isOnaylandi ? <CheckCircle size={36} /> : <Clock size={36} />}
           </div>
-          <h2 className="text-3xl font-bold text-slate-900 tracking-tighter mb-3">İnceleniyor</h2>
+          
+          <h2 className="text-3xl font-bold text-slate-900 tracking-tighter mb-3">
+            {isOnaylandi ? 'Tebrikler!' : 'İnceleniyor'}
+          </h2>
+          
           <p className="text-slate-500 leading-relaxed mb-8 font-medium">
-            Öğrenci kartınız sistemimize yüklendi. Ekibimiz en kısa sürede belgenizi inceleyip aktivasyonunuzu tamamlayacak.
+            {isOnaylandi 
+              ? 'Öğrenci belgeniz yüklendi ve hesabınız anında onaylandı. İndirimleri kullanmaya hemen başlayabilirsiniz!' 
+              : 'Öğrenci kartınız sistemimize yüklendi. 24 saat içerisinde kimlik bilgilerinizi inceleyip size dönüş yapacağız.'}
           </p>
+          
           <button 
             onClick={() => navigate('/dashboard')} 
             className="w-full bg-slate-900 text-white font-bold px-8 py-4 rounded-2xl shadow-xl shadow-slate-900/20 hover:shadow-2xl hover:shadow-slate-900/30 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"

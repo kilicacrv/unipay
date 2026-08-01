@@ -128,7 +128,7 @@ const QRScanner = () => {
         (payload) => {
           if (payload.new.status === 'onaylandi') {
             setStatus('onaylandi');
-            setEarnedPoints(10); // Show standard points on success
+            setEarnedPoints(payload.new.campaign_id ? 30 : 10);
           } else if (payload.new.status === 'reddedildi') {
             setStatus('reddedildi');
             setError('İşletme indirimi reddetti.');

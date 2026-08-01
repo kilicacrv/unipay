@@ -144,7 +144,7 @@ const VenueExplore = () => {
 
           {/* Categories */}
           <div className="flex gap-2 overflow-x-auto no-scrollbar pointer-events-auto px-1 py-1">
-            {['Tümü', 'Cafe', 'Restoran', 'Tatlı', 'Giyim', 'Kırtasiye'].map(cat => (
+            {['Tümü', 'Cafe', 'Restoran', 'Tatlı', 'Giyim', 'Eğlence', 'Kırtasiye', 'Kişisel Bakım', 'Teknoloji', 'Spor', 'Market', 'Eğitim'].map(cat => (
               <button 
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}

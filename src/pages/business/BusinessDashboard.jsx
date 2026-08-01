@@ -161,7 +161,7 @@ const BusinessDashboard = () => {
         venue_id: business.id 
       }).eq('id', visit.id);
       
-      const POINTS = 10;
+      const POINTS = visit.campaign_id ? 30 : 10;
       const { data: existingPoints } = await supabase.from('student_points').select('*').eq('user_id', visit.user_id).single();
       
       if (existingPoints) {

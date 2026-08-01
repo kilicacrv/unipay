@@ -108,6 +108,79 @@ const Home = () => {
       {/* ─── BANNER CAROUSEL ─── */}
       <BannerCarousel />
 
+      {/* ─── HOW IT WORKS ─── */}
+      <section className="py-24 px-4 bg-white relative overflow-hidden">
+        <div className="max-w-5xl mx-auto relative z-10">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <span className="text-primary font-bold text-xs uppercase tracking-widest bg-primary/10 px-3 py-1.5 rounded-lg border border-primary/20 mb-4 inline-block">Nasıl Çalışır?</span>
+            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 tracking-tighter mt-4">
+              3 Basit Adımda İndirim
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+            {/* Connecting Line */}
+            <div className="hidden md:block absolute top-12 left-1/6 right-1/6 w-2/3 h-0.5 bg-slate-100 z-0" style={{ left: '16.66%', right: '16.66%', width: '66.66%' }} />
+
+            {/* Step 1 */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="relative z-10 flex flex-col items-center text-center group"
+            >
+              <div className="w-24 h-24 bg-white rounded-[2rem] border border-slate-200 shadow-xl shadow-slate-200/50 flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform duration-300">
+                <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center">
+                  <QrCode size={32} className="text-slate-900" />
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">1. QR Kodu Okut</h3>
+              <p className="text-slate-500 font-medium">Kasadaki Kampüs Pay QR kodunu okut, sistem öğrenci olduğunu işletmeye anında bildirsin.</p>
+            </motion.div>
+
+            {/* Step 2 */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="relative z-10 flex flex-col items-center text-center mt-8 md:mt-0 group"
+            >
+              <div className="w-24 h-24 bg-white rounded-[2rem] border border-primary shadow-xl shadow-primary/20 flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform duration-300">
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
+                  <Zap size={32} className="text-slate-900" />
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">2. İndirimi Kap</h3>
+              <p className="text-slate-500 font-medium">İşletme ödemeyi onaylasın, sadece öğrencilere özel olan bu dev indirimden anında faydalan.</p>
+            </motion.div>
+
+            {/* Step 3 */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="relative z-10 flex flex-col items-center text-center mt-8 md:mt-0 group"
+            >
+              <div className="w-24 h-24 bg-white rounded-[2rem] border border-amber-200 shadow-xl shadow-amber-200/50 flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform duration-300">
+                <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center">
+                  <Star size={32} className="text-amber-500" />
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">3. Puan Kazan</h3>
+              <p className="text-slate-500 font-medium">Her işleminizden Kampüs Puan (KP) kazanın, daha fazla fırsatın kilidini açın.</p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* ─── FEATURED VENUES ─── */}
       <section className="py-20 px-4 bg-slate-50 border-t border-slate-100 overflow-hidden">
         <div className="max-w-6xl mx-auto">

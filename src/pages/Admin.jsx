@@ -48,7 +48,7 @@ const Admin = () => {
           to_email:   app.email,
           to_name:    app.name || app.contact_name || 'Öğrenci',
           status_message: status === 'onaylandi' 
-            ? 'Tebrikler! Kampüs Pay öğrenci hesabınız onaylandı. Hemen indirimleri kullanmaya başlayabilirsiniz.' 
+            ? 'Öğrenci bilgileriniz onaylanmıştır, Kampüs Pay uygulamasını gönül rahatlığı ile kullanıp indirimlerden faydalanabilirsiniz.' 
             : 'Öğrenci belgeniz doğrulanamadı. Lütfen E-Devlet üzerinden aldığınız güncel bir öğrenci belgesini (PDF) veya öğrenci kartınızı net bir şekilde tekrar yükleyin.',
           from_name:  'Kampüs Pay',
           reply_to:   'info@kampuspay.com',

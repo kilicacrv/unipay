@@ -170,7 +170,7 @@ const AdminVenues = () => {
 
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
-            {['Tümü', 'Cafe', 'Restoran', 'Tatlı', 'Giyim', 'Eğlence'].map(cat => (
+            {['Tümü', 'Cafe', 'Restoran', 'Tatlı', 'Giyim', 'Eğlence', 'Kişisel Bakım', 'Teknoloji', 'Kırtasiye', 'Spor', 'Market', 'Eğitim'].map(cat => (
               <button
                 key={cat}
                 onClick={() => setSelectedFilter(cat)}
@@ -229,6 +229,12 @@ const AdminVenues = () => {
                     <option>Tatlı</option>
                     <option>Giyim</option>
                     <option>Eğlence</option>
+                    <option>Kişisel Bakım</option>
+                    <option>Teknoloji</option>
+                    <option>Kırtasiye</option>
+                    <option>Spor</option>
+                    <option>Market</option>
+                    <option>Eğitim</option>
                   </select>
                 </div>
               </div>
