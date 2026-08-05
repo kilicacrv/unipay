@@ -142,7 +142,13 @@ const AdminLogs = () => {
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2 shrink-0">
                     {(log.user_id || log.details?.email) && (
                       <button 
-                        onClick={() => alert(`Kullanıcı/İşletme Bilgileri: ${log.details?.name || 'Bilinmiyor'} - ${log.details?.email || 'Bilinmiyor'}\nHata: ${log.details?.error || 'Yok'}`)}
+                        onClick={() => {
+                          const detailText = Object.entries(log.details || {})
+                            .filter(([k]) => k !== 'message')
+                            .map(([k, v]) => `${k}: ${v}`)
+                            .join('\n');
+                          alert(`Detaylar:\n${detailText || 'Ek detay bulunmuyor.'}`);
+                        }}
                         className="px-3 py-1 rounded bg-slate-700 text-slate-300 text-xs hover:bg-slate-600 transition-colors flex items-center gap-1"
                       >
                         <Eye size={12} /> İncele
