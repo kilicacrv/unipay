@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { QrCode, Smartphone, Zap, Store, Star, TrendingDown, ShieldCheck, Users, ChevronRight, MapPin } from 'lucide-react';
+import { QrCode, Smartphone, Zap, Store, Star, TrendingDown, ShieldCheck, Users, ChevronRight, MapPin, Navigation } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import BannerCarousel from '../components/BannerCarousel';
 
@@ -221,9 +221,22 @@ const Home = () => {
                     <Star size={16} fill="currentColor" />
                     <span className="text-sm font-bold">{venue.rating || '4.5'}</span>
                   </div>
-                  <Link to={session ? "/dashboard" : "/kayit"} className="bg-slate-900 text-white font-bold rounded-2xl w-full text-center block py-3.5 text-sm hover:bg-slate-800 transition-colors shadow-lg shadow-slate-900/20 hover:-translate-y-0.5">
-                    {session ? "Mekanı İncele" : "Fırsatı Yakala"}
-                  </Link>
+                  <div className="flex gap-2">
+                    <Link to={session ? "/dashboard" : "/kayit"} className="bg-slate-900 text-white font-bold rounded-2xl flex-1 text-center py-3.5 text-sm hover:bg-slate-800 transition-colors shadow-lg shadow-slate-900/20 hover:-translate-y-0.5 flex items-center justify-center">
+                      {session ? "Mekanı İncele" : "Fırsatı Yakala"}
+                    </Link>
+                    {venue.lat && venue.lng && (
+                      <a 
+                        href={`https://www.google.com/maps/dir/?api=1&destination=${venue.lat},${venue.lng}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-primary/10 text-slate-700 font-bold rounded-2xl w-12 flex items-center justify-center hover:bg-primary hover:text-dark transition-colors border border-primary/20"
+                        title="Yol Tarifi Al"
+                      >
+                        <Navigation size={18} />
+                      </a>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             ))}

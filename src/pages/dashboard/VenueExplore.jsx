@@ -35,10 +35,19 @@ const VenueCard = ({ venue, isFavorite, onToggleFavorite, onClick }) => (
       <p onClick={onClick} className="text-[9px] text-slate-400 font-bold uppercase tracking-widest line-clamp-1 mb-2">{venue.address?.split(',')[0] || 'Bosna Hersek Mahallesi'}</p>
       
       <div className="mt-auto flex justify-between items-center pt-2 border-t border-slate-100">
-        <span onClick={onClick} className="text-[10px] font-black text-primary uppercase tracking-widest">İncele</span>
-        <div onClick={onClick} className="w-6 h-6 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-dark transition-colors">
-          <ChevronRight size={14} />
-        </div>
+        <span onClick={onClick} className="text-[10px] font-black text-slate-500 uppercase tracking-widest hover:text-primary transition-colors">İncele</span>
+        {venue.lat && venue.lng && (
+          <a 
+            href={`https://www.google.com/maps/dir/?api=1&destination=${venue.lat},${venue.lng}`}
+            target="_blank" 
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-1 bg-slate-100 text-slate-600 hover:bg-primary hover:text-dark px-2 py-1 rounded-lg text-[9px] font-bold transition-colors"
+          >
+            <Navigation size={10} />
+            Yol Tarifi
+          </a>
+        )}
       </div>
     </div>
 
