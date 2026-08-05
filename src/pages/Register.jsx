@@ -17,6 +17,7 @@ const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', password: '', university: '' });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -183,8 +184,8 @@ const Register = () => {
               </InputWrapper>
             </div>
 
-            <button type="submit" className="btn-primary w-full py-4 text-sm mt-2 justify-center flex items-center">
-              Devam Et →
+            <button type="submit" disabled={loading} className="btn-primary w-full py-4 text-sm mt-2 justify-center flex items-center disabled:opacity-70 disabled:cursor-not-allowed">
+              {loading ? 'İşlem Yapılıyor...' : 'Devam Et →'}
             </button>
           </form>
 
