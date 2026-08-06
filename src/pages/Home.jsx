@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { QrCode, Smartphone, Zap, Store, Star, TrendingDown, ShieldCheck, Users, ChevronRight, MapPin, Navigation, ArrowRight, Sparkles, BadgePercent, Coffee, Utensils, Gift, Heart, Clock, CheckCircle2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { QrCode, Zap, Store, Star, ShieldCheck, ChevronRight, MapPin, Navigation, ArrowRight, Sparkles, BadgePercent, Coffee, Utensils, Gift, Clock, CheckCircle2, Percent, Tag, Pizza, IceCream, Ticket, Bed, Music, Gamepad2, ShoppingBag, Scissors } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import BannerCarousel from '../components/BannerCarousel';
 
@@ -20,12 +20,26 @@ const stagger = {
   },
 };
 
+// Floating background icons config
+const floatingIcons = [
+  { Icon: Coffee, top: '8%', left: '5%', size: 28, delay: 0, duration: 18, color: 'text-amber-300/20' },
+  { Icon: Pizza, top: '15%', right: '8%', size: 32, delay: 2, duration: 22, color: 'text-orange-300/15' },
+  { Icon: IceCream, top: '35%', left: '3%', size: 24, delay: 4, duration: 20, color: 'text-pink-300/15' },
+  { Icon: Percent, top: '60%', right: '5%', size: 30, delay: 1, duration: 19, color: 'text-emerald-300/20' },
+  { Icon: Tag, top: '75%', left: '8%', size: 26, delay: 3, duration: 21, color: 'text-blue-300/15' },
+  { Icon: Ticket, top: '20%', left: '85%', size: 22, delay: 5, duration: 17, color: 'text-purple-300/15' },
+  { Icon: Bed, top: '50%', left: '90%', size: 28, delay: 2.5, duration: 23, color: 'text-teal-300/15' },
+  { Icon: Music, top: '80%', right: '12%', size: 24, delay: 1.5, duration: 18, color: 'text-rose-300/15' },
+  { Icon: Gamepad2, top: '45%', left: '12%', size: 20, delay: 3.5, duration: 20, color: 'text-indigo-300/15' },
+  { Icon: ShoppingBag, top: '65%', left: '45%', size: 22, delay: 4.5, duration: 22, color: 'text-amber-300/15' },
+  { Icon: Scissors, top: '25%', left: '40%', size: 20, delay: 0.5, duration: 19, color: 'text-cyan-300/15' },
+  { Icon: Utensils, top: '70%', left: '70%', size: 26, delay: 2, duration: 21, color: 'text-orange-300/15' },
+];
+
 const Home = () => {
   const [featuredVenues, setFeaturedVenues] = useState([]);
   const [session, setSession] = useState(null);
   const [dashboardUrl, setDashboardUrl] = useState('/dashboard');
-  const [studentCount, setStudentCount] = useState(0);
-  const [venueCount, setVenueCount] = useState(0);
 
   useEffect(() => {
     // Oturum durumunu al
@@ -69,25 +83,13 @@ const Home = () => {
           setFeaturedVenues([]);
         } else {
           setFeaturedVenues(data);
-          setVenueCount(data.length);
         }
       } catch (err) {
         setFeaturedVenues([]);
       }
     };
 
-    const fetchCounts = async () => {
-      try {
-        const { count } = await supabase.from('applications').select('*', { count: 'exact', head: true }).eq('status', 'onaylandi');
-        setStudentCount(count || 0);
-        
-        const { count: vCount } = await supabase.from('venues').select('*', { count: 'exact', head: true });
-        setVenueCount(vCount || 0);
-      } catch(e) {}
-    };
-
     fetchVenues();
-    fetchCounts();
 
     return () => subscription.unsubscribe();
   }, []);
@@ -101,8 +103,27 @@ const Home = () => {
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-bl from-primary/20 to-transparent rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-orange-200/20 to-transparent rounded-full blur-3xl" />
         
-        {/* Floating dots pattern */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+        {/* Floating Vector Icons */}
+        {floatingIcons.map((item, i) => (
+          <motion.div
+            key={i}
+            className={`absolute ${item.color} pointer-events-none select-none`}
+            style={{ top: item.top, left: item.left, right: item.right }}
+            animate={{
+              y: [0, -20, 0, 15, 0],
+              x: [0, 10, -5, 8, 0],
+              rotate: [0, 8, -5, 3, 0],
+            }}
+            transition={{
+              duration: item.duration,
+              repeat: Infinity,
+              ease: 'easeInOut',
+              delay: item.delay,
+            }}
+          >
+            <item.Icon size={item.size} strokeWidth={1.5} />
+          </motion.div>
+        ))}
         
         <div className="max-w-6xl mx-auto relative z-10 flex flex-col items-center text-center">
           
@@ -113,7 +134,7 @@ const Home = () => {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              {studentCount > 0 ? `${studentCount}+ öğrenci kullanıyor` : 'Konya Bosna\'da aktif'}
+              Konya Bosna'da aktif
             </div>
           </motion.div>
 
@@ -149,20 +170,44 @@ const Home = () => {
             </motion.p>
           )}
 
-          {/* ─── Canlı İstatistikler ─── */}
-          <motion.div {...fadeUp(0.5)} className="mt-12 md:mt-16 w-full max-w-md md:max-w-2xl">
-            <div className="grid grid-cols-3 gap-3 md:gap-6">
-              <div className="bg-white/70 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-6 border border-slate-200/60 shadow-sm text-center">
-                <div className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight">{studentCount > 0 ? `${studentCount}+` : '—'}</div>
-                <div className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Öğrenci</div>
+          {/* ─── Sistemi Anlatan Özellikler ─── */}
+          <motion.div {...fadeUp(0.5)} className="mt-12 md:mt-16 w-full max-w-md md:max-w-3xl">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+              <div className="bg-white/70 backdrop-blur-md rounded-2xl p-3.5 md:p-5 border border-slate-200/60 shadow-sm flex items-center gap-3 md:flex-col md:text-center md:gap-2">
+                <div className="w-9 h-9 md:w-12 md:h-12 bg-amber-50 rounded-xl flex items-center justify-center shrink-0">
+                  <BadgePercent className="w-5 h-5 md:w-6 md:h-6 text-amber-500" />
+                </div>
+                <div>
+                  <div className="text-xs md:text-sm font-black text-slate-900">Özel İndirimler</div>
+                  <div className="text-[10px] md:text-xs text-slate-400 font-medium">Sadece öğrencilere</div>
+                </div>
               </div>
-              <div className="bg-white/70 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-6 border border-primary/30 shadow-sm shadow-primary/10 text-center">
-                <div className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight">{venueCount > 0 ? `${venueCount}+` : '—'}</div>
-                <div className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Mekan</div>
+              <div className="bg-white/70 backdrop-blur-md rounded-2xl p-3.5 md:p-5 border border-primary/30 shadow-sm shadow-primary/5 flex items-center gap-3 md:flex-col md:text-center md:gap-2">
+                <div className="w-9 h-9 md:w-12 md:h-12 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
+                  <QrCode className="w-5 h-5 md:w-6 md:h-6 text-slate-800" />
+                </div>
+                <div>
+                  <div className="text-xs md:text-sm font-black text-slate-900">QR ile Anında</div>
+                  <div className="text-[10px] md:text-xs text-slate-400 font-medium">Tarat, faydalan</div>
+                </div>
               </div>
-              <div className="bg-white/70 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-6 border border-emerald-200/60 shadow-sm text-center">
-                <div className="text-2xl md:text-4xl font-black text-emerald-600 tracking-tight">%25</div>
-                <div className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Ort. İndirim</div>
+              <div className="bg-white/70 backdrop-blur-md rounded-2xl p-3.5 md:p-5 border border-emerald-200/60 shadow-sm flex items-center gap-3 md:flex-col md:text-center md:gap-2">
+                <div className="w-9 h-9 md:w-12 md:h-12 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0">
+                  <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-emerald-500" />
+                </div>
+                <div>
+                  <div className="text-xs md:text-sm font-black text-slate-900">%100 Ücretsiz</div>
+                  <div className="text-[10px] md:text-xs text-slate-400 font-medium">Kart gerekmez</div>
+                </div>
+              </div>
+              <div className="bg-white/70 backdrop-blur-md rounded-2xl p-3.5 md:p-5 border border-purple-200/60 shadow-sm flex items-center gap-3 md:flex-col md:text-center md:gap-2">
+                <div className="w-9 h-9 md:w-12 md:h-12 bg-purple-50 rounded-xl flex items-center justify-center shrink-0">
+                  <Star className="w-5 h-5 md:w-6 md:h-6 text-purple-500" />
+                </div>
+                <div>
+                  <div className="text-xs md:text-sm font-black text-slate-900">Puan Kazan</div>
+                  <div className="text-[10px] md:text-xs text-slate-400 font-medium">Kullandıkça biriktir</div>
+                </div>
               </div>
             </div>
           </motion.div>
