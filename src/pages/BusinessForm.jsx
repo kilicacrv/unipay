@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Store, CheckCircle, AlertCircle, TrendingUp, Users, Loader, BarChart2, User, Smartphone, Instagram, ArrowRight, ShieldCheck, Zap, Sparkles } from 'lucide-react';
+import { Store, CheckCircle, AlertCircle, Users, BarChart2, User, Smartphone, Instagram, ArrowRight, ShieldCheck, Zap, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { Link } from 'react-router-dom';
