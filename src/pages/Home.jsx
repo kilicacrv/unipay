@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { QrCode, Zap, Store, Star, ShieldCheck, ChevronRight, MapPin, Navigation, ArrowRight, Sparkles, BadgePercent, Coffee, Utensils, Gift, Clock, CheckCircle2, Percent, Tag, Pizza, IceCream, Ticket, Bed, Music, Gamepad2, ShoppingBag, Scissors } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -11,14 +11,6 @@ const fadeUp = (delay = 0) => ({
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] },
 });
-
-const stagger = {
-  animate: {
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
 
 // Floating background icons config
 const floatingIcons = [
