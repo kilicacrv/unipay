@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Smartphone, GraduationCap, LogOut, ShieldCheck, Bell, Zap, History, Edit2, Check, X } from 'lucide-react';
+import { User, Mail, Smartphone, GraduationCap, LogOut, ShieldCheck, Bell, Zap, History, Edit, Check, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { signOut, supabase } from '../../lib/supabase';
 import StudentBottomNav from '../../components/StudentBottomNav';
@@ -101,7 +101,7 @@ const StudentProfile = () => {
           onClick={() => isEditing ? setIsEditing(false) : setIsEditing(true)}
           className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isEditing ? 'bg-rose-50 text-rose-500' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
         >
-          {isEditing ? <X size={18} /> : <Edit2 size={18} />}
+          {isEditing ? <X size={18} /> : <Edit size={18} />}
         </button>
       </header>
 

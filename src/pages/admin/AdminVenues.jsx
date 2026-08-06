@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { MapPin, Plus, Trash2, Edit2, Save, X, Loader2, Image as ImageIcon, CheckCircle, AlertCircle } from 'lucide-react';
+import { MapPin, Plus, Trash2, Edit, Save, X, Loader2, Image as ImageIcon, CheckCircle, AlertCircle } from 'lucide-react';
 
 const AdminVenues = () => {
   const [venues, setVenues] = useState([]);
@@ -375,7 +375,7 @@ const AdminVenues = () => {
               </div>
               <div className="flex gap-3 pt-4 border-t border-slate-50">
                 <button className="flex-1 h-12 bg-slate-50 text-slate-400 rounded-2xl flex items-center justify-center hover:bg-slate-100 hover:text-slate-900 transition-all">
-                  <Edit2 size={18} />
+                  <Edit size={18} />
                 </button>
                 <button 
                   onClick={() => deleteVenue(venue.id)}

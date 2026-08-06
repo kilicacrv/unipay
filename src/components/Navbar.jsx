@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ArrowRight, UserCircle2, LogOut, LayoutDashboard } from 'lucide-react';
+import { Menu, X, ArrowRight, UserCircle, LogOut, LayoutDashboard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 
@@ -176,7 +176,7 @@ const Navbar = () => {
                     onClick={() => setMenuOpen(false)}
                     className="flex items-center gap-3 px-5 py-4 text-sm font-semibold text-slate-600 hover:bg-slate-50 rounded-2xl transition-colors"
                   >
-                    <UserCircle2 size={20} className="text-slate-400" />
+                    <UserCircle size={20} className="text-slate-400" />
                     Giriş Yap
                   </Link>
                   <Link 
