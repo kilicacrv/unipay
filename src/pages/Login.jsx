@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, AlertCircle, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
+import { Mail, Lock, AlertCircle, ArrowRight, Zap, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 
@@ -147,7 +147,7 @@ const Login = () => {
                 animate={{ opacity: 1, y: 0 }}
                 className="flex items-start gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl px-4 py-3 mb-5 text-xs font-bold leading-relaxed"
               >
-                <CheckCircle2 size={14} className="shrink-0 mt-0.5" />
+                <CheckCircle size={14} className="shrink-0 mt-0.5" />
                 {resetMessage}
               </motion.div>
             )}

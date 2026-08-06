@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { QrCode, Zap, Store, Star, ShieldCheck, ChevronRight, MapPin, Navigation, ArrowRight, Sparkles, BadgePercent, Coffee, Utensils, Gift, Clock, CheckCircle2, Percent, Tag, Pizza, IceCream, Ticket, Bed, Music, Gamepad2, ShoppingBag, Scissors } from 'lucide-react';
+import { QrCode, Zap, Store, Star, ShieldCheck, ChevronRight, MapPin, Navigation, ArrowRight, Sparkles, BadgePercent, Coffee, Utensils, Gift, Clock, CheckCircle, Percent, Tag, Pizza, IceCream, Ticket, Bed, Music, Gamepad2, ShoppingBag, Scissors } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import BannerCarousel from '../components/BannerCarousel';
 
@@ -34,19 +34,6 @@ const Home = () => {
   const [dashboardUrl, setDashboardUrl] = useState('/dashboard');
 
   useEffect(() => {
-    // Oturum durumunu al
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      updateDashboardUrl(session);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      updateDashboardUrl(session);
-    });
-
     const updateDashboardUrl = (currentSession) => {
       if (!currentSession) {
         setDashboardUrl('/dashboard');
@@ -67,6 +54,19 @@ const Home = () => {
         setDashboardUrl('/dashboard');
       }
     };
+
+    // Oturum durumunu al
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      updateDashboardUrl(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      updateDashboardUrl(session);
+    });
 
     const fetchVenues = async () => {
       try {
@@ -185,7 +185,7 @@ const Home = () => {
               </div>
               <div className="bg-white/70 backdrop-blur-md rounded-2xl p-3.5 md:p-5 border border-emerald-200/60 shadow-sm flex items-center gap-3 md:flex-col md:text-center md:gap-2">
                 <div className="w-9 h-9 md:w-12 md:h-12 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-emerald-500" />
+                  <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-emerald-500" />
                 </div>
                 <div>
                   <div className="text-xs md:text-sm font-black text-slate-900">%100 Ücretsiz</div>
