@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Smartphone, User, GraduationCap, AlertCircle, Mail, Lock, Zap, ArrowRight, BadgePercent, ShieldCheck, Star, CheckCircle2 } from 'lucide-react';
+import { Smartphone, User, GraduationCap, AlertCircle, Mail, Lock, Zap, ArrowRight, BadgePercent, ShieldCheck, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 
