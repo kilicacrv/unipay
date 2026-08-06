@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Percent, Zap, Star } from 'lucide-react';
+import { ChevronRight, Zap } from 'lucide-react';
 
 import { supabase } from '../lib/supabase';
 

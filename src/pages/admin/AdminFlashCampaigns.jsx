@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Zap, Clock, Save, Trash2, Loader2, MapPin } from 'lucide-react';
+import { Zap, Clock, Trash2, Loader2, MapPin } from 'lucide-react';
 
 const AdminFlashCampaigns = () => {
   const [venues, setVenues] = useState([]);

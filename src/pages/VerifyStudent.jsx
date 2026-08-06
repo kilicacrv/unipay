@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Upload, CheckCircle, Clock, AlertCircle, Loader } from 'lucide-react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { logSystemEvent } from '../lib/logger';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Smartphone, GraduationCap, LogOut, ShieldCheck, Bell, Zap, History, Edit, Check, X } from 'lucide-react';
+import { User, Mail, Smartphone, GraduationCap, LogOut, ShieldCheck, Zap, History, Edit, Check, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { signOut, supabase } from '../../lib/supabase';
 import StudentBottomNav from '../../components/StudentBottomNav';

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { Search, Map as MapIcon, List, Filter, Navigation, Star, ChevronRight, Tag, User, MapPin, Loader2, Heart } from 'lucide-react';
+import { Search, Map as MapIcon, List, Filter, Navigation, Star, User, Loader2, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import StudentBottomNav from '../../components/StudentBottomNav';

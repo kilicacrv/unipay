@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Image as ImageIcon, Plus, Trash2, Clock, Loader2, Search } from 'lucide-react';
+import { Image as ImageIcon, Plus, Trash2, Loader2 } from 'lucide-react';
 
 const AdminBanners = () => {
   const [banners, setBanners] = useState([]);

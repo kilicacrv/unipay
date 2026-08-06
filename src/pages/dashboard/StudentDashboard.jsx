@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Scan, MapPin, Tag, History, ChevronRight, User, Loader2, Heart, Zap, Clock, Bell, Info, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Scan, History, ChevronRight, User, Loader2, Zap, Clock, Bell, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import StudentBottomNav from '../../components/StudentBottomNav';
