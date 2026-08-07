@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Store, CheckCircle, AlertCircle, Users, BarChart2, User, Smartphone, Instagram, ArrowRight, ShieldCheck, Zap, Sparkles } from 'lucide-react';
+import { Store, CheckCircle, AlertCircle, Users, BarChart2, User, Smartphone, Camera, ArrowRight, ShieldCheck, Zap, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { Link } from 'react-router-dom';
@@ -221,7 +221,7 @@ const BusinessForm = () => {
                   {/* Instagram */}
                   <div className="flex items-center bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary/50 focus-within:bg-white transition-all">
                     <div className="flex items-center pl-4 pr-3 shrink-0 text-slate-400">
-                      <Instagram size={18} />
+                      <Camera size={18} />
                     </div>
                     <input
                       type="text"
