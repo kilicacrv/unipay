@@ -194,11 +194,11 @@ const Navbar = () => {
               transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
               className="md:hidden mt-2 pointer-events-auto"
             >
-              <div className="bg-white/98 backdrop-blur-2xl border border-slate-200/60 rounded-3xl shadow-2xl shadow-slate-900/10 overflow-hidden">
+              <div className="bg-white border border-slate-200/60 rounded-3xl shadow-2xl shadow-slate-900/10 overflow-hidden">
 
                 {/* Nav links */}
                 <div className="p-3 border-b border-slate-100">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-3 mb-2">Keşfet</p>
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-3 mb-2">Keşfet</p>
                   {navLinks.map((link, i) => (
                     <Link
                       key={link.to}
@@ -222,7 +222,7 @@ const Navbar = () => {
                 <div className="p-3">
                   {session ? (
                     <>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-3 mb-2">Hesap</p>
+                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-3 mb-2">Hesap</p>
                       <Link
                         to={dashboardUrl}
                         onClick={() => setMenuOpen(false)}
@@ -245,7 +245,7 @@ const Navbar = () => {
                     </>
                   ) : (
                     <>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-3 mb-2">Hesap</p>
+                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-3 mb-2">Hesap</p>
                       <Link
                         to="/login"
                         onClick={() => setMenuOpen(false)}
