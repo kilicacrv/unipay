@@ -59,7 +59,7 @@ const Register = () => {
         phone: formData.phone,
         email: formData.email,
         university: formData.university,
-        status: 'eksik' // Kart yüklenmedi
+        status: 'pending' // Kart yüklenmedi
       }]);
 
       if (dbError) throw dbError;
