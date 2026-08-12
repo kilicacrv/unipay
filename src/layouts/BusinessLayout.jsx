@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Tag, UserCircle, Settings, LogOut, ChevronRight } from 'lucide-react';
-import supabase from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 
 const BusinessLayout = () => {
   const location = useLocation();
