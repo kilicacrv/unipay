@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Smartphone, User, GraduationCap, AlertCircle, Mail, Lock, Zap, ArrowRight, BadgePercent, ShieldCheck, Star } from 'lucide-react';
+import { Smartphone, User, GraduationCap, AlertCircle, Mail, Lock, Zap, ArrowRight, BadgePercent, ShieldCheck, Star, Eye, EyeOff, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 
@@ -12,9 +12,15 @@ const fadeUp = (delay = 0) => ({
 
 const Register = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ name: '', phone: '', email: '', password: '', university: '' });
+  const [formData, setFormData] = useState({ name: '', phone: '', email: '', password: '', passwordConfirm: '', university: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [kvkkAccepted, setKvkkAccepted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+
+  const passwordsMatch = formData.password && formData.passwordConfirm && formData.password === formData.passwordConfirm;
+  const passwordsMismatch = formData.password && formData.passwordConfirm && formData.password !== formData.passwordConfirm;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,7 +29,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.phone || !formData.email || !formData.password || !formData.university) {
+    if (!formData.name || !formData.phone || !formData.email || !formData.password || !formData.passwordConfirm || !formData.university) {
       setError('Lütfen tüm alanları doldurun.');
       return;
     }
@@ -31,13 +37,20 @@ const Register = () => {
       setError('Şifre en az 6 karakter olmalıdır.');
       return;
     }
+    if (formData.password !== formData.passwordConfirm) {
+      setError('Girdiğiniz şifreler eşleşmiyor. Lütfen kontrol edin.');
+      return;
+    }
     if (formData.phone.replace(/\D/g, '').length < 10) {
       setError('Geçerli bir telefon numarası girin.');
       return;
     }
+    if (!kvkkAccepted) {
+      setError('Devam edebilmek için KVKK ve Aydınlatma Metni\'ni kabul etmeniz gerekmektedir.');
+      return;
+    }
     setLoading(true);
     try {
-      // 1. Supabase Auth ile kullanıcı oluştur
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -52,14 +65,13 @@ const Register = () => {
 
       if (authError) throw authError;
 
-      // 2. Eksik durumunda bir applications kaydı oluştur
       const { error: dbError } = await supabase.from('applications').insert([{
         auth_id: authData.user?.id,
         name: formData.name,
         phone: formData.phone,
         email: formData.email,
         university: formData.university,
-        status: 'bekliyor' // Kart yüklenmedi
+        status: 'bekliyor'
       }]);
 
       if (dbError) throw dbError;
@@ -73,6 +85,10 @@ const Register = () => {
   };
 
   const handleGoogleLogin = async () => {
+    if (!kvkkAccepted) {
+      setError('Google ile devam edebilmek için KVKK ve Aydınlatma Metni\'ni kabul etmeniz gerekmektedir.');
+      return;
+    }
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -127,11 +143,51 @@ const Register = () => {
               </motion.div>
             )}
 
+            {/* KVKK Checkbox — Google butonunun ÜSTÜNDE */}
+            <div
+              onClick={() => { setKvkkAccepted(!kvkkAccepted); setError(''); }}
+              className={`flex items-start gap-3 rounded-2xl border-2 p-4 cursor-pointer transition-all mb-4 select-none ${
+                kvkkAccepted
+                  ? 'bg-emerald-50 border-emerald-300'
+                  : 'bg-slate-50 border-slate-200 hover:border-slate-300'
+              }`}
+            >
+              <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${
+                kvkkAccepted ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 bg-white'
+              }`}>
+                {kvkkAccepted && <CheckCircle size={13} className="text-white" strokeWidth={3} />}
+              </div>
+              <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
+                <span className="font-bold text-slate-800">KVKK ve Aydınlatma Metni'ni okudum, kabul ediyorum.</span>{' '}
+                Kişisel verilerimin{' '}
+                <Link
+                  to="/gizlilik"
+                  onClick={e => e.stopPropagation()}
+                  className="text-primary underline font-bold hover:text-amber-600"
+                >
+                  Gizlilik Politikası
+                </Link>{' '}
+                ve{' '}
+                <Link
+                  to="/kullanim-kosullari"
+                  onClick={e => e.stopPropagation()}
+                  className="text-primary underline font-bold hover:text-amber-600"
+                >
+                  Kullanım Koşulları
+                </Link>{' '}
+                kapsamında işlenmesini onaylıyorum.
+              </p>
+            </div>
+
             {/* Google Button */}
             <button 
               type="button" 
               onClick={handleGoogleLogin}
-              className="w-full bg-white border-2 border-slate-100 text-slate-700 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-3 hover:bg-slate-50 hover:border-slate-200 hover:shadow-md transition-all active:scale-[0.98]"
+              className={`w-full bg-white border-2 text-slate-700 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-3 transition-all active:scale-[0.98] ${
+                kvkkAccepted
+                  ? 'border-slate-100 hover:bg-slate-50 hover:border-slate-200 hover:shadow-md'
+                  : 'border-slate-100 opacity-50 cursor-not-allowed'
+              }`}
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -178,11 +234,70 @@ const Register = () => {
               </div>
 
               {/* Şifre */}
-              <div className="flex items-center bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary/50 focus-within:bg-white transition-all">
+              <div className={`flex items-center bg-slate-50 border rounded-2xl overflow-hidden focus-within:ring-2 focus-within:bg-white transition-all ${
+                passwordsMismatch ? 'border-red-300 focus-within:ring-red-200' : 'border-slate-200 focus-within:ring-primary/30 focus-within:border-primary/50'
+              }`}>
                 <div className="flex items-center pl-4 pr-3 shrink-0 text-slate-400">
                   <Lock size={16} />
                 </div>
-                <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Şifre (min 6 karakter)" className={inputBase} />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Şifre (min 6 karakter)"
+                  className={inputBase}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="pr-4 text-slate-400 hover:text-slate-600 transition-colors shrink-0"
+                >
+                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                </button>
+              </div>
+
+              {/* Şifre Tekrar */}
+              <div>
+                <div className={`flex items-center bg-slate-50 border rounded-2xl overflow-hidden focus-within:ring-2 focus-within:bg-white transition-all ${
+                  passwordsMismatch
+                    ? 'border-red-300 focus-within:ring-red-200'
+                    : passwordsMatch
+                    ? 'border-emerald-300 focus-within:ring-emerald-200'
+                    : 'border-slate-200 focus-within:ring-primary/30 focus-within:border-primary/50'
+                }`}>
+                  <div className={`flex items-center pl-4 pr-3 shrink-0 transition-colors ${
+                    passwordsMismatch ? 'text-red-400' : passwordsMatch ? 'text-emerald-500' : 'text-slate-400'
+                  }`}>
+                    {passwordsMatch ? <CheckCircle size={16} /> : <Lock size={16} />}
+                  </div>
+                  <input
+                    type={showPasswordConfirm ? 'text' : 'password'}
+                    name="passwordConfirm"
+                    value={formData.passwordConfirm}
+                    onChange={handleChange}
+                    placeholder="Şifreyi tekrar girin"
+                    className={inputBase}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                    className="pr-4 text-slate-400 hover:text-slate-600 transition-colors shrink-0"
+                  >
+                    {showPasswordConfirm ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
+                {/* Eşleşme göstergesi */}
+                {passwordsMismatch && (
+                  <p className="text-[11px] text-red-500 font-bold mt-1.5 ml-1 flex items-center gap-1">
+                    <AlertCircle size={11} /> Şifreler eşleşmiyor
+                  </p>
+                )}
+                {passwordsMatch && (
+                  <p className="text-[11px] text-emerald-600 font-bold mt-1.5 ml-1 flex items-center gap-1">
+                    <CheckCircle size={11} /> Şifreler eşleşiyor ✓
+                  </p>
+                )}
               </div>
 
               {/* Üniversite */}
@@ -205,8 +320,8 @@ const Register = () => {
               {/* Submit Button */}
               <button 
                 type="submit" 
-                disabled={loading} 
-                className="w-full bg-slate-900 text-white font-black py-4 rounded-2xl text-sm mt-1 flex items-center justify-center gap-2 hover:bg-slate-800 hover:shadow-xl hover:shadow-slate-900/20 transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed group"
+                disabled={loading || !kvkkAccepted || passwordsMismatch}
+                className="w-full bg-slate-900 text-white font-black py-4 rounded-2xl text-sm mt-1 flex items-center justify-center gap-2 hover:bg-slate-800 hover:shadow-xl hover:shadow-slate-900/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed group"
               >
                 {loading ? (
                   <span className="flex items-center gap-2">
@@ -221,13 +336,6 @@ const Register = () => {
                 )}
               </button>
             </form>
-
-            {/* Terms */}
-            <p className="text-center text-[10px] text-slate-400 mt-4 leading-relaxed">
-              Devam ederek{' '}
-              <Link to="/gizlilik" className="underline hover:text-primary transition-colors">Gizlilik Politikasını</Link> ve{' '}
-              <Link to="/kullanim-kosullari" className="underline hover:text-primary transition-colors">Kullanım Koşullarını</Link> kabul edersiniz.
-            </p>
           </div>
         </motion.div>
 
