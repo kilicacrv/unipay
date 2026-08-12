@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Lock, Bell, Shield, LogOut, ChevronRight, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { signOut } from '../../lib/supabase';
+import { signOut, supabase } from '../../lib/supabase';
 
 const SettingRow = ({ icon, title, desc, action, danger }) => (
   <div className="p-6 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
@@ -21,6 +21,27 @@ const SettingRow = ({ icon, title, desc, action, danger }) => (
 const BusinessSettings = () => {
   const navigate = useNavigate();
   const [notif, setNotif] = useState(true);
+  
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handlePasswordChange = async () => {
+    if (!newPassword || newPassword.length < 6) {
+      alert("Şifre en az 6 karakter olmalıdır.");
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    setLoading(false);
+    if (error) {
+      alert("Şifre değiştirilemedi: " + error.message);
+    } else {
+      alert("Şifreniz başarıyla güncellendi.");
+      setShowPasswordModal(false);
+      setNewPassword('');
+    }
+  };
 
   const handleLogout = async () => {
     await signOut();
@@ -41,21 +62,13 @@ const BusinessSettings = () => {
             <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Güvenlik & Gizlilik</h2>
           </div>
           <div className="divide-y divide-slate-50">
-            <SettingRow 
-              icon={<Lock size={20} />} 
-              title="Şifre Değiştir" 
-              desc="Hesap güvenliğiniz için düzenli olarak güncelleyin."
-            />
-            <SettingRow 
-              icon={<Shield size={20} />} 
-              title="İki Adımlı Doğrulama" 
-              desc="Giriş güvenliğini artırmak için aktif edin."
-              action={
-                <div className="w-10 h-6 bg-slate-100 rounded-full relative cursor-pointer">
-                  <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm" />
-                </div>
-              }
-            />
+            <button onClick={() => setShowPasswordModal(true)} className="w-full text-left">
+              <SettingRow 
+                icon={<Lock size={20} />} 
+                title="Şifre Değiştir" 
+                desc="Hesap güvenliğiniz için düzenli olarak güncelleyin."
+              />
+            </button>
           </div>
         </div>
 
@@ -95,12 +108,6 @@ const BusinessSettings = () => {
                 danger
               />
             </button>
-            <SettingRow 
-              icon={<AlertCircle size={20} />} 
-              title="Hesabı Dondur" 
-              desc="İşletmenizi geçici olarak pasif duruma getirin."
-              danger
-            />
           </div>
         </div>
 
@@ -108,6 +115,37 @@ const BusinessSettings = () => {
           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Üni Pay v1.0.4 — © 2026</p>
         </div>
       </div>
+
+      {showPasswordModal && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-8 w-full max-w-sm">
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Şifre Değiştir</h3>
+            <p className="text-sm text-slate-500 mb-6">Yeni şifrenizi belirleyin.</p>
+            <input
+              type="password"
+              placeholder="Yeni Şifre"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-primary mb-4"
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowPasswordModal(false)}
+                className="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-colors"
+              >
+                İptal
+              </button>
+              <button
+                onClick={handlePasswordChange}
+                disabled={loading}
+                className="flex-1 py-3 bg-primary text-slate-900 rounded-xl font-bold hover:bg-primary/90 transition-colors"
+              >
+                {loading ? 'Güncelleniyor...' : 'Kaydet'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

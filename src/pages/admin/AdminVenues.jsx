@@ -100,7 +100,6 @@ const AdminVenues = () => {
       };
       
       // Remove temporary fields before insert
-      delete venueToInsert.google_maps_url;
       delete venueToInsert.owner_email;
       delete venueToInsert.owner_password;
 

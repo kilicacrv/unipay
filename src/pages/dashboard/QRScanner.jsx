@@ -142,6 +142,17 @@ const QRScanner = () => {
     };
   }, [visitId]);
 
+  const cancelVisit = async () => {
+    if (visitId && status === 'bekliyor') {
+      try {
+        await supabase.from('visits').delete().eq('id', visitId);
+      } catch (err) {
+        console.error("Ziyaret silinemedi:", err);
+      }
+    }
+    navigate('/dashboard');
+  };
+
   const processMatch = async (bizQrData) => {
     setIsProcessing(true);
 
@@ -169,6 +180,21 @@ const QRScanner = () => {
       const { data: venue } = await supabase.from('venues').select('name').eq('id', bizSlug).single();
       if (venue && venue.name) {
         setBusinessName(venue.name);
+      }
+
+      // Check if venue has any active discounts (only if it's not a flash campaign)
+      if (!campaignId) {
+        const { data: activeDiscounts, error: discountsError } = await supabase
+          .from('discounts')
+          .select('id')
+          .eq('venue_id', bizSlug)
+          .limit(1);
+          
+        if (!activeDiscounts || activeDiscounts.length === 0) {
+          setError('Bu işletmede şu an aktif bir indirim bulunmamaktadır.');
+          setIsProcessing(false);
+          return;
+        }
       }
 
       try {
@@ -226,7 +252,7 @@ const QRScanner = () => {
           <h2 className="font-bold text-sm tracking-tight uppercase">QR Tarayıcı</h2>
         </div>
         <button 
-          onClick={() => navigate('/dashboard')} 
+          onClick={cancelVisit} 
           className="w-10 h-10 bg-white/10 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-all"
         >
           <X size={20} />
@@ -270,7 +296,7 @@ const QRScanner = () => {
             </div>
             
             <button 
-              onClick={() => navigate('/dashboard')}
+              onClick={cancelVisit}
               className="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors underline"
             >
               Vazgeç ve Çık

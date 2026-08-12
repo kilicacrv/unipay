@@ -31,9 +31,17 @@ const Venues = () => {
 
   const fetchVenues = async () => {
     setLoading(true);
-    const { data, error } = await supabase.from('venues').select('*');
+    const { data, error } = await supabase.from('venues').select('*, discounts(*)');
     if (!error && data) {
-      setVenues(data);
+      const activeVenues = data.map(v => {
+        let discountText = 'Henüz bir indirim bulunmuyor';
+        if (v.discounts && v.discounts.length > 0) {
+          const d = v.discounts[0];
+          discountText = d.discount_rate ? `%${d.discount_rate}` : (d.title || '%15');
+        }
+        return { ...v, discount: discountText };
+      });
+      setVenues(activeVenues);
     }
     setLoading(false);
   };
@@ -144,7 +152,7 @@ const Venues = () => {
                     <span className={`text-xs font-bold px-3 py-1 rounded-full ${tagColors[categoryUpper] || 'bg-slate-100 text-slate-600'}`}>
                       {venue.category || 'Mekan'}
                     </span>
-                    <span className="text-lg font-black text-secondary">%15</span>
+                    <span className="text-sm font-black text-secondary text-right">{venue.discount}</span>
                   </div>
 
                   <h3 className="text-xl font-black text-dark mb-2 group-hover:text-primary transition-colors">{venue.name}</h3>

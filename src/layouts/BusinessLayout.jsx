@@ -1,6 +1,7 @@
 import React from 'react';
-import { Link, useLocation, Outlet } from 'react-router-dom';
+import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Tag, UserCircle, Settings, LogOut, ChevronRight } from 'lucide-react';
+import supabase from '../lib/supabase';
 
 const BusinessLayout = () => {
   const location = useLocation();
@@ -11,6 +12,23 @@ const BusinessLayout = () => {
     { name: 'Profil', icon: <UserCircle size={20} />, path: '/business/profile' },
     { name: 'Ayarlar', icon: <Settings size={20} />, path: '/business/settings' },
   ];
+  const navigate = useNavigate();
+  const [userName, setUserName] = React.useState('İşletme');
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+  };
+
+    React.useEffect(() => {
+        const fetchUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user && user.user_metadata?.full_name) {
+                setUserName(user.user_metadata.full_name);
+            }
+        };
+        fetchUser();
+    }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
@@ -45,7 +63,7 @@ const BusinessLayout = () => {
         </nav>
 
         <div className="p-4 border-t border-slate-100">
-          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50 transition-colors">
+          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50 transition-colors">
             <LogOut size={20} />
             Çıkış Yap
           </button>
@@ -61,8 +79,8 @@ const BusinessLayout = () => {
           </div>
           <div className="ml-auto flex items-center gap-4">
             <div className="text-right hidden sm:block">
-              <p className="text-xs font-bold text-slate-900 leading-none">Örnek İşletme</p>
-              <p className="text-[10px] text-slate-500 font-medium mt-1">Bosna Şubesi</p>
+              <p className="text-xs font-bold text-slate-900 leading-none">{userName}</p>
+              <p className="text-[10px] text-slate-500 font-medium mt-1">İşletme Paneli</p>
             </div>
             <div className="w-10 h-10 bg-slate-100 border border-slate-200 rounded-full flex items-center justify-center text-slate-400">
               <UserCircle size={24} />

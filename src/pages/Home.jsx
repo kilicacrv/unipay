@@ -70,11 +70,18 @@ const Home = () => {
 
     const fetchVenues = async () => {
       try {
-        const { data, error } = await supabase.from('venues').select('*').limit(6);
-        if (error || !data || data.length === 0) {
+        const { data, error } = await supabase.from('venues').select('*, discounts(*)');
+        if (error || !data) {
           setFeaturedVenues([]);
         } else {
-          setFeaturedVenues(data);
+          const activeVenues = data
+            .filter(v => v.discounts && v.discounts.length > 0)
+            .map(v => {
+              const d = v.discounts[0];
+              const discountText = d.discount_rate ? `%${d.discount_rate}` : (d.title || '%15');
+              return { ...v, discount: discountText };
+            });
+          setFeaturedVenues(activeVenues.slice(0, 6));
         }
       } catch (err) {
         setFeaturedVenues([]);
@@ -315,7 +322,7 @@ const Home = () => {
                   <img src={venue.image_url || 'https://via.placeholder.com/400x300?text=Mekan'} alt={venue.name} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
                   <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md text-amber-600 font-black text-xs px-3 py-1.5 rounded-xl shadow-lg border border-white">
-                    {venue.discount || '%15'} İndirim
+                    {venue.discount} İndirim
                   </div>
                   <div className="absolute bottom-3 left-3 flex items-center gap-1 bg-black/50 backdrop-blur-md text-white px-2.5 py-1 rounded-lg">
                     <Star size={11} className="fill-amber-400 text-amber-400" />

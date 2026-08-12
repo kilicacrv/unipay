@@ -9,9 +9,11 @@ const StatCard = ({ title, value, icon, trend, color = "text-slate-900" }) => (
       <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-600">
         {icon}
       </div>
-      <span className="text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1">
-        <TrendingUp size={12} /> {trend}
-      </span>
+      {trend && (
+        <span className="text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1">
+          <TrendingUp size={12} /> {trend}
+        </span>
+      )}
     </div>
     <p className="text-slate-500 text-sm font-semibold">{title}</p>
     <p className="text-3xl font-bold text-slate-900 mt-1">{value}</p>
@@ -238,10 +240,10 @@ const BusinessDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <StatCard title="Görüntülenme" value={stats.views} icon={<Eye size={20} />} trend="+12%" />
-        <StatCard title="İndirim Kullanımı" value={stats.usages} icon={<Tag size={20} />} trend="+5%" />
-        <StatCard title="Tekil Müşteri" value={stats.customers} icon={<Users size={20} />} trend="+18%" />
-        <StatCard title="Toplam Kampanya" value={stats.campaigns} icon={<Zap size={20} />} trend="0%" />
+        <StatCard title="Görüntülenme" value={stats.views} icon={<Eye size={20} />} />
+        <StatCard title="İndirim Kullanımı" value={stats.usages} icon={<Tag size={20} />} />
+        <StatCard title="Tekil Müşteri" value={stats.customers} icon={<Users size={20} />} />
+        <StatCard title="Toplam Kampanya" value={stats.campaigns} icon={<Zap size={20} />} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

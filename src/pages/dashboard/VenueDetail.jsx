@@ -184,7 +184,9 @@ const VenueDetail = () => {
         <div className="flex gap-4 overflow-x-auto no-scrollbar py-2">
           <button 
             onClick={() => {
-              if (venue.lat && venue.lng) {
+              if (venue.google_maps_url) {
+                window.open(venue.google_maps_url, '_blank');
+              } else if (venue.lat && venue.lng) {
                 window.open(`https://www.google.com/maps/dir/?api=1&destination=${venue.lat},${venue.lng}`, '_blank');
               } else if (venue.address) {
                 window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(venue.address)}`, '_blank');
@@ -205,7 +207,7 @@ const VenueDetail = () => {
           {venue.instagram && (
             <button 
               onClick={() => window.open(`https://instagram.com/${venue.instagram.replace('@', '')}`, '_blank')}
-              className="w-16 h-16 bg-slate-50 text-slate-900 rounded-2xl flex items-center justify-center border border-slate-100 shadow-sm active:scale-90 transition-all shrink-0"
+              className="w-16 h-16 rounded-2xl flex items-center justify-center text-white shadow-sm active:scale-90 transition-all shrink-0 bg-gradient-to-tr from-yellow-400 via-rose-500 to-purple-600"
             >
               <AtSign size={22} />
             </button>
