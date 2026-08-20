@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
+import IOSInstallBanner from './components/IOSInstallBanner';
 
 // ─── Launch Mode ──────────────────────────────────────────────────────────────
 // 'landing' → Sadece landing page + kayıt formları açık
@@ -69,6 +70,7 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
+      <IOSInstallBanner />
 
       <div className="min-h-screen flex flex-col font-poppins bg-background text-dark">
         <Navbar />
