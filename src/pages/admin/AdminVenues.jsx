@@ -231,6 +231,7 @@ const AdminVenues = () => {
   };
 
   return (
+    <>
     <div className="w-full">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
         <div>
@@ -595,7 +596,7 @@ const AdminVenues = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
