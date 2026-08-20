@@ -250,22 +250,31 @@ const QRScanner = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-950 z-[100] flex flex-col font-sans">
+    <div className="fixed inset-0 z-[100] flex flex-col font-sans overflow-hidden bg-slate-950">
+      {/* Premium Background Elements */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3" />
+        <div className="absolute inset-0 bg-[url('https://kampuspay.com/logo.png')] bg-center bg-no-repeat bg-contain opacity-5 mix-blend-overlay" />
+      </div>
+
       {/* Header */}
       <div className="p-6 flex items-center justify-between text-white relative z-20">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse" />
-          <h2 className="font-bold text-sm tracking-tight uppercase">QR Tarayıcı</h2>
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center backdrop-blur-md">
+            <Zap size={16} className="text-primary fill-primary" />
+          </div>
+          <h2 className="font-black text-lg tracking-tight">KAMPÜS PAY</h2>
         </div>
         <button 
           onClick={cancelVisit} 
-          className="w-10 h-10 bg-white/10 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-all"
+          className="w-10 h-10 bg-white/5 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-all"
         >
           <X size={20} />
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center p-6 relative">
+      <div className="flex-1 flex flex-col items-center justify-center p-6 relative z-10">
         {isVerifying ? (
           <div className="w-full flex flex-col items-center justify-center text-white">
             <Loader2 size={40} className="animate-spin mb-4" />
@@ -273,17 +282,20 @@ const QRScanner = () => {
           </div>
         ) : !scanResult ? (
           <div className="w-full max-w-sm flex flex-col items-center">
-            <div className="relative w-full aspect-square max-w-[300px]">
-              <div id="reader" className="overflow-hidden rounded-[2.5rem] border-4 border-white/10 shadow-2xl bg-black/40"></div>
-              <div className="absolute inset-x-8 top-1/2 h-0.5 bg-primary/50 shadow-[0_0_15px_rgba(255,214,0,0.8)] animate-[scan_2s_infinite_ease-in-out] z-10" />
-              <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-[2rem]" />
-              <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-[2rem]" />
-              <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-[2rem]" />
-              <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-[2rem]" />
+            <div className="relative w-full aspect-square max-w-[300px] rounded-[2.5rem] p-2 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+              <div id="reader" className="w-full h-full overflow-hidden rounded-[2rem] bg-black/40"></div>
+              {/* Clean Scan Animation Overlay */}
+              <div className="absolute inset-x-6 top-1/2 h-0.5 bg-primary/80 shadow-[0_0_20px_rgba(255,214,0,1)] animate-[scan_2s_infinite_ease-in-out] z-10" />
             </div>
-            <p className="text-white/40 text-center mt-12 text-xs font-bold uppercase tracking-widest px-8 leading-relaxed">
-              İndirim kodunu doğrulamak için işletmenin QR kodunu taratın
-            </p>
+            
+            <div className="mt-12 text-center px-6">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/5 border border-white/10 mb-4 backdrop-blur-md">
+                <div className="w-4 h-4 bg-primary rounded-full animate-pulse shadow-[0_0_15px_rgba(255,214,0,0.5)]" />
+              </div>
+              <p className="text-white/60 text-xs font-bold uppercase tracking-widest leading-relaxed">
+                İndirim kodunu doğrulamak için<br/>işletmenin QR kodunu taratın
+              </p>
+            </div>
           </div>
         ) : status === 'bekliyor' ? (
           <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 text-center shadow-2xl animate-in zoom-in duration-300 border border-slate-100 flex flex-col items-center">
