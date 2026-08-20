@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { X, CheckCircle, Loader2, AlertTriangle, Zap } from 'lucide-react';
+import { X, CheckCircle, Loader2, AlertTriangle, Zap, Camera } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { logSystemEvent } from '../../lib/logger';
@@ -18,6 +18,8 @@ const QRScanner = () => {
   const [visitId, setVisitId] = useState(null);
   const [status, setStatus] = useState(null); // 'bekliyor', 'onaylandi', 'reddedildi'
   const [businessName, setBusinessName] = useState(null);
+  const [venueId, setVenueId] = useState(null);
+  const [discountRate, setDiscountRate] = useState(null);
 
   const [isVerifying, setIsVerifying] = useState(true);
   const html5QrCodeRef = useRef(null);
@@ -181,12 +183,13 @@ const QRScanner = () => {
       if (venue && venue.name) {
         setBusinessName(venue.name);
       }
+      setVenueId(bizSlug);
 
       // Check if venue has any active discounts (only if it's not a flash campaign)
       if (!campaignId) {
         const { data: activeDiscounts, error: discountsError } = await supabase
           .from('discounts')
-          .select('id')
+          .select('id, discount_rate')
           .eq('venue_id', bizSlug)
           .limit(1);
           
@@ -194,6 +197,9 @@ const QRScanner = () => {
           setError('Bu işletmede şu an aktif bir indirim bulunmamaktadır.');
           setIsProcessing(false);
           return;
+        }
+        if (activeDiscounts[0]?.discount_rate) {
+          setDiscountRate('%' + activeDiscounts[0].discount_rate);
         }
       }
 
@@ -365,6 +371,14 @@ const QRScanner = () => {
               className="mt-8 w-full max-w-xs bg-white text-emerald-600 py-5 rounded-[1.5rem] font-black text-sm uppercase tracking-widest hover:bg-emerald-50 transition-all shadow-2xl active:scale-95"
             >
               TAMAM
+            </button>
+
+            <button 
+              onClick={() => navigate('/dashboard/create-post', { state: { venueId, venueName: businessName, discountRate, visitId } })}
+              className="mt-3 w-full max-w-xs bg-white/10 border border-white/20 text-white py-4 rounded-[1.5rem] font-bold text-sm flex items-center justify-center gap-2 hover:bg-white/20 transition-all active:scale-95 backdrop-blur-md"
+            >
+              <Camera size={18} />
+              Deneyimini Paylaş
             </button>
             
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-32 -mt-32" />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tag, Heart, MapPin, User } from 'lucide-react';
+import { Tag, Heart, MapPin, User, Compass } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const StudentBottomNav = () => {
@@ -20,6 +20,10 @@ const StudentBottomNav = () => {
       <div onClick={() => navigate('/dashboard')} className={getNavClass('/dashboard')}>
         <Tag size={18} strokeWidth={2.5} />
         <span className="text-[8px] font-black uppercase tracking-tighter mt-0.5">Fırsatlar</span>
+      </div>
+      <div onClick={() => navigate('/dashboard/kesfet')} className={getNavClass('/dashboard/kesfet')}>
+        <Compass size={18} strokeWidth={2.5} />
+        <span className="text-[8px] font-black uppercase tracking-tighter mt-0.5">Keşfet</span>
       </div>
       <div onClick={() => navigate('/dashboard/favorites')} className={getNavClass('/dashboard/favorites')}>
         <Heart size={18} strokeWidth={2.5} />

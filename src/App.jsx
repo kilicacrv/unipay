@@ -57,6 +57,8 @@ const StudentProfile   = lazy(() => import('./pages/dashboard/StudentProfile'));
 const VenueExplore     = lazy(() => import('./pages/dashboard/VenueExplore'));
 const VenueDetail      = lazy(() => import('./pages/dashboard/VenueDetail'));
 const Favorites        = lazy(() => import('./pages/dashboard/Favorites'));
+const Kesfet           = lazy(() => import('./pages/dashboard/Kesfet'));
+const CreatePost       = lazy(() => import('./pages/dashboard/CreatePost'));
 
 // Admin Pages
 const AdminLayout    = lazy(() => import('./layouts/AdminLayout'));
@@ -143,6 +145,16 @@ function App() {
               <Route path="/dashboard/favorites" element={
                 <LaunchGate>
                   <ProtectedRoute allowedRole="student"><Favorites /></ProtectedRoute>
+                </LaunchGate>
+              } />
+              <Route path="/dashboard/kesfet" element={
+                <LaunchGate>
+                  <ProtectedRoute allowedRole="student"><Kesfet /></ProtectedRoute>
+                </LaunchGate>
+              } />
+              <Route path="/dashboard/create-post" element={
+                <LaunchGate>
+                  <ProtectedRoute allowedRole="student"><CreatePost /></ProtectedRoute>
                 </LaunchGate>
               } />
 
